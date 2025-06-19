@@ -1,0 +1,19 @@
+.dashboardCard {
+  background: #CAC9CE;
+  border-radius: 16px;
+  height: 130px;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 2px 8px rgba(30,16,62,0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #10031C;
+  transition: box-shadow 0.2s;
+}
+.dashboardCard:hover {
+  box-shadow: 0 6px 20px rgba(30,16,62,0.13);
+  text-decoration: none;
+  color: #10031C;
+}
