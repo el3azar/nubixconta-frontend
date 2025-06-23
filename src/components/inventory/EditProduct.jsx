@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import CancelRegister from './CancelRegister'; // 🔧 IMPORTANTE
+import CancelRegister from './CancelRegister';
+import { showSuccess, showError } from './alerts'; // Notificaciones SweetAlert2
+import './alerts.css';
 
 const EditProduct = ({ show, product, onSave, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -9,7 +11,7 @@ const EditProduct = ({ show, product, onSave, onCancel }) => {
     cantidad: ''
   });
 
-  const [showCancelModal, setShowCancelModal] = useState(false); // 🔧 NUEVO
+  const [showCancelModal, setShowCancelModal] = useState(false);
 
   useEffect(() => {
     if (product) {
@@ -26,45 +28,65 @@ const EditProduct = ({ show, product, onSave, onCancel }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    const limits = {
+      codigo: 10,
+      nombre: 50,
+      unidad: 20
+    };
+
+    if (limits[name] && value.length > limits[name]) return;
+
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const { codigo, nombre, unidad, cantidad } = formData;
+
+    // Validación de campos vacíos
+    if (!codigo || !nombre || !unidad || !cantidad) {
+      showError('NOTA: Hacen falta uno o varios datos del registro');
+      return;
+    }
+
+    // Validación de tipo de dato
+    if (!/^\d+$/.test(cantidad)) {
+      showError('NOTA: Se está ingresando información incorrecta en uno o más campos');
+      return;
+    }
+
+    // Guardar cambios
     onSave({
       ...product,
-      codigo: formData.codigo,
-      nombre: formData.nombre,
-      unidad: formData.unidad,
-      existencias: parseInt(formData.cantidad)
+      codigo,
+      nombre,
+      unidad,
+      existencias: parseInt(cantidad)
     });
+
+    showSuccess('El Registro se actualizó con éxito');
   };
 
   const handleCancelClick = () => {
-    setShowCancelModal(true); // 🔧 Mostrar confirmación
+    setShowCancelModal(true);
   };
 
   const confirmCancel = () => {
     setShowCancelModal(false);
-    onCancel(); // 🔧 Ejecuta el cierre real
+    onCancel();
   };
 
   const cancelCancel = () => {
-    setShowCancelModal(false); // 🔧 Solo oculta el modal de confirmación
+    setShowCancelModal(false);
   };
 
   return (
     <>
-      <div
-        className="modal fade show d-block"
-        tabIndex="-1"
-        style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
-      >
+      <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
         <div className="modal-dialog modal-lg">
-          <div
-            className="modal-content text-white p-4 rounded"
-            style={{ backgroundColor: '#6B5E80' }}
-          >
+          <div className="modal-content text-white p-4 rounded" style={{ backgroundColor: '#6B5E80' }}>
             <h3 className="text-center mb-4">Editar Producto</h3>
 
             <form onSubmit={handleSubmit}>
@@ -77,6 +99,7 @@ const EditProduct = ({ show, product, onSave, onCancel }) => {
                     className="form-control"
                     value={formData.codigo}
                     onChange={handleChange}
+                    maxLength={10}
                     required
                   />
                 </div>
@@ -91,6 +114,7 @@ const EditProduct = ({ show, product, onSave, onCancel }) => {
                     className="form-control"
                     value={formData.nombre}
                     onChange={handleChange}
+                    maxLength={50}
                     required
                   />
                 </div>
@@ -102,6 +126,7 @@ const EditProduct = ({ show, product, onSave, onCancel }) => {
                     className="form-control"
                     value={formData.unidad}
                     onChange={handleChange}
+                    maxLength={20}
                     required
                   />
                 </div>
@@ -115,38 +140,21 @@ const EditProduct = ({ show, product, onSave, onCancel }) => {
                   className="form-control"
                   value={formData.cantidad}
                   onChange={handleChange}
+                  min={0}
                   required
                 />
               </div>
 
               <div className="d-flex justify-content-center gap-3">
-                <button
-                  type="submit"
-                  className="btn"
-                  style={{
-                    backgroundColor: '#1B043B',
-                    color: '#fff',
-                    padding: '6px 20px',
-                    borderRadius: '8px',
-                    border: 'none',
-                    fontWeight: 'bold'
-                  }}
-                >
+                <button type="submit" className="btn" style={{ backgroundColor: '#1B043B', color: '#fff', padding: '6px 20px', borderRadius: '8px', border: 'none', fontWeight: 'bold' }}>
                   Guardar Cambios
                 </button>
 
                 <button
                   type="button"
                   className="btn"
-                  onClick={handleCancelClick} // 🔧 CAMBIADO
-                  style={{
-                    backgroundColor: '#fff',
-                    color: '#1B043B',
-                    padding: '6px 20px',
-                    borderRadius: '8px',
-                    border: '1px solid #1B043B',
-                    fontWeight: 'bold'
-                  }}
+                  onClick={handleCancelClick}
+                  style={{ backgroundColor: '#fff', color: '#1B043B', padding: '6px 20px', borderRadius: '8px', border: '1px solid #1B043B', fontWeight: 'bold' }}
                 >
                   Cancelar Registro
                 </button>
@@ -156,7 +164,6 @@ const EditProduct = ({ show, product, onSave, onCancel }) => {
         </div>
       </div>
 
-      {/* Modal de Confirmación */}
       <CancelRegister
         show={showCancelModal}
         onConfirm={confirmCancel}
