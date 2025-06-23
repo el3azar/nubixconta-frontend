@@ -8,10 +8,11 @@ import ProductTable from './ProductTable';
 
 const ProductList = () => {
   const [products, setProducts] = useState([
-    { id: 1, codigo: '1A-001', nombre: 'Guayabas', unidad: 'Caja', existencias: 5, activo: true },
-    { id: 2, codigo: '1A-002', nombre: 'Kiwis', unidad: 'Paquete', existencias: 0, activo: false },
-    { id: 3, codigo: '1A-003', nombre: 'Producto Karen', unidad: 'Unidad', existencias: 12, activo: true }
+    // { id: 1, correlativo: '1A', codigo: '1A-001', nombre: 'Guayabas', unidad: 'Caja', existencias: 5, activo: true },
+    // { id: 2, correlativo: '2A', codigo: '1A-002', nombre: 'Kiwis', unidad: 'Paquete', existencias: 0, activo: false },
+    // { id: 3, correlativo: '3A', codigo: '1A-003', nombre: 'Producto Karen', unidad: 'Unidad', existencias: 12, activo: true }
   ]);
+  // Agregar datos prellenados como arriba es solo agregar los articulos mediante las llaves y separando por comas
 
   // Modal de registro
   const [showRegisterModal, setShowRegisterModal] = useState(false);
