@@ -2,8 +2,7 @@ import React from 'react';
 import ProductRow from './ProductRow';
 import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 
-const ProductTable = ({ products, handleSort, sortField, sortDirection }) => {
-  // Función para renderizar ícono según el campo actual
+const ProductTable = ({ products, handleSort, sortField, sortDirection, onEdit, onToggleStatus }) => {
   const renderSortIcon = (field) => {
     if (sortField !== field) return <FaSort className="ms-2" />;
     return sortDirection === 'asc' ? <FaSortUp className="ms-2" /> : <FaSortDown className="ms-2" />;
@@ -14,7 +13,7 @@ const ProductTable = ({ products, handleSort, sortField, sortDirection }) => {
       <table className="table table-hover mb-0">
         <thead className="table-dark">
           <tr>
-            <th>#</th>
+            <th>Correlativo</th> {/* 🟣 Cambiado */}
             <th>Código</th>
             <th role="button" onClick={() => handleSort('nombre')}>
               Nombre {renderSortIcon('nombre')}
@@ -28,7 +27,12 @@ const ProductTable = ({ products, handleSort, sortField, sortDirection }) => {
         </thead>
         <tbody>
           {products.map((product, index) => (
-            <ProductRow key={product.id || index} product={product} index={index + 1} />
+            <ProductRow
+              key={product.id || index}
+              product={product}
+              onEdit={onEdit}
+              onToggleStatus={onToggleStatus}
+            />
           ))}
         </tbody>
       </table>

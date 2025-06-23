@@ -1,37 +1,59 @@
 import React, { useState } from 'react';
 import ProductSearchBar from './ProductSearchBar';
-import RegisterProductButton from './RegisterProductButton';
+import RegisterProduct from './RegisterProduct';
+import EditProduct from './EditProduct';
+import EnableProduct from './EnableProduct';
+import DisableProduct from './DisableProduct';
 import ProductTable from './ProductTable';
 
 const ProductList = () => {
-  // 🧪 Datos de prueba
   const [products, setProducts] = useState([
-    {
-      id: 1,
-      codigo: '1A-001',
-      nombre: 'Guayabas',
-      unidad: 'Caja',
-      existencias: 5,
-      activo: true
-    },
-    {
-      id: 2,
-      codigo: '1A-002',
-      nombre: 'Kiwis',
-      unidad: 'Paquete',
-      existencias: 0,
-      activo: false
-    },
-    {
-      id: 3,
-      codigo: '1A-003',
-      nombre: 'Producto Karen',
-      unidad: 'Unidad',
-      existencias: 12,
-      activo: true
-    }
+    { id: 1, codigo: '1A-001', nombre: 'Guayabas', unidad: 'Caja', existencias: 5, activo: true },
+    { id: 2, codigo: '1A-002', nombre: 'Kiwis', unidad: 'Paquete', existencias: 0, activo: false },
+    { id: 3, codigo: '1A-003', nombre: 'Producto Karen', unidad: 'Unidad', existencias: 12, activo: true }
   ]);
 
+  // Modal de registro
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const handleSaveProduct = (newProduct) => {
+    setProducts(prev => [...prev, { id: prev.length + 1, ...newProduct }]);
+  };
+
+  // Modal de edición
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const handleEditClick = (product) => {
+    setSelectedProduct(product);
+    setShowEditModal(true);
+  };
+
+  const handleUpdateProduct = (updatedProduct) => {
+    setProducts((prev) =>
+      prev.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
+    );
+    setShowEditModal(false);
+  };
+
+  // Modal activar/desactivar
+  const [showToggleModal, setShowToggleModal] = useState(false);
+  const [productToToggle, setProductToToggle] = useState(null);
+
+  const handleToggleClick = (product) => {
+    setProductToToggle(product);
+    setShowToggleModal(true);
+  };
+
+  const handleConfirmToggle = () => {
+    setProducts((prev) =>
+      prev.map((p) =>
+        p.id === productToToggle.id ? { ...p, activo: !p.activo } : p
+      )
+    );
+    setShowToggleModal(false);
+  };
+
+  // Ordenamiento
   const [sortField, setSortField] = useState('');
   const [sortDirection, setSortDirection] = useState('asc');
 
@@ -45,20 +67,16 @@ const ProductList = () => {
   };
 
   const sortedProducts = [...products].sort((a, b) => {
-  const aValue = sortField === 'existencias' ? Number(a[sortField]) : a[sortField];
-  const bValue = sortField === 'existencias' ? Number(b[sortField]) : b[sortField];
-
-  if (!aValue || !bValue) return 0;
-
-  if (typeof aValue === 'string') {
-    return sortDirection === 'asc'
-      ? aValue.localeCompare(bValue)
-      : bValue.localeCompare(aValue);
-  }
-
+    const aValue = sortField === 'existencias' ? Number(a[sortField]) : a[sortField];
+    const bValue = sortField === 'existencias' ? Number(b[sortField]) : b[sortField];
+    if (!aValue || !bValue) return 0;
+    if (typeof aValue === 'string') {
+      return sortDirection === 'asc'
+        ? aValue.localeCompare(bValue)
+        : bValue.localeCompare(aValue);
+    }
     return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
   });
-
 
   return (
     <div className="min-h-screen bg-[#3D3457] text-white p-8">
@@ -69,7 +87,19 @@ const ProductList = () => {
 
       {/* Botón registrar producto */}
       <div className="d-flex justify-content-start mt-3" style={{ maxWidth: '700px', margin: '0 auto' }}>
-        <RegisterProductButton />
+        <button
+          className="btn"
+          onClick={() => setShowRegisterModal(true)}
+          style={{
+            backgroundColor: '#1B043B',
+            color: '#FFFFFF',
+            borderRadius: '8px',
+            padding: '10px 20px',
+            border: 'none'
+          }}
+        >
+          Registrar Producto
+        </button>
       </div>
 
       {/* Tabla de productos */}
@@ -78,8 +108,41 @@ const ProductList = () => {
         handleSort={handleSort}
         sortField={sortField}
         sortDirection={sortDirection}
+        onEdit={handleEditClick}
+        onToggleStatus={handleToggleClick}
       />
 
+      {/* Modal de registro */}
+      <RegisterProduct
+        show={showRegisterModal}
+        onClose={() => setShowRegisterModal(false)}
+        onSave={handleSaveProduct}
+      />
+
+      {/* Modal de edición */}
+      <EditProduct
+        show={showEditModal}
+        product={selectedProduct}
+        onSave={handleUpdateProduct}
+        onCancel={() => setShowEditModal(false)}
+      />
+
+      {/* Modal de activar/desactivar */}
+      {productToToggle && (
+        productToToggle.activo ? (
+          <DisableProduct
+            show={showToggleModal}
+            onConfirm={handleConfirmToggle}
+            onCancel={() => setShowToggleModal(false)}
+          />
+        ) : (
+          <EnableProduct
+            show={showToggleModal}
+            onConfirm={handleConfirmToggle}
+            onCancel={() => setShowToggleModal(false)}
+          />
+        )
+      )}
     </div>
   );
 };
