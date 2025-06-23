@@ -26,7 +26,7 @@ export default function Login() {
             if (response.role === true || response.role === "true") {
                 navigate("/admin");
             } else {
-                navigate("/home}");
+                navigate("/empresas");
             }
         } else {
             alert("Usuario o contraseña incorrectos");
@@ -41,8 +41,8 @@ export default function Login() {
                 </h1>
                 <form onSubmit={handleSubmit(loginForm)}>
                     <article>
-                        <p>
-                            <FaInfoCircle className="me-2" /> Ingresa tus credenciales para acceder al sistema
+                        <p className='text-white'>
+                            <FaInfoCircle className=" me-2" /> Ingresa tus credenciales para acceder al sistema
                         </p>
                     </article>
                     <article className="mb-3">
