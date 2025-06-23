@@ -19,6 +19,7 @@ import DashBoardEmpresas from '../components/administration/DashBoardEmpresas';
 import DashBoardGeneral from '../components/administration/DashBoardGeneral';
 import DashBoardGeneralAdmin from '../components/administration/DashBoardGeneralAdmin';
 import { CompanyProvider } from '../context/CompanyContext';
+import CompanyManagementView from '../components/administration/companyMangment/CompanyManagementView';
 
 
 export default function Rutas() {
@@ -47,7 +48,7 @@ export default function Rutas() {
             */}
             <Route path="/admin/usuarios" element={<div>Gestión de usuarios</div>} />
             {/* Rutas extras que necesites en gestion de usuarios */}
-            <Route path="/admin/empresas" element={<div>Gestión de empresas</div>} />
+            <Route path="/admin/empresas" element={<CompanyManagementView />} />
              {/* Rutas extras que necesites en gestion de empresas */}
             <Route path="/admin/bitacora-cambios" element={<div>Bitácora de cambios</div>} />
              {/* Rutas extras que necesites en Bitácora de cambios*/}
