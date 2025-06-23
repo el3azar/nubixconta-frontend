@@ -1,0 +1,95 @@
+.formWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #C9C9CE 0%, #ABAABC 100%);
+}
+
+/* Contenedor del formulario */
+.formContainer {
+  max-width: 370px;
+  width: 100%;
+  padding: 28px 26px 25px 26px;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(25, 4, 59, 0.12), 0 1.5px 8px #8581B0;
+  background-color: #1B043B;
+  color: #ABAABC;
+}
+
+h1 {
+  color: #7D49CC;
+  font-weight: bold;
+  font-size: 2.05rem;
+  margin-bottom: 1rem;
+}
+
+label {
+  color: #ABAABC;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+input[type="text"],
+input[type="password"] {
+  height: 42px;
+  padding: 6px 13px;
+  border: 2px solid #49207B;
+  border-radius: 8px;
+  background-color: #C9C9CE;
+  color: #1B043B;
+  font-size: 1.07rem;
+  margin-bottom: 0.5rem;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+  outline: none;
+  border-color: #7D49CC;
+  background: #ABAABC;
+}
+
+/* Errores */
+.inputError {
+  border: 2px solid #CC4949 !important;
+  background-color: #FFE5E5 !important;
+}
+
+.errorMessage {
+  color: #CC4949;
+  font-size: 0.95rem;
+  margin-top: 0.15rem;
+  margin-bottom: 0.45rem;
+}
+
+/* Botón */
+.customBtn {
+  background-color: #7D49CC;
+  color: #FFF;
+  border: none;
+  border-radius: 8px;
+  padding: 11px 0;
+  font-size: 1.08rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.18rem;
+  transition: background 0.18s, color 0.18s;
+}
+
+.customBtn:hover {
+  background-color: #49207B;
+  color: #FFF;
+}
+
+/* Info */
+article > p {
+  color: #8581B0;
+  font-size: 1rem;
+  margin-bottom: 1.12rem;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+}

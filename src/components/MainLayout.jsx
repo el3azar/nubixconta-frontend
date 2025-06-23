@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import SideBar from "./SideBar";
 import styles from "../styles/MainLayout.module.css"; // Importa el CSS Module para este layout
+import { Outlet } from "react-router-dom";
+
 
 // Layout principal para toda la aplicación
 const MainLayout = ({ children }) => {
@@ -29,7 +31,7 @@ const MainLayout = ({ children }) => {
       {/* main semántico para el contenido */}
       <main className={styles.mainContent + " flex-grow-1 p-4"} aria-label="Contenido principal" >
         {/* Aquí se cargan las páginas (dashboard, ventas, etc.) */}
-        {children}
+         <Outlet />
       </main>
     </div>
   );
