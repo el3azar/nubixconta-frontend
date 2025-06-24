@@ -22,6 +22,7 @@ export default function Login() {
         const response = await loginService(payload);
         console.log("Respuesta del login:", response);
         if (response?.token) {
+            localStorage.setItem("token", response.token); // ✅ GUARDAR EL TOKEN AQUÍ
             login(response.token, response.role); // <- Actualiza context y sessionStorage
             if (response.role === true || response.role === "true") {
                 navigate("/admin");
