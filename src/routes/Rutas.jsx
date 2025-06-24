@@ -48,9 +48,9 @@ export default function Rutas() {
             {/* Cada opción principal del panel de administración debe agregarse aquí */}
             <Route path="/admin" element={<DashBoardGeneralAdmin />} />
             <Route path="/admin/usuarios" element={<div>Gestión de usuarios</div>} />
-            {/* Rutas extras que necesites en gestion de usuarios */}
-            <Route path="/admin/empresas" element={<div>Gestión de empresas</div>} />
-             {/* Rutas extras que necesites en gestion de empresas */}
+            {/* Rutas extras que necesites en gestión de usuarios */}
+            <Route path="/admin/empresas" element={<CompanyManagementView />} />
+            {/* Rutas extras que necesites en gestión de empresas */}
             <Route path="/admin/bitacora-cambios" element={<div>Bitácora de cambios</div>} />
             {/* Rutas extras que necesites en Bitácora de cambios */}
             <Route path="/admin/bitacora-accesos" element={<div>Bitácora de accesos</div>} />
