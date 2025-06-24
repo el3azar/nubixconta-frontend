@@ -1,0 +1,240 @@
+
+.container {
+
+  min-height: 60vh;
+  color: #000;
+}
+
+.titulo {
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+}
+label{
+  color:#000
+}
+
+/* Filtro de fechas */
+.buscador {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #8581B0;
+  padding: 1.2rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.filtroGrupo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.filtroGrupo label {
+  color: #000;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.filtroGrupo input[type="date"] {
+  padding: 0.6rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.btnBuscar {
+  background-color: #10031C;
+  color: white;
+  padding: 0.7rem 1.2rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Botón Nueva debajo del filtro */
+.botonNuevaWrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.btnNueva {
+  background-color: #10031C;
+  color: white;
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Tabla con scroll */
+.tablaWrapper {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #bbb;
+  border-radius: 12px;
+  background-color: white;
+}
+
+/* Tabla general */
+.tabla {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.95rem;
+}
+
+/* Encabezado */
+.tabla thead {
+  background-color: #f3f3f3;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.tabla thead th {
+  padding: 0.2rem 1rem;
+  font-weight: bold;
+  text-align: left;
+  color: #333;
+  border-bottom: 1px solid #ccc;
+}
+
+/* Celdas */
+.tabla td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid #ddd;
+  white-space: nowrap;
+  vertical-align: top;
+  height: 60px; /* o ajusta según lo que necesites */
+}
+/*Clasifica las Filas por estado  */
+.row-green {
+  background-color: #d6f5d6;
+}
+
+.row-red {
+  background-color: #f8cccc;
+}
+
+.row-neutral {
+  background-color: #f2f2f2;
+}
+
+/* Añade bordes redondeados solo a esquinas exteriores */
+.tabla thead tr th:first-child {
+  border-top-left-radius: 12px;
+}
+.tabla thead tr th:last-child {
+  border-top-right-radius: 12px;
+}
+.tabla tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 12px;
+}
+.tabla tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 12px;
+}
+
+.icono {
+  cursor: pointer;
+  font-size: 1rem;
+  color: #444;
+  transition: color 0.2s;
+}
+
+.icono:hover {
+  color: #000;
+}
+
+/* Para el texto de descripción colapsado */
+.tabla td span {
+  max-width: 150px;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+/* Para botón de expandir */
+.tabla td button {
+  vertical-align: middle;
+}
+
+ /*estilos para mostrar la descripcion y que se expanda la fila*/
+.descripcionCell {
+  max-width: 240px;
+  min-width: 180px;
+  padding-right: 0;
+  vertical-align: top;
+  height: 20px;
+  overflow: hidden;
+  position: relative;
+}
+
+.descripcionWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  height: 100%;
+  width: 100%;
+  white-space: normal;
+}
+
+.descripcionWrapper span {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+  padding-right: 1.5rem; /* deja espacio para la flecha */
+}
+
+.expandida {
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+
+.toggleBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #444;
+  position: absolute;
+  top: 6px;
+  right: 4px;
+  padding: 0;
+  z-index: 2;
+}
+
+.toggleBtn:hover {
+  color: #000;
+}
+
+.fechaGrupo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; 
+}
+
+.fechaGrupo label {
+  font-weight: 500;
+  color: #000;
+}
+
+.fechaGrupo input[type="date"] {
+  padding: 0.8rem 1rem;
+  font-size: 1.05rem;
+  border-radius: 8px;
+  min-width: 200px;
+  height: 48px;
+  border: none;
+}
