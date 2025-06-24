@@ -31,6 +31,7 @@ export function AuthProvider({ children }) {
     setRole(null);
     sessionStorage.removeItem(TOKEN_KEY);
     sessionStorage.removeItem(ROLE_KEY);
+    sessionStorage.removeItem("empresaActiva");
   };
 
   // Sincroniza el contexto si el storage cambia en otras pestañas/ventanas
@@ -39,6 +40,7 @@ export function AuthProvider({ children }) {
       if (!sessionStorage.getItem(TOKEN_KEY)) {
         setToken(null);
         setRole(null);
+
       }
     };
     window.addEventListener("storage", syncLogout);
