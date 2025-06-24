@@ -1,0 +1,139 @@
+:root {
+  --bg-dark: #10031C;
+  --bg-mid: #1B043B;
+  --bg-purple: #49207B;
+  --accent: #7D49CC;
+  --muted: #8581B0;
+  --gray: #ABAABC;
+}
+
+/* Contenedor principal de la vista */
+.mainWrapper {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;   /* centra el contenido */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow-x: auto;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  min-width: 1000px;
+  table-layout: auto;
+}
+
+
+/* Navegación superior del módulo (Clientes, Ventas...) */
+.subnav {
+  background-color: var(--bg-dark);
+  width: 100%;
+  padding: 0.75rem 0;
+  border-radius: 0.6rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  overflow-x: auto;
+}
+
+.subnavBtn {
+  background: none;
+  color: #fff;
+  padding: 0.5rem 1.2rem;
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: 0.4rem;
+  white-space: nowrap;
+  transition: background-color 0.3s ease;
+}
+
+.subnavBtn:hover,
+.subnavBtn.active {
+  background-color: var(--accent);
+  color: #fff;
+}
+
+/* Caja de búsqueda */
+.searchBox {
+  background-color: rgba(133, 129, 176, 0.5);
+  padding: 2rem;
+  border-radius: 0.75rem;
+}
+
+/* Botón de búsqueda */
+.searchBtn {
+  background-color: var(--bg-dark);
+  color: #fff;
+  font-weight: 500;
+  border-radius: 2rem;
+  padding: 0.5rem 1.5rem;
+  transition: background-color 0.3s ease;
+}
+
+.searchBtn:hover {
+  background-color: var(--accent);
+  color: #fff;
+}
+
+/* Sección de tabla */
+.tableSection {
+  background-color: var(--gray);
+  padding: 2rem;
+  border-radius: 0.75rem;
+  overflow-x: auto; /* permite scroll horizontal solo dentro */
+}
+
+/* Encabezado personalizado */
+.customHeader {
+  background-color: var(--muted);
+  color: #fff;
+}
+
+/* Tabla responsiva */
+.table-responsive {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.table {
+  width: 100% !important;
+  min-width: 900px;       /* asegura scroll si el contenido lo requiere */
+  table-layout: auto;
+}
+
+/* Estilo de celdas */
+.table th, .table td {
+  padding: 0.85rem 1rem;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.table td {
+  word-break: break-word;
+  max-width: 200px;
+}
+
+.table tbody {
+  background-color: white; /* puedes cambiarlo si necesitas un tono distinto */
+}
+
+/* Botón de íconos */
+.iconBtn {
+  background-color: transparent;
+  color: var(--bg-dark);
+  border: 1px solid var(--bg-dark);
+  border-radius: 0.4rem;
+  padding: 0.35rem 0.5rem;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.iconBtn:hover {
+  background-color: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}

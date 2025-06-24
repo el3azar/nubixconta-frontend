@@ -41,11 +41,21 @@ const handleCardClick = (index) => {
 };
 
   return (
-    <DashboardCards
-      title="Empresas asignadas"
-      items={items}
-      onCardClick={handleCardClick}
-    />
+   <div
+      style={{
+        backgroundColor: "#ABAABC",
+        minHeight: "100vh",
+        width: "100%",
+        padding: "2rem 1rem",
+        boxSizing: "border-box"
+      }}
+    >
+      <DashboardCards
+        title="Empresas asignadas"
+        items={items}
+        onCardClick={handleCardClick}
+      />
+    </div>
   );
 };
 
