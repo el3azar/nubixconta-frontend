@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import SideBar from "./SideBar";
-import styles from "../styles/MainLayout.module.css"; // Importa el CSS Module para este layout
+import styles from "../styles/mainLayout.module.css"; // Importa el CSS Module para este layout
 import { Outlet } from "react-router-dom";
 
 
