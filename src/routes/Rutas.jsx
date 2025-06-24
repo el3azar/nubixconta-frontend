@@ -19,6 +19,9 @@ import DashBoardEmpresas from '../components/administration/DashBoardEmpresas';
 import DashBoardGeneral from '../components/administration/DashBoardGeneral';
 import DashBoardGeneralAdmin from '../components/administration/DashBoardGeneralAdmin';
 import { CompanyProvider } from '../context/CompanyContext';
+import DashboardInventory from '../components/inventory/DashBoardInventory';
+import ProductList from '../components/inventory/ProductList';
+import ProductMovementList from '../components/inventory/ProductMovementList';
 
 
 export default function Rutas() {
@@ -66,8 +69,10 @@ export default function Rutas() {
             {/* Rutas extras que necesites en ventas*/}
             <Route path="/cuentas" element={<div>Cuentas por Cobrar</div>} />
              {/* Rutas extras que necesites en CXC*/}
-            <Route path="/inventario" element={<div>Inventario</div>} />
+            <Route path="/inventario" element={<DashboardInventory />} />
              {/* Rutas extras que necesites en Inventario*/}
+             <Route path="/inventario/productos" element={<ProductList />} />
+             <Route path="/inventario/movimientosproductos" element={<ProductMovementList />} />
             
             {/* Ruta comodín: muestra Dashboard general (puedes personalizar para un 404) */}
             <Route path="*" element={<Login />} />
