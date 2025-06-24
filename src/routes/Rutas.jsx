@@ -20,7 +20,10 @@ import DashBoardGeneral from '../components/administration/DashBoardGeneral';
 import DashBoardGeneralAdmin from '../components/administration/DashBoardGeneralAdmin';
 import { CompanyProvider } from '../context/CompanyContext';
 import CompanyManagementView from '../components/administration/companyMangment/CompanyManagementView';
-
+import { CompanyDataProvider } from '../components/administration/companyMangment/CompanyDataContext';
+import RegisterCompanyView from '../components/administration/companyMangment/RegisterCompanyView';
+import EditCompanyView from '../components/administration/companyMangment/EditCompanyView';
+import ViewCompanyDetails from '../components/administration/companyMangment/ViewCompanyDetails';
 
 export default function Rutas() {
   return (
@@ -48,8 +51,32 @@ export default function Rutas() {
             */}
             <Route path="/admin/usuarios" element={<div>Gestión de usuarios</div>} />
             {/* Rutas extras que necesites en gestion de usuarios */}
-            <Route path="/admin/empresas" element={<CompanyManagementView />} />
+            <Route path="/admin/empresas" element={
+              <CompanyDataProvider>
+                <CompanyManagementView />
+              </CompanyDataProvider>
+            } />
              {/* Rutas extras que necesites en gestion de empresas */}
+            <Route path="/admin/empresas/registronuevo" element={
+              <CompanyDataProvider>
+                <RegisterCompanyView />
+              </CompanyDataProvider>
+              } />
+            <Route path="/admin/empresas/editar/:id" element={
+              <CompanyDataProvider>
+                <EditCompanyView />
+              </CompanyDataProvider>
+              } />
+
+            <Route
+              path="/admin/empresas/ver/:id"
+              element={
+                <CompanyDataProvider>
+                  <ViewCompanyDetails />
+                </CompanyDataProvider>
+              }
+            />
+
             <Route path="/admin/bitacora-cambios" element={<div>Bitácora de cambios</div>} />
              {/* Rutas extras que necesites en Bitácora de cambios*/}
             <Route path="/admin/bitacora-accesos" element={<div>Bitácora de accesos</div>} />

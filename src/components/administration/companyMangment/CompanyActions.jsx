@@ -4,55 +4,41 @@ import {
   FiEye,
   FiBarChart2,
   FiUserPlus,
-  FiXCircle,
-  FiCheckCircle
 } from 'react-icons/fi';
+import { showToggleCompanyStatusModal } from './ToggleCompanyStatusModal';
 
 const CompanyActions = ({
+  empresa,
   onEdit,
   onView,
   onAccounting,
   onAssign,
-  onToggleStatus,
-  isActive
+  onToggleStatus
 }) => {
-  const iconStyle = {
-    fontSize: '1.1rem',
-    cursor: 'pointer',
-    marginRight: '0.5rem',
+  const handleSwitchChange = () => {
+    const nuevoEstado = !empresa.activa;
+    showToggleCompanyStatusModal(nuevoEstado, () => {
+      onToggleStatus(empresa, nuevoEstado);
+    });
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center">
-      <span className="me-2" title="Editar">
-        <FiEdit style={iconStyle} onClick={onEdit} />
-      </span>
+    <div className="d-flex justify-content-center align-items-center gap-2">
+      <span title="Editar" onClick={onEdit}><FiEdit /></span>
+      <span title="Ver" onClick={onView}><FiEye /></span>
+      <span title="Contabilidad" onClick={onAccounting}><FiBarChart2 /></span>
+      <span title="Asignar" onClick={onAssign}><FiUserPlus /></span>
 
-      <span className="me-2" title="Ver Información">
-        <FiEye style={iconStyle} onClick={onView} />
-      </span>
-
-      <span className="me-2" title="Ver Contabilidad">
-        <FiBarChart2 style={iconStyle} onClick={onAccounting} />
-      </span>
-
-      <span className="me-2" title="Asignar Empresa">
-        <FiUserPlus style={iconStyle} onClick={onAssign} />
-      </span>
-
-      <span title={isActive ? 'Desactivar' : 'Activar'}>
-        {isActive ? (
-          <FiXCircle
-            style={{ ...iconStyle, color: 'red' }}
-            onClick={() => onToggleStatus(false)}
-          />
-        ) : (
-          <FiCheckCircle
-            style={{ ...iconStyle, color: 'green' }}
-            onClick={() => onToggleStatus(true)}
-          />
-        )}
-      </span>
+      {/* 🎯 Aquí va el switch visual */}
+      <div className="form-check form-switch switch-dark">
+        <input
+          className="form-check-input"
+          type="checkbox"
+          role="switch"
+          checked={empresa.activa}
+          onChange={handleSwitchChange}
+        />
+      </div>
     </div>
   );
 };
