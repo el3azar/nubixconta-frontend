@@ -20,7 +20,7 @@ import DashBoardEmpresas from '../components/administration/DashBoardEmpresas';
 import DashBoardGeneral from '../components/administration/DashBoardGeneral';
 import DashBoardGeneralAdmin from '../components/administration/DashBoardGeneralAdmin';
 import { CompanyProvider } from '../context/CompanyContext';
-import ViewCustomers from '../components/sales/viewCustomers';
+import ViewCustomers from '../components/sales/ViewCustomers';
 import NewCustomer from '../components/sales/NewCustomer';
 import EditCustomer from "../components/sales/EditCustomer";
 import DesactivatedCustomer from '../components/sales/DesactivatedCustomer';
