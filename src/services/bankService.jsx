@@ -1,8 +1,8 @@
 import axios from "axios";
+//Este enpoint trae el listado de todas las cuentas bancarias de la empresa
+const API_URL = "http://localhost:8080/api/v1/accounts/bank-accounts";
 
-const API_URL = "http://localhost:8080/api/v1/sales";
-
-export const getAllSales = async () => {
+export const getBankAcount = async () => {
   try {
     const token = sessionStorage.getItem("nubix_token");
     const response = await axios.get(API_URL, {

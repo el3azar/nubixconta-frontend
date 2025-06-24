@@ -1,0 +1,142 @@
+
+
+.titulo {
+  font-size: 1.6rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.seccionSuperior {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Izquierda: filtros */
+.bloqueFiltros {
+  background-color: #bcb7dd;
+  border-radius: 10px;
+  padding: 1.2rem;
+  flex: 1.2;
+  max-width: 650px; /* tamaño más pequeño */
+}
+
+.subtitulo {
+  font-weight: bold;
+  margin-bottom: 0.8rem;
+}
+
+.gridFiltros {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem 2rem;
+}
+
+.filtro {
+  display: flex;
+  flex-direction: column;
+}
+
+.filtro label {
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+}
+
+.filtro input {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: none;
+  min-width: 150px;
+}
+
+.centrado {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.btnBuscar {
+  background-color: #10031c;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+/* Derecha: botón Ver cuentas y exportar */
+.bloqueLateral {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 1.2rem;
+  padding-top: 12rem; /* <-- Aumentado (antes 2rem) */
+}
+
+
+.btnVerCuentas {
+  background-color: #10031c;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  margin-left: 3rem;
+  gap: 0.5rem;
+}
+
+.exportaciones {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.exportBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: transparent;
+  text-decoration: none;
+  color: #10031c;
+  font-weight: 600;
+  border:none;
+   
+}
+
+
+.exportBtn:hover {
+  text-decoration: underline;
+}
+
+.tablaWrapper {
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  overflow: auto;
+  background-color: white;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.tabla thead {
+  background-color: #eee;
+}
+
+.tabla th,
+.tabla td {
+  padding: 0.8rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}

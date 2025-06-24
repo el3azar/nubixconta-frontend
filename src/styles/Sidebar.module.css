@@ -1,0 +1,79 @@
+/* Sidebar principal */
+.sidebar {
+  background-color: #10031C;
+  min-height: 100vh;
+  transition: width 0.3s;
+  z-index: 1100;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Sidebar ancho abierto o colapsado */
+.sidebarOpen {
+  width: 220px;
+}
+.sidebarCollapsed {
+  width: 60px;
+}
+
+/* Encabezado del sidebar */
+.sidebarHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  margin-left: 1.5rem;
+  height: 56px;
+}
+
+/* Logo/texto */
+.sidebarLogo {
+  font-size: 1.25rem;
+  font-weight: bold;
+  flex-grow: 1;
+  letter-spacing: 1px;
+}
+
+/* Botón hamburguesa */
+.sidebarToggleBtn {
+  margin-left: 8px;
+  color: white;
+}
+
+/* Navegación principal */
+.sidebarNav {
+  flex: 1;
+}
+
+.menuLink {
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  transition: background 0.2s;
+  text-decoration: none;
+}
+
+/* Estado activo */
+.active {
+  background: #292440 !important;
+  color: #fff !important;
+}
+
+/* Overlay móvil/tablet */
+.sidebarOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
+  background: rgba(0,0,0,0.2);
+  transition: opacity 0.3s;
+}
+
+/* Oculta el texto cuando el sidebar está colapsado */
+.menuLabelHidden {
+  display: none !important;
+}
