@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
 
-const API_URL = "http://localhost:8080/api/v1/products";
+const API_URL = "https://nubixconta-backend-production.up.railway.app/api/v1/products";
 
 // Configura los headers con el token
 const getAuthHeader = (token) => ({

@@ -4,7 +4,7 @@ import axios from "axios";
 const loginService = async (user) => {
   try {
     const response = await axios.post(
-      "http://localhost:8080/api/v1/auth/login", // <-- cambia el host si es necesario
+      "https://nubixconta-backend-production.up.railway.app/api/v1/auth/login", // <-- cambia el host si es necesario
       user
     );
     return response.data; // Espera: { token, role }
