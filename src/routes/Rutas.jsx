@@ -11,15 +11,11 @@
  *  - Todas las rutas nuevas deben importar el componente correspondiente arriba.
  */
 
-import React from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import React from 'react'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import MainLayout from '../components/MainLayout';
-import Login from '../components/Login';
-import DashBoardSales from '../components/sales/DashBoardSales';
-import AccountsReceivable from '../components/accountsreceivable/AccountsReceivable';
-import AccountsReceivableMenu from '../components/accountsreceivable/AccountsReceivableMenu';
-import AccountsReceivableReport from '../components/accountsreceivable/AccountsReceivableReport'; 
-import AccountsReceivableAccount from '../components/accountsreceivable/AccountsReceivableAccount'; 
+import Login from '../components/Login'
+import DashBoardSales from '../components/sales/DashBoardSales'
 import DashBoardEmpresas from '../components/administration/DashBoardEmpresas';
 import DashBoardGeneral from '../components/administration/DashBoardGeneral';
 import DashBoardGeneralAdmin from '../components/administration/DashBoardGeneralAdmin';
@@ -33,6 +29,13 @@ import NewSale from '../components/sales/NewSale';
 import DashboardInventory from '../components/inventory/DashBoardInventory';
 import ProductList from '../components/inventory/ProductList';
 import ProductMovementList from '../components/inventory/ProductMovementList';
+import CompanyManagementView from '../components/administration/companyMangment/CompanyManagementView';
+import UserManagementDashboard from '../components/administration/userManagement/UserManagementDashboard';
+import ChangeHistory from '../components/administration/changeHistory/ChangeHistory'
+import { CompanyDataProvider } from '../components/administration/companyMangment/CompanyDataContext';
+import RegisterCompanyView from '../components/administration/companyMangment/RegisterCompanyView';
+import EditCompanyView from '../components/administration/companyMangment/EditCompanyView';
+import ViewCompanyDetails from '../components/administration/companyMangment/ViewCompanyDetails';
 
 export default function Rutas() {
   return (
@@ -41,31 +44,64 @@ export default function Rutas() {
         {/* Ruta pública de login (no requiere layout ni contexto) */}
         <Route path='/' element={<Login />} />
 
-        {/* Selección de empresa (asistente) - sin layout */}
-        <Route path="/empresas" element={<DashBoardEmpresas />} />
-
         {/* Rutas que requieren contexto de empresa */}
         <Route element={<CompanyProvider />}>
-          {/* Agrupa rutas protegidas dentro del layout */}
-          <Route element={<MainLayout />}>
 
-            {/* Ruta por defecto para asistentes u otros roles */}
-            <Route path="/home" element={<DashBoardGeneral />} />
+          {/* Selección de empresa (asistente) - sin layout */}
+          <Route path="/empresas" element={<DashBoardEmpresas />} />
+
+          {/* Rutas internas protegidas con layout (sidebar + header) */}
+          <Route element={<MainLayout />}>
 
             {/* ======== SECCIÓN: ADMINISTRACIÓN ======== */}
             {/* Cada opción principal del panel de administración debe agregarse aquí */}
             <Route path="/admin" element={<DashBoardGeneralAdmin />} />
-            <Route path="/admin/usuarios" element={<div>Gestión de usuarios</div>} />
-            {/* Rutas extras que necesites en gestión de usuarios */}
-            <Route path="/admin/empresas" element={<div>Gestión de empresas</div>} />
-            {/* Rutas extras que necesites en gestión de empresas */}
-            <Route path="/admin/bitacora-cambios" element={<div>Bitácora de cambios</div>} />
-            {/* Rutas extras que necesites en Bitácora de cambios */}
+            {/* 
+              Reemplaza <div> por tu componente principal de cada módulo:
+              Ejemplo:
+                <Route path="/admin/usuarios" element={<UsuariosAdmin />} />
+            */}
+            <Route path="/admin/usuarios" element={<UserManagementDashboard />} />
+            {/* Rutas extras que necesites en gestion de usuarios */}
+            <Route path="/admin/empresas" element={
+              <CompanyDataProvider>
+                <CompanyManagementView />
+              </CompanyDataProvider>
+            } />
+             {/* Rutas extras que necesites en gestion de empresas */}
+            <Route path="/admin/empresas/registronuevo" element={
+              <CompanyDataProvider>
+                <RegisterCompanyView />
+              </CompanyDataProvider>
+              } />
+            <Route path="/admin/empresas/editar/:id" element={
+              <CompanyDataProvider>
+                <EditCompanyView />
+              </CompanyDataProvider>
+              } />
+
+            <Route
+              path="/admin/empresas/ver/:id"
+              element={
+                <CompanyDataProvider>
+                  <ViewCompanyDetails />
+                </CompanyDataProvider>
+              }
+            />
+
+            <Route path="/admin/bitacora-cambios" element={<ChangeHistory />} />
+             {/* Rutas extras que necesites en Bitácora de cambios*/}
             <Route path="/admin/bitacora-accesos" element={<div>Bitácora de accesos</div>} />
-            {/* Rutas extras que necesites en Bitácora de accesos */}
+            {/* Rutas extras que necesites en Bitácora de accesos*/}
 
             {/* ======== SECCIÓN: MÓDULOS OPERATIVOS ======== */}
             {/* Cada módulo principal (ventas, cuentas, inventario, etc.) va aquí */}
+            <Route path="/home" element={<DashBoardGeneral />} />
+            {/* 
+              Reemplaza <div> por tu componente principal del módulo.
+              Ejemplo:
+                <Route path="/ventas" element={<VentasDashboard />} />
+            */}
             <Route path="/ventas" element={<DashBoardSales />} />
              <Route path="/ventas/clientes/desactivated" element={<DesactivatedCustomer />} />
             <Route path="/ventas/clientes" element={<ViewCustomers/>} />
@@ -100,6 +136,13 @@ export default function Rutas() {
              <Route path="/inventario/productos" element={<ProductList />} />
              <Route path="/inventario/movimientosproductos" element={<ProductMovementList />} />
             
+            {/* Rutas extras que necesites en ventas*/}
+            <Route path="/cuentas" element={<div>Cuentas por Cobrar</div>} />
+             {/* Rutas extras que necesites en CXC*/}
+            <Route path="/inventario" element={<DashboardInventory />} />
+             {/* Rutas extras que necesites en Inventario*/}
+             <Route path="/inventario/productos" element={<ProductList />} />
+             <Route path="/inventario/movimientosproductos" element={<ProductMovementList />} />
             {/* Ruta comodín: muestra Dashboard general (puedes personalizar para un 404) */}
             <Route path="*" element={<Login />} />
           </Route>
