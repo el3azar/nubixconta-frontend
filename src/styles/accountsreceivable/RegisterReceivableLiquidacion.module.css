@@ -1,0 +1,114 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal {
+  background: #c4c4c4;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 650px;
+  position: relative;
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  font-size: 1.5rem;
+  border: none;
+  cursor: pointer;
+}
+
+.title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.tipo {
+  display: flex;
+  gap: 2rem;
+  background: #e0e0e0;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.formGrid label {
+  font-weight: bold;
+  color: #000;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+input[type="text"],
+textarea,
+select {
+  width: 100%;
+  padding: 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #aaa;
+  background-color: white;
+  color: #000;
+}
+
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+
+.cancel {
+  background: #fff;
+  border: 2px solid #10031C;
+  padding: 0.7rem 1.5rem;
+  font-weight: bold;
+  border-radius: 8px;
+}
+
+.register {
+  background: #10031C;
+  color: white;
+  padding: 0.7rem 1.5rem;
+  font-weight: bold;
+  border-radius: 8px;
+  border: none;
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+  width: 100%;
+  padding: 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #aaa;
+  font-size: 1rem;
+  box-sizing: border-box;
+}

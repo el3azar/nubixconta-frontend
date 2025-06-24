@@ -1,0 +1,35 @@
+.container {
+  padding: 20px;
+}
+.filters {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  margin-bottom: 20px;
+}
+.label {
+  font-weight: bold;
+  margin-right: 8px;
+  color: #000;
+}
+.filterItem {
+  display: flex;
+  flex-direction: column;
+}
+.searchBtn {
+  background: #2d0143;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 24px;
+  cursor: pointer;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table th, .table td {
+  padding: 8px;
+  border: 1px solid #ccc;
+  background: #f6f6f6;
+}

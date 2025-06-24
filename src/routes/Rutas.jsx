@@ -10,6 +10,7 @@
  *  - Para páginas de administración, agregar la ruta bajo el bloque de administración.
  *  - Todas las rutas nuevas deben importar el componente correspondiente arriba.
  */
+
 import React from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import MainLayout from '../components/MainLayout';
@@ -19,8 +20,12 @@ import DashBoardEmpresas from '../components/administration/DashBoardEmpresas';
 import DashBoardGeneral from '../components/administration/DashBoardGeneral';
 import DashBoardGeneralAdmin from '../components/administration/DashBoardGeneralAdmin';
 import { CompanyProvider } from '../context/CompanyContext';
+import DashboardInventory from '../components/inventory/DashBoardInventory';
+import ProductList from '../components/inventory/ProductList';
+import ProductMovementList from '../components/inventory/ProductMovementList';
 import CompanyManagementView from '../components/administration/companyMangment/CompanyManagementView';
-import { CompanyDataProvider } from '../components/administration/companyMangment/CompanyDataContext';
+import UserManagementDashboard from '../components/administration/userManagement/UserManagementDashboard';
+import ChangeHistory from '../components/administration/changeHistory/ChangeHistory'import { CompanyDataProvider } from '../components/administration/companyMangment/CompanyDataContext';
 import RegisterCompanyView from '../components/administration/companyMangment/RegisterCompanyView';
 import EditCompanyView from '../components/administration/companyMangment/EditCompanyView';
 import ViewCompanyDetails from '../components/administration/companyMangment/ViewCompanyDetails';
@@ -49,7 +54,7 @@ export default function Rutas() {
               Ejemplo:
                 <Route path="/admin/usuarios" element={<UsuariosAdmin />} />
             */}
-            <Route path="/admin/usuarios" element={<div>Gestión de usuarios</div>} />
+            <Route path="/admin/usuarios" element={<UserManagementDashboard />} />
             {/* Rutas extras que necesites en gestion de usuarios */}
             <Route path="/admin/empresas" element={
               <CompanyDataProvider>
@@ -77,7 +82,7 @@ export default function Rutas() {
               }
             />
 
-            <Route path="/admin/bitacora-cambios" element={<div>Bitácora de cambios</div>} />
+            <Route path="/admin/bitacora-cambios" element={<ChangeHistory />} />
              {/* Rutas extras que necesites en Bitácora de cambios*/}
             <Route path="/admin/bitacora-accesos" element={<div>Bitácora de accesos</div>} />
             {/* Rutas extras que necesites en Bitácora de accesos*/}
@@ -94,9 +99,10 @@ export default function Rutas() {
             {/* Rutas extras que necesites en ventas*/}
             <Route path="/cuentas" element={<div>Cuentas por Cobrar</div>} />
              {/* Rutas extras que necesites en CXC*/}
-            <Route path="/inventario" element={<div>Inventario</div>} />
+            <Route path="/inventario" element={<DashboardInventory />} />
              {/* Rutas extras que necesites en Inventario*/}
-            
+             <Route path="/inventario/productos" element={<ProductList />} />
+             <Route path="/inventario/movimientosproductos" element={<ProductMovementList />} />
             {/* Ruta comodín: muestra Dashboard general (puedes personalizar para un 404) */}
             <Route path="*" element={<Login />} />
           </Route>
