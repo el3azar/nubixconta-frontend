@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import DateRangeFilter from '../../components/accountsreceivable/DateRangeFilter';
 import styles from "../../styles/accountsreceivable/AccountsReceivableReport.module.css";
 import { FaFilePdf, FaFileExcel } from "react-icons/fa";
-import { getAccountsReceivable } from "../../services/accountsReceivableReportService";
+import { getAccountsReceivable } from "../../services/accountsreceivable/accountsReceivableReportService";
 
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
