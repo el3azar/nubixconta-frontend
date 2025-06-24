@@ -1,0 +1,281 @@
+.container {
+  background: #ABAABC;
+  min-height: 100vh;
+  padding: 2rem;
+  font-family: sans-serif;
+  color: #10031C;
+}
+.title {
+  text-align: center;
+  color: #1B043B;
+  margin-bottom: 1.5rem;
+}
+.card {
+  background: #C9C9CE;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+.grid2 label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+  color: #10031C;
+}
+.grid2 input,
+.grid2 textarea,
+.grid2 select {
+  width: 100%;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 0.5rem;
+}
+.addBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  background: #10031C;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  background: white;
+}
+.table th,
+.table td {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+}
+.total {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #1B043B;
+}
+.actions button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: 2px solid #49207B;
+  margin-left: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.register {
+  background: #10031C;
+  color: white;
+  border: none;
+}
+.cancel {
+  background: transparent;
+  color: #10031C;
+}
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+}
+
+
+/* Solo para la sección “Buscar Producto” */
+.lineGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  align-items: flex-end;;
+}
+
+/* El primer hijo (Select + checkbox + botón) ocupa toda la 1ª fila */
+.lineGrid > div:first-child {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+/* (Opcional) Asegura que los inputs del resto queden al 100% */
+.lineGrid input {
+  width: 100%;
+}
+
+.searchRow {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Hacemos el filtro más ancho */
+.searchWrapper {
+  /* Antes: flex: 1; */
+  width: 300px;    /* Ajusta este valor al que necesites */
+  min-width: 150px;
+  height: 50px;       /* el alto que quieras */
+  min-height: 50px;  
+}
+
+/* Contenedor de la sección */
+.tableSection {
+  margin-top: 2rem;
+}
+
+/* Wrapper para scroll */
+.tableWrapper {
+  max-height: 300px;             /* ajusta la altura visible antes de scroll */
+  overflow-y: auto;
+  border: 1px solid var(--color-filter-bg);
+  border-radius: 0.5rem;
+}
+
+/* Estilos generales de la tabla */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Encabezado con color y posición fija */
+.table thead th {
+  background:#8581B0;
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 0.75rem;
+  text-align: center;
+}
+
+/* Celdas del cuerpo */
+.table th,
+.table td {
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+/* Filas alternas para mejor lectura */
+.table tbody tr:nth-child(even) {
+  background: #f9f9f9;
+}
+
+/* Botón de eliminar con icono */
+.deleteBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+.deleteBtn:hover {
+  color: #bf3c37;
+}
+
+.editBtn {
+  margin-right: 0.5rem;
+}
+
+/* Clase genérica para botones que solo muestran un icono */
+.iconBtn {
+  background: none;       /* sin fondo */
+  border: none;           /* sin borde */
+  padding: 4px;           /* un poquito de clic área */
+  margin: 0;              
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+/* Tamaño y alineación del SVG */
+.iconBtn svg {
+  width: 1.2em;
+  height: 1.2em;
+}
+
+/* Color y hover específico para “editar” */
+.editBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+  margin-right: 0.5rem;           /* separa del trash */
+}
+
+/* Mejora visual para el Select */
+.searchWrapper .react-select__control {
+  background-color: white;
+  border-radius: 0.5rem;
+  border: 2px solid #49207B;
+  min-height: 45px;
+  padding: 2px;
+  font-size: 1rem;
+}
+
+.searchWrapper .react-select__menu {
+  z-index: 5;
+  font-size: 0.95rem;
+}
+
+/* Animación de entrada para campos dinámicos */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.lineGrid > div {
+  animation: fadeIn 0.3s ease;
+}
+
+/* Botón “Añadir” más llamativo */
+.addBtn {
+  background: #49207B;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.addBtn:hover {
+  background: #32185C;
+}
+
+/* Input mejorados en área de detalle */
+.lineGrid input, .lineGrid select {
+  border: 1px solid #7D49CC;
+  border-radius: 0.5rem;
+  padding: 0.45rem 0.75rem;
+}
+
+/* Mejora en visibilidad del label */
+.lineGrid label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #1B043B;
+}

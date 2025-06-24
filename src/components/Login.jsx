@@ -1,11 +1,11 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
-import { loginService } from '../services/loginServices'; // <- Tu nuevo service
+import { loginService } from '../services/loginServices'; 
 import { useNavigate } from 'react-router-dom';
 import styles from '../styles/Login.module.css';
 import { FaArrowRightToBracket } from 'react-icons/fa6';
 import { FaInfoCircle } from 'react-icons/fa';
-import { useAuth } from '../context/AuthContext'; // <- Importa el context
+import { useAuth } from '../context/AuthContext'; 
 
 export default function Login() {
     const { register, handleSubmit, formState: { errors } } = useForm();
@@ -13,7 +13,7 @@ export default function Login() {
     const { login } = useAuth(); // <- Método de tu context
 
     const loginForm = async (data) => {
-        // Cambia a userName y password (el backend ya no espera email)
+        
         const payload = {
             userName: data.userName,
             password: data.password
@@ -22,7 +22,7 @@ export default function Login() {
         const response = await loginService(payload);
         console.log("Respuesta del login:", response);
         if (response?.token) {
-            login(response.token, response.role); // <- Actualiza context y sessionStorage
+            login(response.token, response.role); 
             if (response.role === true || response.role === "true") {
                 navigate("/admin");
             } else {
@@ -46,7 +46,7 @@ export default function Login() {
                         </p>
                     </article>
                     <article className="mb-3">
-                        <label htmlFor="userName">Usuario</label>
+                        <label htmlFor="userName" className='text-white'>Usuario</label>
                         <input
                             type="text"
                             {...register('userName', { required: "El usuario es obligatorio" })}
@@ -55,7 +55,7 @@ export default function Login() {
                         {errors.userName && <p className={styles.errorMessage}>{errors.userName.message}</p>}
                     </article>
                     <article className="mb-3">
-                        <label htmlFor="password">Contraseña</label>
+                        <label htmlFor="password" className='text-white'>Contraseña</label>
                         <input
                             type="password"
                             {...register('password', { required: "La contraseña es obligatoria" })}

@@ -19,7 +19,12 @@ import DashBoardEmpresas from '../components/administration/DashBoardEmpresas';
 import DashBoardGeneral from '../components/administration/DashBoardGeneral';
 import DashBoardGeneralAdmin from '../components/administration/DashBoardGeneralAdmin';
 import { CompanyProvider } from '../context/CompanyContext';
-
+import ViewCustomers from '../components/sales/viewCustomers';
+import NewCustomer from '../components/sales/NewCustomer';
+import EditCustomer from "../components/sales/EditCustomer";
+import DesactivatedCustomer from '../components/sales/DesactivatedCustomer';
+import Sales from '../components/sales/Sales';
+import NewSale from '../components/sales/NewSale';
 
 export default function Rutas() {
   return (
@@ -27,6 +32,7 @@ export default function Rutas() {
       <Routes>
         {/* Ruta pública de login (no requiere layout ni contexto) */}
         <Route path='/' element={<Login />} />
+
 
         {/* Rutas que requieren contexto de empresa */}
         <Route element={<CompanyProvider />}>
@@ -63,7 +69,17 @@ export default function Rutas() {
                 <Route path="/ventas" element={<VentasDashboard />} />
             */}
             <Route path="/ventas" element={<DashBoardSales />} />
-            {/* Rutas extras que necesites en ventas*/}
+             <Route path="/ventas/clientes/desactivated" element={<DesactivatedCustomer />} />
+            <Route path="/ventas/clientes" element={<ViewCustomers/>} />
+            <Route path="/ventas/clientes/nuevo" element={<NewCustomer />} />
+            
+            
+            <Route path="/ventas/clientes/editar/:id" element={<EditCustomer />} />
+            <Route path="/ventas/ventas" element={<Sales />} />
+            <Route path="/ventas/nueva/:clientId" element={<NewSale />} />
+            <Route path="/ventas/nota-credito" element={<div>Notas de credito</div>} />
+            <Route path="/ventas/reportes" element={<div>Reportes</div>}/>
+
             <Route path="/cuentas" element={<div>Cuentas por Cobrar</div>} />
              {/* Rutas extras que necesites en CXC*/}
             <Route path="/inventario" element={<div>Inventario</div>} />

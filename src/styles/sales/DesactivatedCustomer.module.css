@@ -1,0 +1,49 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;      /* centra horizontalmente */
+  padding-bottom: 4rem;    /* ← espacio extra para que el botón nunca se corte */
+  min-height: 100vh;       /* opcional: asegúrate de ocupar toda la ventana */
+}
+
+.heading {
+  align-self: flex-start;   /* hace que el título quede a la izquierda dentro del wrapper */
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.tableContainer {
+  width: 100%;
+  max-width: 1100px;        /* ajusta al ancho deseado */
+  overflow-x: auto;         /* para pantallas pequeñas */
+  flex: 1;                 /* ocupa el espacio disponible */
+  overflow-y: auto;       
+}
+
+.eyeIcon {
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.backButton {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  border-bottom: #10031C !important;
+  color: #10031C;
+}
+
+.backButton:hover{
+  background-color:#10031C;
+  color: #fff;;
+}
+
+/* Ajusta el estilo de cada TH */
+.wrapper table thead th {
+  background-color: #8581B0 !important;  
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  text-align: center;
+  border-radius: 2%;
+  border-color: #7D49CC;
+}

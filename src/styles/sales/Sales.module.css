@@ -1,0 +1,135 @@
+:root {
+  --color-dark: #10031C;
+  --color-primary: #49207B;
+  --color-light-bg: #E6E5EA;
+  --color-content-bg: #ABAABC;
+  --color-filter-bg: #B7B3C4;
+  --color-success: #4E944F;
+  --color-danger: #E2574C;
+}
+
+/* Wrapper general dentro del layout (entre sidebar/navbar) */
+.wrapper {
+  background-color: var(--color-light-bg);
+  min-height: calc(100vh - 64px); /* ajusta según altura navbar */
+  padding: 2rem 0;
+}
+
+/* Caja interior que centra todo */
+.content {
+  background-color: var(--color-content-bg);
+  border-radius: 1rem;
+  padding: 2rem;
+}
+
+/* Título de sección */
+.title {
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Filtro de fechas */
+.filter {
+  display: flex;
+  align-items: flex-end;
+  gap: 10rem;
+  background-color: var(--color-filter-bg);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.filter label {
+  color: var(--color-dark);
+  font-weight: 500;
+}
+
+.filter .form-control {
+  background: #fff;
+  border-radius: 0.25rem;
+  border: none;
+  min-width: 220px;
+   max-width: 320px;     /* opcional, para no pasarse */
+  width: 100%;          /* ocupa todo el ancho disponible dentro del min/max */
+}
+
+.filter input[type="date"] {
+  min-width: 250px;
+  max-width: 320px;
+  width: 100%;          /* ocupa todo el ancho disponible dentro del min/max */
+}
+
+.btnbscr {
+  background-color: #10031C !important;
+  border: none;
+  color: #fff;
+}
+
+.btnbscr:hover {
+  background-color: #270745 !important;
+  border: none;
+  color: #fff;
+}
+
+/* Tabla */
+.tableContainer {
+  background: #fff;
+  border-radius: 0.5rem;
+  padding: 1rem;
+ 
+}
+
+.tableContainer table {
+  width: 100%;               /* fuerza que la tabla llene todo el contenedor */
+  table-layout: fixed;       /* fija el ancho de las columnas */
+  border-collapse: collapse; /* elimina el hueco entre celdas */
+  border-spacing: 0;         /* por si acaso queda algo de espacio */
+}
+
+.tableContainer thead th {
+ 
+  background-color: var(--color-filter-bg); /* el mismo fondo que tu cabecera */
+  z-index: 10;
+  border-bottom: 2px solid rgba(0,0,0,0.1);
+}
+
+.tableContainer tr.table-success,
+.tableContainer tr.table-success > td { background-color: var(--color-success) !important; }
+
+.tableContainer tr.table-danger,
+.tableContainer tr.table-danger > td { background-color: var(--color-danger) !important; }
+
+/* ——————————————
+   Alineación vertical uniforme
+   —————————————— */
+.tableContainer td {
+  vertical-align: middle;   /* centra el contenido verticalmente */
+}
+
+.actions {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;            /* espacio igual entre íconos */
+}
+.actions svg {
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+.actions svg:last-child {
+  margin-right: 0;
+}
+
+/*Contenedor y espaciado del botón "Nuevo" */
+.newbtn {
+  background-color: #10031C;  
+  border-bottom: #10031C ;
+  color: #fff;
+  text-align: right;
+  margin: 2rem;        /* separa del filtro y de la tabla */
+}
+
+.newbtn:hover{
+    border-color: #10031C;
+    color: #10031C;
+}
