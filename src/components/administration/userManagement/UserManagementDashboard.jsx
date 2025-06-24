@@ -117,7 +117,7 @@ const UserManagementDashboard = () => {
   /* -------------- JSX -------------- */
   return (
     <div className="container mt-4">
-      <h2 className="mb-4">👥 Gestión de Usuarios</h2>
+      <h2 className="mb-4">GESTIÓN DE USUARIOS</h2>
 
       <input
         type="text"

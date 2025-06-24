@@ -25,6 +25,7 @@ import ProductList from '../components/inventory/ProductList';
 import ProductMovementList from '../components/inventory/ProductMovementList';
 import CompanyManagementView from '../components/administration/companyMangment/CompanyManagementView';
 import UserManagementDashboard from '../components/administration/userManagement/UserManagementDashboard';
+import ChangeHistory from '../components/administration/changeHistory/ChangeHistory'
 
 export default function Rutas() {
   return (
@@ -53,9 +54,9 @@ export default function Rutas() {
             <Route path="/admin/usuarios" element={<UserManagementDashboard />} />
             {/* Rutas extras que necesites en gestion de usuarios */}
             <Route path="/admin/empresas" element={<CompanyManagementView />} />
-              {/* Rutas extras que necesites en gestion de empresas */}
-            <Route path="/admin/bitacora-cambios" element={<div>Bitácora de cambios</div>} />
-              {/* Rutas extras que necesites en Bitácora de cambios*/}
+             {/* Rutas extras que necesites en gestion de empresas */}
+            <Route path="/admin/bitacora-cambios" element={<ChangeHistory />} />
+             {/* Rutas extras que necesites en Bitácora de cambios*/}
             <Route path="/admin/bitacora-accesos" element={<div>Bitácora de accesos</div>} />
             {/* Rutas extras que necesites en Bitácora de accesos*/}
 
@@ -75,7 +76,6 @@ export default function Rutas() {
              {/* Rutas extras que necesites en Inventario*/}
              <Route path="/inventario/productos" element={<ProductList />} />
              <Route path="/inventario/movimientosproductos" element={<ProductMovementList />} />
-            
             {/* Ruta comodín: muestra Dashboard general (puedes personalizar para un 404) */}
             <Route path="*" element={<Login />} />
           </Route>
