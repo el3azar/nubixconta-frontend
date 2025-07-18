@@ -1,7 +1,7 @@
 // src/services/accountReceivableService.js
 import axios from "axios";
 
-const API_URL = "https://nubixconta-backend-production.up.railway.app/api/v1/accounts-receivable/search-by-customer";
+const API_URL = "http://localhost:8080/api/v1/accounts-receivable/search-by-customer";
 
 export const getAccountStatementsByCustomer = async (filters) => {
   try {

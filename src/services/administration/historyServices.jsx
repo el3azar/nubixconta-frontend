@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const HISTORY_API = 'https://nubixconta-backend-production.up.railway.app/api/v1/history';
-const USERS_API   = 'https://nubixconta-backend-production.up.railway.app/api/v1/users';
+const HISTORY_API = 'http://localhost:8080/api/v1/history';
+const USERS_API   = 'http://localhost:8080/api/v1/users';
 const token       = localStorage.getItem('token');
 
 // Obtiene todos los usuarios para el <Select>

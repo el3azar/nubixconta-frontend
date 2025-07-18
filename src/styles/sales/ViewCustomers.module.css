@@ -1,4 +1,5 @@
 :root {
+  /* Tu paleta de colores se mantiene intacta */
   --bg-dark: #10031C;
   --bg-mid: #1B043B;
   --bg-purple: #49207B;
@@ -7,28 +8,16 @@
   --gray: #ABAABC;
 }
 
-/* Contenedor principal de la vista */
+/* Contenedor principal de la vista (la tarjeta blanca) */
 .mainWrapper {
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.738);
   border-radius: 1rem;
-  padding: 2rem;
+  padding: 1.5rem;
   width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;   /* centra el contenido */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  overflow-x: auto;
+  max-width: 1200px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin: 0 auto; /* Centra el contenedor en pantallas grandes */
 }
-
-.table-responsive {
-  width: 100%;
-  overflow-x: auto;
-}
-
-.table {
-  min-width: 1000px;
-  table-layout: auto;
-}
-
 
 /* Navegación superior del módulo (Clientes, Ventas...) */
 .subnav {
@@ -64,7 +53,7 @@
   border-radius: 0.75rem;
 }
 
-/* Botón de búsqueda */
+/* Botón de búsqueda y botones de acción principales */
 .searchBtn {
   background-color: var(--bg-dark);
   color: #fff;
@@ -75,53 +64,135 @@
 }
 
 .searchBtn:hover {
-  background-color: var(--accent);
-  color: #fff;
+ background: transparent;
+  color: #10031C;
+  border: 2px solid #10031C;
 }
 
-/* Sección de tabla */
+
+.actionButton {
+  /* --- Estilo Base --- */
+  background-color: #10031C; /* Color principal oscuro de tu paleta */
+  color: #fff;
+  font-weight: 500;
+  text-decoration: none; /* Asegura que nunca haya subrayado */
+  
+  /* --- Forma y Tamaño --- */
+  padding: 0.45rem 1.5rem; /* Menos padding vertical = menos alto */
+  border-radius: 50px;     /* Valor alto para una forma de píldora perfecta */
+  min-width: 160px;        /* CLAVE: Ancho mínimo para que ambos botones sean iguales */
+  
+  /* --- Alineación y Transición --- */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 1px solid transparent; /* Evita saltos en el hover */
+  transition: background-color 0.3s ease;
+}
+
+/* --- Estado Hover --- */
+.actionButton:hover {
+  background: transparent;
+  color: #10031C;
+  border: 2px solid #10031C;
+  text-decoration: none; /* Reafirma que no haya subrayado */
+}
+
+/* Sección de la tabla */
 .tableSection {
-  background-color: var(--gray);
-  padding: 2rem;
-  border-radius: 0.75rem;
-  overflow-x: auto; /* permite scroll horizontal solo dentro */
+  padding-top: 1.5rem;
 }
 
-/* Encabezado personalizado */
-.customHeader {
-  background-color: var(--muted);
-  color: #fff;
-}
-
-/* Tabla responsiva */
-.table-responsive {
+/* Wrapper DIRECTO de la tabla para un scroll limpio y contenido */
+.tableResponsiveWrapper {
   overflow-x: auto;
   width: 100%;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
 }
 
 .table {
-  width: 100% !important;
-  min-width: 900px;       /* asegura scroll si el contenido lo requiere */
-  table-layout: auto;
+  width: 100%;
+  min-width: 1000px; /* o incluso 950px según columnas */
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
-/* Estilo de celdas */
+/* Cabecera de la tabla */
+.customHeader {
+  background-color: var(--muted);
+  color: #fff;
+  position: sticky; /* Fija la cabecera al hacer scroll vertical */
+  top: 0;
+  z-index: 1;
+}
+
+/* Estilo general para celdas de cabecera y cuerpo */
 .table th, .table td {
   padding: 0.85rem 1rem;
-  white-space: nowrap;
   vertical-align: middle;
+  border-bottom: 1px solid #dee2e6;
 }
 
 .table td {
-  word-break: break-word;
-  max-width: 200px;
+  /* Por defecto, permitimos que el texto se ajuste */
+  white-space: normal;
+  word-break: break-word; /* Asegura que palabras largas no rompan el layout */
 }
+
+/* --- CLASES PARA EL ANCHO ESPECÍFICO DE CADA COLUMNA --- */
+
+.colDireccion {
+  min-width: 220px;
+  max-width: 320px;
+  white-space: normal; /* Permite salto de línea solo si es demasiado larga */
+  word-break: break-word;
+}
+.colNombre {
+  min-width: 180px;
+  max-width: 250px;
+  white-space: normal;
+  word-break: break-word;
+}
+.colApellido {
+  min-width: 110px;
+  max-width: 250px;
+  white-space: normal;
+  word-break: break-word;
+}
+.colCorreo {
+  min-width: 170px;
+  max-width: 250px;
+  white-space: normal;
+  word-break: break-word;
+}
+.colTelefono, .colDui, .colNit{
+  min-width: 110px;
+  max-width: 160px;
+  white-space: nowrap;
+}
+.colLimite{
+  min-width: 100px;
+  max-width: 140px;
+}
+.colDias {
+  min-width: 80px;
+  max-width: 100px;
+}
+.colAcciones {
+  min-width: 130px;
+  max-width: 160px;
+  white-space: nowrap;
+  text-align: center;
+}
+
 
 .table tbody {
-  background-color: white; /* puedes cambiarlo si necesitas un tono distinto */
+  background-color: white;
 }
 
-/* Botón de íconos */
+/* Botones de íconos en la tabla */
 .iconBtn {
   background-color: transparent;
   color: var(--bg-dark);
@@ -133,7 +204,7 @@
 }
 
 .iconBtn:hover {
-  background-color: var(--accent);
+  background-color: var(--muted);
   color: #fff;
-  border-color: var(--accent);
+  border-color: var(--bg-purple);
 }

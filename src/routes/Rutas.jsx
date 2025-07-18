@@ -20,10 +20,10 @@ import DashBoardEmpresas from '../components/administration/DashBoardEmpresas';
 import DashBoardGeneral from '../components/administration/DashBoardGeneral';
 import DashBoardGeneralAdmin from '../components/administration/DashBoardGeneralAdmin';
 import { CompanyProvider } from '../context/CompanyContext';
-import ViewCustomers from '../components/sales/ViewCustomers';
-import NewCustomer from '../components/sales/NewCustomer';
-import EditCustomer from "../components/sales/EditCustomer";
-import DesactivatedCustomer from '../components/sales/DesactivatedCustomer';
+import ViewCustomers from '../components/sales/customer/ViewCustomers';
+import NewCustomer from '../components/sales/customer/NewCustomer';
+import EditCustomer from "../components/sales/customer/EditCustomer";
+import DesactivatedCustomer from '../components/sales/customer/DesactivatedCustomer';
 import Sales from '../components/sales/Sales';
 import NewSale from '../components/sales/NewSale';
 import DashboardInventory from '../components/inventory/DashBoardInventory';
@@ -108,7 +108,7 @@ export default function Rutas() {
                 <Route path="/ventas" element={<VentasDashboard />} />
             */}
             <Route path="/ventas" element={<DashBoardSales />} />
-             <Route path="/ventas/clientes/desactivated" element={<DesactivatedCustomer />} />
+            <Route path="/ventas/clientes/desactivated" element={<DesactivatedCustomer />} />
             <Route path="/ventas/clientes" element={<ViewCustomers/>} />
             <Route path="/ventas/clientes/nuevo" element={<NewCustomer />} />
             
