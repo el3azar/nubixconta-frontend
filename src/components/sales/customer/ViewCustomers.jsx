@@ -75,9 +75,10 @@ const handleDeactivate = (id, name) => {
   return (
     <>
     <SubMenu />
+ 
+      
+    
     <section className={styles.mainWrapper}>
-      
-      
 
       <section className={`${styles.searchBox} mb-4`}>
         <h5 className="fw-bold mb-3">Buscar Cliente</h5>
@@ -184,6 +185,7 @@ const handleDeactivate = (id, name) => {
         </div>
       </section>
     </section>
+    
     </>
     
   );

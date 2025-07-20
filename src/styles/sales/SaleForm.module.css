@@ -1,0 +1,148 @@
+:root {
+  --color-dark: #10031C;
+  --color-primary: #49207B;
+  --color-light-bg: #E6E5EA;
+  --color-content-bg: #ABAABC;
+  --color-card-bg: #C9C9CE;
+}
+
+.container {
+  background: var(--color-content-bg);
+  min-height: 100vh;
+  padding: 2rem 0.5rem;
+  color: var(--color-dark);
+}
+.title {
+  color: #1B043B;
+  margin-bottom: 1.5rem;
+}
+.total {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #1B043B;
+}
+.addBtn {
+  background: #10031C;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background 0.2s;
+}
+.addBtn:hover {
+  background: #49207B;
+  color: #fff;
+}
+.register {
+  background: #10031C;
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.8rem;
+  border-radius: 1.5rem;
+  font-weight: 600;
+  margin-right: 0.5rem;
+  transition: background 0.2s;
+}
+.register:hover {
+  background: #49207B;
+  color: #fff;
+}
+.cancel {
+  background: #fff;
+  color: #10031C;
+  border: 2px solid #49207B;
+  padding: 0.75rem 1.5rem;
+  border-radius: 1.5rem;
+  font-weight: 600;
+  transition: background 0.2s, color 0.2s;
+}
+.cancel:hover {
+  background: #ECECEC;
+  color: #49207B;
+}
+.iconBtn {
+  background: none;
+  border: none;
+  padding: 0.2rem 0.4rem;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.15s;
+}
+.editBtn:hover {
+  color: #49207B;
+}
+.deleteBtn:hover {
+  color: #E2574C;
+}
+.tableHead th {
+  background: #8581B0 !important;
+  color: #fff;
+  text-align: center;
+  vertical-align: middle;
+}
+.table {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+/* Hace que todos los input, select y textarea de tu formulario tengan el mismo alto y tamaño de fuente */
+.card input,
+.card select,
+.card textarea,
+.card .react-select__control {
+  min-height: 45px !important;
+  height: 45px !important;
+  font-size: 1.07rem;
+  border-radius: 0.5rem;
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
+}
+
+/* Si usas react-select, iguala la altura a los input */
+.card .react-select__control {
+  min-height: 45px !important;
+  height: 45px !important;
+  font-size: 1.07rem;
+  border-radius: 0.5rem;
+}
+
+/* 1. CLASE BASE PARA TODOS LOS BOTONES DE ACCIÓN */
+.actionButton {
+  background-color: #10031C; /* Morado oscuro */
+  color: #fff;
+  border: 2px solid #10031C;
+  padding: 0.6rem 1.5rem;
+  border-radius: 50px; /* Completamente redondeado */
+  font-weight: 500;
+  min-width: 140px; /* Ancho mínimo */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer; /* Asegura que se muestre la manito */
+}
+
+/* EFECTO HOVER PARA EL BOTÓN PRINCIPAL */
+.actionButton:hover {
+  background-color: transparent;
+  color: #10031C;
+}
+
+/* 2. VARIANTE SECUNDARIA (Para "Cancelar") */
+/* Empieza con el estilo del hover del botón principal */
+.secondary {
+  background-color: transparent;
+  color: #10031C;
+}
+.secondary:hover {
+  background-color: #10031C;
+  color: #fff;
+}
