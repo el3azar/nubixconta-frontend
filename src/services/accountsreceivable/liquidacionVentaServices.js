@@ -1,8 +1,9 @@
 import axios from "axios";
+import { DateTime } from "luxon";
+const BASE_URL = 'http://localhost:8080/api/v1/collection-detail/register-payment';
 
-const BASE_URL_AR = 'https://nubixconta-backend-production.up.railway.app/api/v1/accounts-receivable';
-const BASE_URL_CD = 'https://nubixconta-backend-production.up.railway.app/api/v1/collection-detail';
-
+//const BASE_URL_AR = 'https://nubixconta-backend-production.up.railway.app/api/v1/accounts-receivable';
+//const BASE_URL_CD = 'https://nubixconta-backend-production.up.railway.app/api/v1/collection-detail';
 export const registrarLiquidacionVenta = async ({
   documentNumber,
   cuentaNombre,
@@ -29,30 +30,20 @@ export const registrarLiquidacionVenta = async ({
 
     const monto = tipoLiquidacion === "PARCIAL" ? parseFloat(montoAbono) : ventaSeleccionada.totalAmount;
     if (isNaN(monto) || monto <= 0) throw new Error("El monto del abono debe ser un número positivo");
-
-    const nuevaCuentaPorCobrar = {
-      saleId: ventaSeleccionada.saleId,
-      balance: monto,
-      receiveAccountStatus: "PENDIENTE",
-      receivableAccountDate: new Date().toISOString(),
-      moduleType: "Cuentas por cobrar",
-    };
-
-    const responseAR = await axios.post(BASE_URL_AR, nuevaCuentaPorCobrar, { headers });
-    const accountReceivableId = responseAR.data.id;
-
+    
     const nuevoDetalle = {
-      accountReceivable: { id: accountReceivableId },
+      saleId:  ventaSeleccionada.saleId,
       accountId: cuentaSeleccionada.id,
       reference: referencia,
       paymentMethod: metodoPago,
       paymentStatus: "PENDIENTE",
       paymentAmount: monto,
       paymentDetailDescription: descripcion,
+      collectionDetailDate:DateTime.local().toFormat("yyyy-MM-dd'T'HH:mm:ss"),
       moduleType: "Cuentas por cobrar",
     };
 
-    await axios.post(BASE_URL_CD, nuevoDetalle, { headers });
+    await axios.post(BASE_URL, nuevoDetalle, { headers });
 
     return { success: true };
   } catch (error) {

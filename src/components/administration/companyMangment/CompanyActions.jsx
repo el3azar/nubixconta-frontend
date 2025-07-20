@@ -1,44 +1,32 @@
-import React from 'react';
-import {
-  FiEdit,
-  FiEye,
-  FiBarChart2,
-  FiUserPlus,
-} from 'react-icons/fi';
-import { showToggleCompanyStatusModal } from './ToggleCompanyStatusModal';
-
+import {  FiUserPlus } from 'react-icons/fi';
+import { RiUserReceived2Line } from "react-icons/ri";
+import {FaEdit, FaEye, FaBook } from 'react-icons/fa';
+import styles from '../../../styles/accountsreceivable/AccountsReceivable.module.css'
 const CompanyActions = ({
   empresa,
   onEdit,
   onView,
   onAccounting,
   onAssign,
-  onToggleStatus
 }) => {
-  const handleSwitchChange = () => {
-    const nuevoEstado = !empresa.activa;
-    showToggleCompanyStatusModal(nuevoEstado, () => {
-      onToggleStatus(empresa, nuevoEstado);
-    });
-  };
-
   return (
-    <div className="d-flex justify-content-center align-items-center gap-2">
-      <span title="Editar" onClick={onEdit}><FiEdit /></span>
-      <span title="Ver" onClick={onView}><FiEye /></span>
-      <span title="Contabilidad" onClick={onAccounting}><FiBarChart2 /></span>
-      <span title="Asignar" onClick={onAssign}><FiUserPlus /></span>
+ <div className="d-flex justify-content-center gap-2">
 
-      {/* 🎯 Aquí va el switch visual */}
-      <div className="form-check form-switch switch-dark">
-        <input
-          className="form-check-input"
-          type="checkbox"
-          role="switch"
-          checked={empresa.activa}
-          onChange={handleSwitchChange}
-        />
-      </div>
+      {/* Ver empresa */}
+      <FaEye title="Ver detalles" className={styles.icono} onClick={onView} />
+
+      {/* Editar empresa */}
+      <FaEdit title="Editar" className={styles.icono} onClick={onEdit} />
+
+      {/* Ir a contabilidad */}
+      <FaBook title="Contabilidad" className={styles.icono} onClick={onAccounting} />
+
+      {/* Asignar/Reasignar empresa */}
+      {empresa.asignada ? (
+        <RiUserReceived2Line title="Reasignar" className={styles.icono} onClick={onAssign} />
+      ) : (
+        <FiUserPlus title="Asignar" className={styles.icono} onClick={onAssign} />
+      )}
     </div>
   );
 };

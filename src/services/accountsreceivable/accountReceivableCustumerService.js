@@ -1,13 +1,13 @@
-// src/services/accountReceivableService.js
 import axios from "axios";
 
-const API_URL = "https://nubixconta-backend-production.up.railway.app/api/v1/accounts-receivable/search-by-customer";
+const API_URL = "http://localhost:8080/api/v1/accounts-receivable/search-by-customer";
+//const API_URL = "https://nubixconta-backend-production.up.railway.app/api/v1/accounts-receivable/search-by-customer";
 
 export const getAccountStatementsByCustomer = async (filters) => {
   try {
     const token = sessionStorage.getItem("nubix_token");
 
-    // Construimos la query dinámicamente
+    // Construimos la query dinámicamente son los campos por los que quiero filtrar
     const params = new URLSearchParams();
     if (filters.nombre) params.append("name", filters.nombre);
     if (filters.apellido) params.append("lastName", filters.apellido);

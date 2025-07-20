@@ -36,7 +36,10 @@ import { CompanyDataProvider } from '../components/administration/companyMangmen
 import RegisterCompanyView from '../components/administration/companyMangment/RegisterCompanyView';
 import EditCompanyView from '../components/administration/companyMangment/EditCompanyView';
 import ViewCompanyDetails from '../components/administration/companyMangment/ViewCompanyDetails';
-
+import AccountsReceivable from '../components/accountsreceivable/AccountsReceivable';
+import AccountsReceivableMenu from '../components/accountsreceivable/AccountsReceivableMenu';
+import AccountsReceivableReport from '../components/accountsreceivable/AccountsReceivableReport'; 
+import AccountsReceivableAccount from '../components/accountsreceivable/AccountsReceivableAccount'; 
 export default function Rutas() {
   return (
     <BrowserRouter>
@@ -117,7 +120,7 @@ export default function Rutas() {
             {/* Rutas extras que necesites en ventas */}
 
             {/* Rutas del módulo de Cuentas por Cobrar */}
-            <Route path="/cuentas" element={<AccountsReceivableMenu />} />
+            <Route path="/cuentas" element={<AccountsReceivableMenu/>} />
             <Route path="/cuentas/cobros" element={<AccountsReceivable />} />
             <Route path="/cuentas/reportes" element={<AccountsReceivableReport />} />
             <Route path="/cuentas/estado_cuenta" element={<AccountsReceivableAccount />} />
