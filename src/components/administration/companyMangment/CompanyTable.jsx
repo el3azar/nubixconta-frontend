@@ -36,7 +36,7 @@ useEffect(() => {
             <th style={{ width: '15%' }}>NRC</th>
             <th style={{ width: '20%' }}>DUI/NIT</th>
             <th style={{ width: '35%' }}>Nombre</th>
-            <th style={{ width: '15%' }}>Estado</th>
+            <th style={{ width: '10%' }}>Estado</th>
             <th style={{ width: '30%' }}>Acciones</th>
           </tr>
         </thead>

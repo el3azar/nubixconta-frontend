@@ -10,8 +10,16 @@ const CompanyActions = ({
   onAssign,
 }) => {
   return (
- <div className="d-flex justify-content-center gap-2">
+ <div className="d-flex justify-content-center gap-3">
 
+
+
+      {/* Asignar/Reasignar empresa */}
+      {empresa.asignada ? (
+        <RiUserReceived2Line title="Reasignar" className={styles.icono} onClick={onAssign} />
+      ) : (
+        <FiUserPlus title="Asignar" className={styles.icono} onClick={onAssign} />
+      )}
       {/* Ver empresa */}
       <FaEye title="Ver detalles" className={styles.icono} onClick={onView} />
 
@@ -21,12 +29,6 @@ const CompanyActions = ({
       {/* Ir a contabilidad */}
       <FaBook title="Contabilidad" className={styles.icono} onClick={onAccounting} />
 
-      {/* Asignar/Reasignar empresa */}
-      {empresa.asignada ? (
-        <RiUserReceived2Line title="Reasignar" className={styles.icono} onClick={onAssign} />
-      ) : (
-        <FiUserPlus title="Asignar" className={styles.icono} onClick={onAssign} />
-      )}
     </div>
   );
 };

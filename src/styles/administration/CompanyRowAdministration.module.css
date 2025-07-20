@@ -22,5 +22,6 @@
 }
 
 .table-responsive {
-  overflow: visible !important;
+    overflow-x: auto;
+  overflow-y: visible;
 }
