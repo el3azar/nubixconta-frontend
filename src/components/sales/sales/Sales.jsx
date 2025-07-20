@@ -252,7 +252,7 @@ const Sales = () => {
                     sale.saleStatus === 'APLICADA' ? 'table-success' : 
                     sale.saleStatus === 'ANULADA' ? 'table-danger' : ''
                   }>
-                    <td>{sale.correlative}</td>
+                    <td>{sale.saleId}</td>
                     <td>{sale.documentNumber}</td>
                     <td>{formatDate(sale.issueDate)}</td>
                     <td>{sale.saleStatus}</td>
