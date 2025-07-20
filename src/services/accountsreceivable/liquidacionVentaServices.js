@@ -2,8 +2,9 @@ import axios from "axios";
 import { DateTime } from "luxon";
 const BASE_URL = 'http://localhost:8080/api/v1/collection-detail/register-payment';
 
-//const BASE_URL_AR = 'https://nubixconta-backend-production.up.railway.app/api/v1/accounts-receivable';
-//const BASE_URL_CD = 'https://nubixconta-backend-production.up.railway.app/api/v1/collection-detail';
+const BASE_URL_AR = 'http://localhost:8080/api/v1/accounts-receivable';
+const BASE_URL_CD = 'http://localhost:8080/api/v1/collection-detail';
+
 export const registrarLiquidacionVenta = async ({
   documentNumber,
   cuentaNombre,

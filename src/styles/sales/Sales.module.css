@@ -8,67 +8,69 @@
   --color-danger: #E2574C;
 }
 
-/* Wrapper general dentro del layout (entre sidebar/navbar) */
-.wrapper {
-  background-color: var(--color-light-bg);
-  min-height: calc(100vh - 64px); /* ajusta según altura navbar */
-  padding: 2rem 0;
-}
-
-/* Caja interior que centra todo */
-.content {
-  background-color: var(--color-content-bg);
-  border-radius: 1rem;
-  padding: 2rem;
-}
-
-/* Título de sección */
-.title {
-  font-weight: 600;
-  text-align: center;
-}
-
-/* Filtro de fechas */
+/* 
+ * CLAVE 1: El contenedor del filtro.
+ * Lo convertimos en un contenedor Flex. 'align-items' lo alinea verticalmente
+ * y 'gap' maneja el espaciado horizontal.
+ */
 .filter {
   display: flex;
   align-items: flex-end;
-  gap: 10rem;
+  gap: 2rem;
   background-color: var(--color-filter-bg);
-  border-radius: 0.5rem;
+  border-radius: 0.7rem;
   padding: 1.5rem;
   margin-bottom: 2rem;
 }
 
-.filter label {
-  color: var(--color-dark);
+.filterItem {
+  flex: 1 1 0%;
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+}
+
+.filter .form-control[type="date"] {
+  min-width: 180px;
+  max-width: 300px;
+  width: 100%;
+  font-size: 1.1rem;
+  padding: 0.7rem 1.1rem;
+}
+
+
+.filterButtonWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  /* El botón será más ancho aquí */
+  min-width: 200px;
+}
+
+
+/* 
+ * CLAVE 3: Clase unificada para los botones de acción.
+ * Esta clase se usará para "Buscar" y "Nuevo".
+ */
+.actionButton {
+  background-color: #10031C;
+  color: #fff;
+  border: 2px solid #10031C;
+  padding: 0.6rem 1.5rem;
+  border-radius: 50px;
   font-weight: 500;
+  min-width: 140px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
 }
 
-.filter .form-control {
-  background: #fff;
-  border-radius: 0.25rem;
-  border: none;
-  min-width: 220px;
-   max-width: 320px;     /* opcional, para no pasarse */
-  width: 100%;          /* ocupa todo el ancho disponible dentro del min/max */
-}
-
-.filter input[type="date"] {
-  min-width: 250px;
-  max-width: 320px;
-  width: 100%;          /* ocupa todo el ancho disponible dentro del min/max */
-}
-
-.btnbscr {
-  background-color: #10031C !important;
-  border: none;
-  color: #fff;
-}
-
-.btnbscr:hover {
-  background-color: #270745 !important;
-  border: none;
-  color: #fff;
+.actionButton:hover {
+  background-color: transparent;
+  color: #10031C;
 }
 
 /* Tabla */
@@ -120,16 +122,14 @@
   margin-right: 0;
 }
 
-/*Contenedor y espaciado del botón "Nuevo" */
-.newbtn {
-  background-color: #10031C;  
-  border-bottom: #10031C ;
-  color: #fff;
-  text-align: right;
-  margin: 2rem;        /* separa del filtro y de la tabla */
-}
-
-.newbtn:hover{
-    border-color: #10031C;
-    color: #10031C;
+@media (max-width: 700px) {
+  .filter {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .filterButtonWrap {
+    align-items: stretch;
+    min-width: unset;
+    margin-top: 1rem;
+  }
 }

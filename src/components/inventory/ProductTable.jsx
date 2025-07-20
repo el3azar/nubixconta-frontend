@@ -19,10 +19,12 @@ const ProductTable = ({ products, handleSort, sortField, sortDirection, onEdit, 
               Nombre{renderSortIcon('nombre')}
             </th>
             <th>Unidad</th>
+            <th>Unidadx2</th>
             <th role="button" onClick={() => handleSort('existencias')}>
               Existencias{renderSortIcon('existencias')}
             </th>
             <th>Acciones</th>
+            
           </tr>
         </thead>
         <tbody>
