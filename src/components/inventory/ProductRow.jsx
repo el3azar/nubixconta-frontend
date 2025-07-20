@@ -17,7 +17,7 @@ const ProductRow = ({ product, onEdit, onStatusUpdated }) => {
       }
       showSuccess("Estado del producto cambiado con éxito");
     } catch (error) {
-      console.error("Error al cambiar estado del producto:", error);
+      
       showError("Ocurrió un error: " + error.message);
     }
   };

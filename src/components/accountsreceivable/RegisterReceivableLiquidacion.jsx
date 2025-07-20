@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import AutocompleteSelect from "./AutocompleteSelect";
 import styles from "../../styles/accountsreceivable/RegisterReceivableLiquidacion.module.css";
 import { getAllSales } from "../../services/salesServices";
-import { getBankAcount } from "../../services/bankService";
-import { registrarLiquidacionVenta } from "../../services/liquidacionVentaServices";
+import { getBankAcount } from "../../services/accountsreceivable/bankService";
+import { registrarLiquidacionVenta } from "../../services/accountsreceivable/liquidacionVentaServices";
 import { showSuccess, showError } from "../../components/inventory/alerts";
 
 const RegisterReceivableLiquidacion = ({ onClose }) => {

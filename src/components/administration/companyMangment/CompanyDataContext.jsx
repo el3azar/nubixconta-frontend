@@ -1,33 +1,41 @@
-// src/context/CompanyDataContext.jsx
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { getCompanies } from '../../../services/administration/companiesViewServices';
+
 
 const CompanyDataContext = createContext();
 
 export const useCompany = () => useContext(CompanyDataContext);
 
 export const CompanyDataProvider = ({ children }) => {
-  const [companies, setCompanies] = useState([
-    {
-      id: 1,
-      nombre: 'Empresa A',
-      nit: '0614-123456-101-2',
-      dui: '',
-      nrc: '00000001',
-      tipo: 'juridica',
-      asignada: true,
-      activa: true
-    },
-    {
-      id: 2,
-      nombre: 'Empresa B',
-      nit: '',
-      dui: '12345678-9',
-      nrc: '00000002',
-      tipo: 'natural',
-      asignada: false,
-      activa: true
-    }
-  ]);
+  const [companies, setCompanies] = useState([]);
+
+  // 🔁 Adaptar los datos del backend al formato usado internamente
+  const adaptCompanyData = (rawCompanies) => {
+    return rawCompanies.map((c, index) => ({
+      id: index + 1, // O usa c.id si el backend lo provee
+      nombre: c.companyName,
+      nit: c.companyNit || '',
+      dui: c.companyDui || '',
+      nrc: c.companyNrc,
+      tipo: c.companyDui ? 'natural' : 'juridica', 
+      asignada: c.companyStatus
+    }));
+  };
+
+  // 🔄 Obtener empresas desde el backend al iniciar
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const raw = await getCompanies();
+        const adapted = adaptCompanyData(raw);
+        setCompanies(adapted);
+      } catch (error) {
+        console.error("Error al cargar empresas:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // ✅ Agrega una empresa nueva
   const addCompany = (newCompany) => {
@@ -61,7 +69,7 @@ export const CompanyDataProvider = ({ children }) => {
       companies,
       addCompany,
       updateCompany,
-      toggleCompanyStatus, // 👉 Exportamos la nueva función
+      toggleCompanyStatus,
       getCompanyById
     }}>
       {children}
@@ -69,10 +77,3 @@ export const CompanyDataProvider = ({ children }) => {
   );
 };
 
-/*
-📌 Cuando integres backend:
-- Usa useEffect para cargar empresas desde una API (GET /api/empresas).
-- addCompany debe hacer POST /api/empresas y luego actualizar el estado local.
-- updateCompany debe hacer PUT /api/empresas/:id.
-- toggleCompanyStatus puede hacer PATCH o PUT a /api/empresas/:id.
-*/

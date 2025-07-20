@@ -37,12 +37,10 @@ import { CompanyDataProvider } from '../components/administration/companyMangmen
 import RegisterCompanyView from '../components/administration/companyMangment/RegisterCompanyView';
 import EditCompanyView from '../components/administration/companyMangment/EditCompanyView';
 import ViewCompanyDetails from '../components/administration/companyMangment/ViewCompanyDetails';
-import AccountsReceivableMenu from '../components/accountsreceivable/AccountsReceivableMenu';
 import AccountsReceivable from '../components/accountsreceivable/AccountsReceivable';
-import AccountsReceivableReport from '../components/accountsreceivable/AccountsReceivableReport';
-import AccountsReceivableAccount from '../components/accountsreceivable/AccountsReceivableAccount';
-
-
+import AccountsReceivableMenu from '../components/accountsreceivable/AccountsReceivableMenu';
+import AccountsReceivableReport from '../components/accountsreceivable/AccountsReceivableReport'; 
+import AccountsReceivableAccount from '../components/accountsreceivable/AccountsReceivableAccount'; 
 export default function Rutas() {
   return (
     <BrowserRouter>
