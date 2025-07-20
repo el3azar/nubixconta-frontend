@@ -53,9 +53,9 @@ const UserManagementDashboard = () => {
   const handleEdit = (user) => setSelectedUser(user);
 
   const handleSubmit = (formData) => {
-    const promise = formData.get("id")
-      ? updateUser(formData.get("id"), formData)
-      : createUser(formData);
+ const promise = formData.id
+  ? updateUser(formData.id, formData)
+  : createUser(formData);
 
     promise
       .then(() => {
@@ -83,17 +83,18 @@ const UserManagementDashboard = () => {
     }).then((result) => {
       if (!result.isConfirmed) return;
 
-      const fd = new FormData();
-      fd.append("id", user.id);
-      fd.append("firstName", user.firstName);
-      fd.append("lastName", user.lastName);
-      fd.append("email", user.email);
-      fd.append("userName", user.userName);
-      fd.append("password", user.password || "");
-      fd.append("file", "");
-      fd.append("status", !user.status);
+  const updatedUser = {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        userName: user.userName,
+        password: user.password || "",
+        status: !user.status
+      };
 
-      updateUser(user.id, fd)
+      updateUser(user.id, updatedUser)
+   
         .then(() => {
           toastSuccess(
             `Usuario ${!user.status ? "activado" : "desactivado"} correctamente`

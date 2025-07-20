@@ -1,8 +1,7 @@
-// src/services/accountsReceivableService.js
 import axios from "axios";
 
-const API_URL = "https://nubixconta-backend-production.up.railway.app/api/v1/accounts-receivable";
-
+const API_URL = "http://localhost:8080/api/v1/accounts-receivable";
+//const API_URL = "https://nubixconta-backend-production.up.railway.app/api/v1/accounts-receivable";
 export const getAccountsReceivable = async () => {
   try {
     const token = sessionStorage.getItem("nubix_token"); // token correcto
@@ -15,6 +14,6 @@ export const getAccountsReceivable = async () => {
     return response.data;
   } catch (error) {
     console.error("Error al obtener cuentas por cobrar:", error);
-    return []; // o `throw error` si deseas manejarlo arriba
+    return []; 
   }
 };

@@ -4,9 +4,10 @@ import axios from "axios";
 const loginService = async (user) => {
   try {
     const response = await axios.post(
-      "https://nubixconta-backend-production.up.railway.app/api/v1/auth/login", // <-- cambia el host si es necesario
+      "http://localhost:8080/api/v1/auth/login", // <-- cambia el host si es necesario
       user
     );
+    //"https://nubixconta-backend-production.up.railway.app/api/v1/auth/login"
     return response.data; // Espera: { token, role }
   } catch (error) {
     console.error("Error al autenticarse", error);

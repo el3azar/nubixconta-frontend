@@ -1,5 +1,5 @@
 import React from 'react';
-import CustomSelect from './CustomSelect';
+
 import { FiSearch } from 'react-icons/fi';
 
 const CompanySearchBar = ({ filters, onChange, onSearch, assistantOptions }) => {
@@ -22,22 +22,12 @@ const CompanySearchBar = ({ filters, onChange, onSearch, assistantOptions }) => 
 
         <div className="col-md-4">
           <label className="form-label text-dark">Asistente asignado</label>
-          <CustomSelect
-            options={assistantOptions}
-            value={filters.asistente}
-            onChange={(value) => onChange({ ...filters, asistente: value })}
-            placeholder="Seleccionar asistente"
-          />
+         
         </div>
 
         <div className="col-md-4">
           <label className="form-label text-dark">Estado</label>
-          <CustomSelect
-            options={['Asignada', 'Sin asignar']}
-            value={filters.estado}
-            onChange={(value) => onChange({ ...filters, estado: value })}
-            placeholder="Seleccionar estado"
-          />
+          
         </div>
       </div>
 
