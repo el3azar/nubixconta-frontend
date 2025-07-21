@@ -2,6 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import CompanyActions from './CompanyActions';
 import '../../../styles/administration/CompanyRowAdministration.module.css';
 import { getUsersByAssistant } from '../../../services/administration/usersByAssistanService';
+import { assignUserToCompany } from '../../../services/administration/assignUserToCompanyService';
+import { showSuccess, showError } from '../../inventory/alerts';
+import Swal from "sweetalert2";
 const CompanyRow = ({
   company,
   index,
@@ -25,7 +28,7 @@ useEffect(() => {
 
     const adapted = users.map(user => ({
       label: `${user.firstName} ${user.lastName}`,
-      value: user.userName,
+      value: user.id,
     }));
 
     setAssistantOptions(adapted);
@@ -36,12 +39,38 @@ useEffect(() => {
   const handleAssignClick = () => {
     setShowSelect(prev => !prev);
   };
+const handleAssistantChange = async (value) => {
+  const selectedUser = assistantOptions.find(opt => opt.value === Number(value));
+  const nombreUsuario = selectedUser?.label || value;
 
-  const handleAssistantChange = (value) => {
-    setSelectedAssistant(value);
+  setSelectedAssistant(value);
+
+const confirm = await Swal.fire({
+    title: "¿Deseas asignar  esta  empresa?",
+    text: `¿Está seguro que desea asignar la contabilidad de la empresa "${company.nombre}" al usuario "${nombreUsuario}"?`,
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Sí, asignar",
+    cancelButtonText: "Cancelar",
+  });
+
+
+
+if (!confirm.isConfirmed) return;
+  try {
+    await assignUserToCompany(company.id, selectedUser.value);
+     showSuccess("Empresa asignada con exito");
+    onAssign({
+      ...company,
+      asignada: true,
+    }, value);
+  } catch (error) {
+    showError('Ocurrió un error al asignar la empresa. Intente nuevamente.');
+  } finally {
     setShowSelect(false);
-    onAssign(company, value);
-  };
+  }
+};
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {

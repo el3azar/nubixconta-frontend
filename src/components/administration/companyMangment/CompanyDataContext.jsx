@@ -12,7 +12,7 @@ export const CompanyDataProvider = ({ children }) => {
   // 🔁 Adaptar los datos del backend al formato usado internamente
   const adaptCompanyData = (rawCompanies) => {
     return rawCompanies.map((c, index) => ({
-      id: index + 1, // O usa c.id si el backend lo provee
+      id: c.id, // O usa c.id si el backend lo provee
       nombre: c.companyName,
       nit: c.companyNit || '',
       dui: c.companyDui || '',

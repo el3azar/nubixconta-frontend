@@ -8,7 +8,7 @@ import RegisterCompanyButton from './RegisterCompanyButton';
 
 const CompanyManagementView = () => {
   const navigate = useNavigate();
-  const { companies, toggleCompanyStatus } = useCompany();
+ const { companies, toggleCompanyStatus, updateCompany } = useCompany();
 
   const [filters, setFilters] = useState({
     nombre: '',
@@ -29,7 +29,20 @@ const CompanyManagementView = () => {
   const handleEdit = (empresa) => navigate(`/admin/empresas/editar/${empresa.id}`);
   const handleView = (empresa) => navigate(`/admin/empresas/ver/${empresa.id}`);
   const handleAccounting = (empresa) => console.log('Contabilidad:', empresa);
-  const handleAssign = (empresa) => console.log('Asignar empresa:', empresa);
+
+
+const handleAssign = (empresa, userId) => {
+  // Crea un nuevo objeto empresa actualizado con asignada = true
+  const updatedCompany = { ...empresa, asignada: true };
+  updateCompany(updatedCompany);
+
+  // Opcional: podrías mostrar un mensaje de éxito o refrescar lista
+  Swal.fire({
+    icon: 'success',
+    title: `Empresa ${empresa.nombre} asignada con éxito`,
+    timer: 1500,
+  });
+};
 
   const handleToggleStatus = (empresa, nuevoEstado) => {
     toggleCompanyStatus(empresa.id, nuevoEstado);
