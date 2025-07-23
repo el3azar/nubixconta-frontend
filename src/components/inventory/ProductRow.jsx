@@ -28,6 +28,7 @@ const ProductRow = ({ product, onEdit, onStatusUpdated }) => {
       <td>{product.productName}</td>
       <td>{product.unit}</td>
       <td>{product.stockQuantity}</td>
+      <td>{(product.stockQuantity) *2}</td>
       <td>{new Date(product.productDate).toLocaleDateString()}</td>
       <td className="d-flex gap-3 justify-content-center align-items-center">
         <label className={styles.switch}>

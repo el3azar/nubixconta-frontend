@@ -20,12 +20,13 @@ import DashBoardEmpresas from '../components/administration/DashBoardEmpresas';
 import DashBoardGeneral from '../components/administration/DashBoardGeneral';
 import DashBoardGeneralAdmin from '../components/administration/DashBoardGeneralAdmin';
 import { CompanyProvider } from '../context/CompanyContext';
-import ViewCustomers from '../components/sales/viewCustomers';
-import NewCustomer from '../components/sales/NewCustomer';
-import EditCustomer from "../components/sales/EditCustomer";
-import DesactivatedCustomer from '../components/sales/DesactivatedCustomer';
-import Sales from '../components/sales/Sales';
-import NewSale from '../components/sales/NewSale';
+import ViewCustomers from '../components/sales/customer/ViewCustomers';
+import NewCustomer from '../components/sales/customer/NewCustomer';
+import EditCustomer from "../components/sales/customer/EditCustomer";
+import DesactivatedCustomer from '../components/sales/customer/DesactivatedCustomer';
+import Sales from '../components/sales/sales/Sales';
+import NewSale from '../components/sales/sales/NewSale';
+import EditSale from '../components/sales/sales/EditSale';
 import DashboardInventory from '../components/inventory/DashBoardInventory';
 import ProductList from '../components/inventory/ProductList';
 import ProductMovementList from '../components/inventory/ProductMovementList';
@@ -100,13 +101,10 @@ export default function Rutas() {
             {/* ======== SECCIÓN: MÓDULOS OPERATIVOS ======== */}
             {/* Cada módulo principal (ventas, cuentas, inventario, etc.) va aquí */}
             <Route path="/home" element={<DashBoardGeneral />} />
-            {/* 
-              Reemplaza <div> por tu componente principal del módulo.
-              Ejemplo:
-                <Route path="/ventas" element={<VentasDashboard />} />
-            */}
+
+            {/* INICIO RUTAS VENTAS */}
             <Route path="/ventas" element={<DashBoardSales />} />
-             <Route path="/ventas/clientes/desactivated" element={<DesactivatedCustomer />} />
+            <Route path="/ventas/clientes/desactivated" element={<DesactivatedCustomer />} />
             <Route path="/ventas/clientes" element={<ViewCustomers/>} />
             <Route path="/ventas/clientes/nuevo" element={<NewCustomer />} />
             
@@ -114,10 +112,13 @@ export default function Rutas() {
             <Route path="/ventas/clientes/editar/:id" element={<EditCustomer />} />
             <Route path="/ventas/ventas" element={<Sales />} />
             <Route path="/ventas/nueva/:clientId" element={<NewSale />} />
+             <Route path="/ventas/editar/:saleId" element={<EditSale />} />
+
+
             <Route path="/ventas/nota-credito" element={<div>Notas de credito</div>} />
             <Route path="/ventas/reportes" element={<div>Reportes</div>}/>
 
-            {/* Rutas extras que necesites en ventas */}
+            {/* FIN RUTAS VENTAS*/}
 
             {/* Rutas del módulo de Cuentas por Cobrar */}
             <Route path="/cuentas" element={<AccountsReceivableMenu/>} />
