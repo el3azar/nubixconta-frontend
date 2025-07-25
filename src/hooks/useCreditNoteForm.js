@@ -51,6 +51,8 @@ export const useCreditNoteForm = (clientId=null) => {
       setValue('saleId', null);
       return;
     }
+    // Determinamos si la venta original tenía IVA en general.
+    const saleHadVat = sale.vatAmount > 0;
 
     // Transformamos los detalles de la venta a la estructura que nuestro formulario espera.
     const detailsForForm = sale.saleDetails.map(detail => ({
@@ -69,8 +71,10 @@ export const useCreditNoteForm = (clientId=null) => {
       unitPrice: detail.unitPrice,
       subtotal: detail.subtotal,
 
-      // Establecemos el valor por defecto para el campo editable 'impuesto'
-      impuesto: true,
+      // Se establece el valor por defecto en 'false' para todas las líneas.
+      // Esto es más seguro, ya que evita sobre-calcular el impuesto por defecto
+      // y fuerza al usuario a marcar explícitamente las líneas que sí lo llevan.
+      impuesto: false, 
     }));
     
     setValue('saleId', sale.saleId);

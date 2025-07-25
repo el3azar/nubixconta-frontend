@@ -19,7 +19,16 @@ export default function CreditNote() {
   // a los nombres genéricos que espera DocumentListView.
   const serviceAdapter = {
     getAll: (sortBy) => creditNoteService.getAllCreditNotes(sortBy),
-    searchByDate: (filters) => creditNoteService.searchByDateAndStatus(filters),
+    searchByDate: (filters) => {
+      // DocumentListView envía { startDate, endDate }.
+      // CreditNoteService espera { start, end }.
+      // Este bloque hace la "traducción".
+      const correctFilters = {
+        start: filters.startDate,
+        end: filters.endDate,
+      };
+      return creditNoteService.searchByDateAndStatus(correctFilters);
+    },
     approve: (id) => creditNoteService.applyCreditNote(id),
     cancel: (id) => creditNoteService.cancelCreditNote(id),
     delete: (id) => creditNoteService.deleteCreditNote(id),
