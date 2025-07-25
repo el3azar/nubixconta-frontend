@@ -90,18 +90,22 @@ export default function NewCreditNote() {
       subtotal: parseFloat((rest.quantity * rest.unitPrice).toFixed(2)) // Aseguramos el subtotal de línea
     }));
 
-    // 3. Construimos el DTO final usando los totales recién calculados.
+    //3.  Construimos el DTO final de forma más robusta.
+    // Usamos el spread operator en formData para asegurarnos de incluir todos
+    // los campos validados por Zod (documentNumber, description, saleId, totales)
+    // y luego sobreescribimos 'details' con la versión limpia.
     const finalDTO = {
-      documentNumber: formData.documentNumber,
-      description: formData.description,
-      saleId: formData.saleId,
+      ...formData,
       details: cleanDetails,
-      subtotalAmount: parseFloat(calculatedSubtotal.toFixed(2)),
-      vatAmount: parseFloat(calculatedVat.toFixed(2)),
-      totalAmount: parseFloat(calculatedTotal.toFixed(2)),
     };
 
-    console.log("✅ Datos consistentes, enviando DTO a la API:", finalDTO);
+     // Convertimos los totales a string para una serialización segura,
+    // el backend los convertirá a BigDecimal.
+    finalDTO.subtotalAmount = finalDTO.subtotalAmount.toFixed(2);
+    finalDTO.vatAmount = finalDTO.vatAmount.toFixed(2);
+    finalDTO.totalAmount = finalDTO.totalAmount.toFixed(2);
+
+    console.log("✅ Enviando DTO al API:", finalDTO);
     submitCreditNote(finalDTO);
   };
 

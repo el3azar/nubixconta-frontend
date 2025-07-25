@@ -93,11 +93,12 @@ const getAllSales = async (sortBy = 'status') => { // Acepta el parámetro, con 
   };
   /**
    * Busca y devuelve todas las ventas en estado 'APLICADA' para un cliente específico.
+   * y que no tenga una nota de crédito asociada en estado PENDIENTE o APLICADA.
    * @param {number} clientId - El ID del cliente.
    * @returns {Promise<Array>} Una lista de ventas aplicadas del cliente.
    */
   const getAppliedSalesByCustomer = async (clientId) => {
-    const response = await axios.get(`${API_URL}/customer/${clientId}/applied`, getAuthHeader(token));
+    const response = await axios.get(`${API_URL}/customer/${clientId}/available-for-credit-note`, getAuthHeader(token));
     return response.data;
   };
   /**
