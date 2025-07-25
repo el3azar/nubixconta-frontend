@@ -120,11 +120,60 @@ export default function SaleForm({
               </div>
             </div>
             <div className="row g-3">
-              <div className="col-12 col-sm-6 col-md-4 col-md"><label className="form-label fw-bold">Nombre</label><input className="form-control" value={editorTipo === 'Producto' ? editorSelectedProduct?.label || '' : editorNombreServicio} readOnly /></div>
-              <div className="col-12 col-sm-6 col-md-4 col-md"><label className="form-label fw-bold">Código</label><input className="form-control" value={editorSelectedProduct?.codigo || ''} readOnly /></div>
-              <div className="col-12 col-sm-6 col-md-4 col-md"><label className="form-label fw-bold">Cantidad</label><input type="number" className="form-control" min={1} value={editorCantidad} onChange={e => setEditorCantidad(e.target.value)} /></div>
-              <div className="col-12 col-sm-6 col-md-4 col-md"><label className="form-label fw-bold">Precio Unitario</label><input type="number" className="form-control" min={0} value={editorPrecio} onChange={e => setEditorPrecio(e.target.value)} /></div>
-              <div className="col-12 col-sm-6 col-md-4 col-md"><label className="form-label fw-bold">Subtotal</label><input className="form-control" type="text" readOnly value={(editorCantidad * editorPrecio).toFixed(2)} /></div>
+
+               {/* --- RENDERIZADO CONDICIONAL --- */}
+  {editorTipo === 'Producto' && (
+    <>
+      <div className="col-12 col-md-4">
+        <label className="form-label fw-bold">Nombre</label>
+        <input 
+          className="form-control" 
+          value={editorSelectedProduct?.label || ''} 
+          readOnly 
+        />
+      </div>
+      <div className="col-12 col-md-2">
+        <label className="form-label fw-bold">Código</label>
+        <input 
+          className="form-control" 
+          value={editorSelectedProduct?.codigo || ''} 
+          readOnly 
+        />
+      </div>
+    </>
+  )}
+  {/* --- FIN DEL RENDERIZADO CONDICIONAL --- */}
+
+               {/* Los campos de Cantidad, Precio y Subtotal ahora ocupan el espacio restante */}
+  <div className={`col-12 ${editorTipo === 'Producto' ? 'col-md-2' : 'col-md-4'}`}>
+    <label className="form-label fw-bold">Cantidad</label>
+    <input 
+      type="number" 
+      className="form-control" 
+      min={1} 
+      value={editorCantidad} 
+      onChange={e => setEditorCantidad(e.target.value)} 
+    />
+  </div>
+  <div className={`col-12 ${editorTipo === 'Producto' ? 'col-md-2' : 'col-md-4'}`}>
+    <label className="form-label fw-bold">Precio Unitario</label>
+    <input 
+      type="number" 
+      className="form-control" 
+      min={0} 
+      value={editorPrecio} 
+      onChange={e => setEditorPrecio(e.target.value)} 
+    />
+  </div>
+  <div className={`col-12 ${editorTipo === 'Producto' ? 'col-md-2' : 'col-md-4'}`}>
+    <label className="form-label fw-bold">Subtotal</label>
+    <input 
+      className="form-control" 
+      type="text" 
+      readOnly 
+      value={!isNaN(editorCantidad) && !isNaN(editorPrecio) ? (editorCantidad * editorPrecio).toFixed(2) : '0.00'}
+    />
+  </div>
             </div>
           </div>
         </section>

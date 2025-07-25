@@ -41,9 +41,47 @@ import AccountsReceivable from '../components/accountsreceivable/AccountsReceiva
 import AccountsReceivableMenu from '../components/accountsreceivable/AccountsReceivableMenu';
 import AccountsReceivableReport from '../components/accountsreceivable/AccountsReceivableReport'; 
 import AccountsReceivableAccount from '../components/accountsreceivable/AccountsReceivableAccount'; 
+import { Toaster } from 'react-hot-toast';
+import CreditNote from '../components/sales/creditnote/CreditNote';
+import NewCreditNote from '../components/sales/creditnote/NewCreditNote';
+import EditCreditNote from '../components/sales/creditnote/EditCreditNote';
+import AccountingEntry from '../components/sales/sales/AccountingEntry';
+
+
+
 export default function Rutas() {
   return (
     <BrowserRouter>
+     {/* --- PASO 2: AÑADIR EL COMPONENTE TOASTER AQUÍ --- */}
+      {/* Lo configuramos una sola vez con tu paleta de colores. */}
+      {/* Estará disponible para toda la aplicación. */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000, 
+          style: {
+            background: '#1B043B', // Fondo morado oscuro
+            color: '#ABAABC',      // Texto gris/lila claro
+            border: '1px solid #49207B', // Borde morado medio
+            padding: '16px',
+            borderRadius: '10px',
+            pointerEvents: 'none', // Ignora clics, hover, etc.
+      userSelect: 'none',     // Evita que el texto pueda ser seleccionado.
+          },
+          success: {
+            iconTheme: {
+              primary: '#7D49CC', // Color del icono (morado vibrante)
+              secondary: '#FFF',  // Fondo blanco para el check
+            },
+          },
+          error: {
+            style: { border: '1px solid #D32F2F' }, // Borde rojo para errores
+            iconTheme: { primary: '#D32F2F', secondary: '#FFF' },
+          }
+        }}
+      />
+      {/* --- FIN DEL BLOQUE AÑADIDO --- */}
+
       <Routes>
         {/* Ruta pública de login (no requiere layout ni contexto) */}
         <Route path='/' element={<Login />} />
@@ -115,7 +153,14 @@ export default function Rutas() {
              <Route path="/ventas/editar/:saleId" element={<EditSale />} />
 
 
-            <Route path="/ventas/nota-credito" element={<div>Notas de credito</div>} />
+           <Route path="/ventas/notas-credito" element={<CreditNote />} />
+           <Route path="/ventas/nueva-nota-credito/:clientId" element={<NewCreditNote />} />
+           <Route path="/ventas/editar-nota-credito/:creditNoteId" element={<EditCreditNote />} />
+
+            {/* 
+            <Route path="/ventas/asiento-contable" element={<AccountingEntry />} />
+
+*/}
             <Route path="/ventas/reportes" element={<div>Reportes</div>}/>
 
             {/* FIN RUTAS VENTAS*/}

@@ -1,0 +1,297 @@
+:root {
+  --bg-primary: #e0dbf3;
+  --bg-section: #f4f1fa;
+  --color-primary: #2e1a4d;
+  --color-accent: #49207b;
+  --border-light: #c0b7db;
+  --row-even: #dfdbeb;
+  --row-selected: #e5dde8;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  background-color: var(--bg-primary);
+  border-radius: 12px;
+  font-family: Arial, sans-serif;
+}
+
+.title {
+  text-align: center;
+  font-size: 1.75rem;
+  margin-bottom: 24px;
+  color: var(--color-primary);
+}
+
+.ventasSection,
+.clienteSection,
+.detallesSection {
+  background-color: var(--bg-section);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+}
+
+.table th,
+.table td {
+  padding: 12px 8px;
+  text-align: left;
+  background-color: #ffffff; /* fondo por defecto de celdas */
+}
+
+.table thead th {
+  background-color: #c0b7db;
+  color: var(--color-primary);
+  border-bottom: 2px solid #d3cce6;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: var(--row-even);
+}
+
+.selectedRow {
+  background-color: var(--row-selected) !important;
+}
+
+/* Asegura que las celdas de la fila seleccionada también cambien de color */
+.table tbody tr.selectedRow td {
+  background-color: var(--row-selected) !important;
+}
+
+/* Hover de fila aplicado a las celdas */
+.table tbody tr:hover td {
+  background-color: var(--row-selected);
+  cursor: pointer;
+}
+
+.documentSection label,
+.clienteSection label {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.documentSection input,
+.clienteSection input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.total {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 1.125rem;
+  color: var(--color-primary);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 16px;
+}
+/* 1. CLASE BASE PARA TODOS LOS BOTONES DE ACCIÓN */
+.actionButton {
+  background-color: #10031C; /* Morado oscuro */
+  color: #fff;
+  border: 2px solid #10031C;
+  padding: 0.6rem 1.5rem;
+  border-radius: 50px; /* Completamente redondeado */
+  font-weight: 500;
+  min-width: 140px; /* Ancho mínimo */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer; /* Asegura que se muestre la manito */
+}
+
+/* EFECTO HOVER PARA EL BOTÓN PRINCIPAL */
+.actionButton:hover {
+  background-color: transparent;
+  color: #10031C;
+}
+
+/* 2. VARIANTE SECUNDARIA (Para "Cancelar") */
+/* Empieza con el estilo del hover del botón principal */
+.secondary {
+  background-color: transparent;
+  color: #10031C;
+}
+.secondary:hover {
+  background-color: #10031C;
+  color: #fff;
+}
+
+/* Nuevo grid para sección de documento */
+.documentSection {
+  padding: 0;
+  margin-bottom: 24px;
+}
+
+.documentGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.documentField {
+  display: flex;
+  flex-direction: column;
+}
+
+.documentField label {
+  font-size: 0.875rem;
+  color: var(--color-primary);
+  margin-bottom: 6px;
+}
+
+.documentField input {
+  width: 50%;
+  height: 40px;
+  padding: 8px 8px;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  font-size: 1rem;
+}
+.table td button {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.detallesSection .table td input {
+  border: none;
+  background: transparent;
+  outline: none;
+}
+
+/* ... (todos tus estilos existentes) ... */
+
+
+/* ... (todos tus estilos existentes) ... */
+
+
+/* --- AÑADE ESTAS NUEVAS REGLAS AL FINAL --- */
+
+/* Estilo para los inputs de texto/número que SÍ queremos ver */
+.editableInput {
+  /* ¡Usamos !important para anular la regla general que los esconde! */
+  border: 1px solid var(--border-light) !important;
+  background-color: #ffffff !important;
+  border-radius: 4px;
+  padding: 4px 8px;
+  width: 100%;
+  max-width: 120px; /* Para que no sean demasiado anchos */
+  text-align: right; /* Común para números */
+}
+/* 1. El contenedor principal del checkbox personalizado */
+.customCheckboxContainer {
+  display: inline-block; /* O 'block' si lo prefieres */
+  position: relative;    /* Necesario para posicionar el checkmark falso */
+  cursor: pointer;
+  width: 22px;           /* Tamaño del área clickeable */
+  height: 22px;
+  user-select: none;     /* Evita que se seleccione el texto al hacer doble clic */
+}
+
+/* 2. Ocultamos el checkbox real del navegador */
+.customCheckboxContainer input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* 3. Creamos el "cuadrado" del checkbox falso */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 22px;
+  width: 22px;
+  background-color: #ffffff; /* Fondo blanco */
+  border: 2px solid var(--color-primary); /* Borde morado oscuro */
+  border-radius: 4px;
+  transition: all 0.2s ease-in-out;
+}
+
+/* 4. Cambiamos el fondo cuando el checkbox real (oculto) está :checked */
+.customCheckboxContainer input:checked ~ .checkmark {
+  background-color: var(--color-accent); /* Relleno morado vibrante */
+  border-color: var(--color-accent);
+}
+
+/* 5. Creamos la marca de verificación (el "check") usando un pseudo-elemento */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none; /* Oculto por defecto */
+}
+
+/* 6. Mostramos la marca de verificación cuando el checkbox real está :checked */
+.customCheckboxContainer input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* 7. Estilizamos y posicionamos la marca de verificación para que parezca un "check" */
+.customCheckboxContainer .checkmark:after {
+  left: 7px;
+  top: 3px;
+  width: 6px;
+  height: 12px;
+  border: solid white; /* El check será de color blanco */
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+
+/* ... (todos tus estilos existentes) ... */
+
+
+/* --- AÑADE ESTAS NUEVAS CLASES AL FINAL --- */
+
+/* 1. Contenedor principal para el pie de página del formulario */
+.footerActions {
+  display: flex;
+  justify-content: space-between; /* Empuja los totales a la izquierda y los botones a la derecha */
+  align-items: center;
+  flex-wrap: wrap; /* Permite que se apilen en pantallas pequeñas */
+  gap: 1.5rem; /* Espacio entre totales y botones si se apilan */
+  margin-top: 24px;
+}
+
+/* 2. El nuevo estilo para la fila de totales */
+.totalsRow {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem; /* Espacio entre "Subtotal", "IVA" y "Total" */
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--color-primary);
+}
+
+.totalsRow strong {
+  font-weight: 700;
+  margin-right: 0.5rem;
+}

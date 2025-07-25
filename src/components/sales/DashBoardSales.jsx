@@ -7,7 +7,7 @@ import layoutStyles from "../../styles/mainLayout.module.css"
 const ventasItems = [
   { label: "Clientes", icon: FaUsers, to: "/ventas/clientes" },
   { label: "Ventas", icon: FaChartLine, to: "/ventas/ventas" },
-  { label: "Nota de Credito", icon: FaFileInvoiceDollar, to: "/ventas/nota-credito" },
+  { label: "Nota de Credito", icon: FaFileInvoiceDollar, to: "/ventas/notas-credito" },
   { label: "Reportes", icon: FaUserCheck, to: "/ventas/reportes" }
 ];
 
