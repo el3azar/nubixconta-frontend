@@ -24,14 +24,15 @@ export const SaleService = () => {
   //      MÉTODOS PRINCIPALES
   // ============================
 
-  /**
-   * Obtiene todas las ventas (sin filtros)
-   * @returns {Promise<Array>} Lista de ventas
-   */
-  const getAllSales = async () => {
-    const response = await axios.get(API_URL, getAuthHeader(token));
-    return response.data;
-  };
+/**
+ * Obtiene todas las ventas con un ordenamiento específico.
+ * @param {string} sortBy - Criterio de ordenamiento ('status' o 'date').
+ * @returns {Promise<Array>} Lista de ventas ordenadas.
+ */
+const getAllSales = async (sortBy = 'status') => { // Acepta el parámetro, con 'status' por defecto.
+  const response = await axios.get(`${API_URL}?sortBy=${sortBy}`, getAuthHeader(token));
+  return response.data;
+};
 
   /**
    * Busca ventas dentro de un rango de fechas (por filtro)
@@ -90,7 +91,15 @@ export const SaleService = () => {
     const response = await axios.get(`${API_URL}/${saleId}`, getAuthHeader(token));
     return response.data;
   };
-
+  /**
+   * Busca y devuelve todas las ventas en estado 'APLICADA' para un cliente específico.
+   * @param {number} clientId - El ID del cliente.
+   * @returns {Promise<Array>} Una lista de ventas aplicadas del cliente.
+   */
+  const getAppliedSalesByCustomer = async (clientId) => {
+    const response = await axios.get(`${API_URL}/customer/${clientId}/applied`, getAuthHeader(token));
+    return response.data;
+  };
   /**
    * Crea una nueva venta
    * @param {Object} saleData (SaleCreateDTO)
@@ -112,7 +121,7 @@ export const SaleService = () => {
     return response.data;
   };
 
-  // (Opcional) Búsqueda por cliente, por si implementas esa vista
+  //Búsqueda por cliente, por si implementas esa vista
   const searchSalesByCustomer = async (filters) => {
     const params = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
@@ -137,6 +146,7 @@ export const SaleService = () => {
     cancelSale,
     getSaleById,
     createSale,
+    getAppliedSalesByCustomer,
     updateSale,
     searchSalesByCustomer,    // Solo si implementas búsqueda avanzada
     getSaleDetailsBySaleId,   // Solo si necesitas mostrar detalles por separado

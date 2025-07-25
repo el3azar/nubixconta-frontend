@@ -5,7 +5,7 @@ import styles from '../../styles/sales/SubMenu.module.css'; // Nuevo archivo
 const defaultLinks = [
   { to: '/ventas/clientes', label: 'Clientes' },
   { to: '/ventas/ventas', label: 'Ventas' },
-  { to: '/ventas/nota-credito', label: 'Notas de Crédito' },
+  { to: '/ventas/notas-credito', label: 'Notas de Crédito' },
   { to: '/ventas/reportes', label: 'Reportes' },
 ];
 
