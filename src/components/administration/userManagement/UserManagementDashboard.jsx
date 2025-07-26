@@ -4,7 +4,7 @@ import {
   createUser,
   updateUser,
 } from "../../../services/administration/userService";
-import { FaUser, FaEdit, FaTrash } from "react-icons/fa";
+import { FaUser, FaEdit, FaTrash, FaTrashAlt, FaEye, FaLink, FaEyeSlash } from "react-icons/fa";
 import Swal from "sweetalert2";
 import UserForm from "./UserForm";
 
@@ -147,19 +147,49 @@ const UserManagementDashboard = () => {
                   </strong>
                 </p>
 
-                <div className="d-flex justify-content-between">
+                <div className="d-flex justify-content-around mt-3"> {/* Cambiado a justify-content-around para distribuir los iconos */}
+                  {/* Botón Editar */}
                   <button
-                    className="btn btn-sm btn-primary"
+                    className="btn btn-outline-primary me-2" // me-2 para un pequeño margen a la derecha
                     onClick={() => handleEdit(u)}
+                    data-bs-toggle="tooltip" // Atributo para activar el tooltip
+                    data-bs-placement="top"  // Posición del tooltip
+                    title="Editar"           // Texto del tooltip
                   >
-                    <FaEdit /> Editar
+                    <FaEdit />
                   </button>
 
+                  {/* Botón Desactivar/Activar */}
                   <button
-                    className="btn btn-sm btn-danger"
+                    className={`btn btn-outline-${u.status ? "danger" : "success"} me-2`} // Color dinámico
                     onClick={() => handleToggleActive(u)}
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    title={u.status ? "Desactivar" : "Activar"} // Texto dinámico del tooltip
                   >
-                    <FaTrash /> {u.status ? "Desactivar" : "Activar"}
+                    <FaEyeSlash /> {/* Usamos FaTrashAlt como icono */}
+                  </button>
+
+                  {/* Botón Asignar Empresa */}
+                  <button
+                    className="btn btn-outline-info me-2" // Un color diferente para distinguir
+                    onClick={() => handleAssignCompany(u)}
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    title="Asignar empresa"
+                  >
+                    <FaLink /> {/* Icono de enlace */}
+                  </button>
+
+                  {/* Botón Empresas Asignadas */}
+                  <button
+                    className="btn btn-outline-secondary" // Otro color
+                    onClick={() => handleViewAssignedCompanies(u)}
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    title="Empresas asignadas"
+                  >
+                    <FaEye /> {/* Icono de ojo */}
                   </button>
                 </div>
               </div>

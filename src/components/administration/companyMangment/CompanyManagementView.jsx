@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { useCompany } from './CompanyDataContext';
@@ -8,25 +8,43 @@ import RegisterCompanyButton from './RegisterCompanyButton';
 
 const CompanyManagementView = () => {
   const navigate = useNavigate();
- const { companies, toggleCompanyStatus, updateCompany } = useCompany();
+ const { companies, toggleCompanyStatus, updateCompany, fetchCompanies,getAssistantOptions, loadingAssistants } = useCompany();
 
   const [filters, setFilters] = useState({
     nombre: '',
     asistente: '',
     estado: ''
   });
+  
+   const assistantOptions = useMemo(() => {
+    return getAssistantOptions();
+  }, [getAssistantOptions]);
+
+    useEffect(() => {
+    fetchCompanies();
+  }, [fetchCompanies]);
 
   const filteredCompanies = useMemo(() => {
     return companies.filter((e) => {
       const nombreMatch = e.nombre.toLowerCase().includes(filters.nombre.toLowerCase());
+      const activeStatusMatch = e.activeStatus === true;
+      const asistenteMatch = filters.asistente
+      ? String(e.userId) === filters.asistente 
+          : true; 
       const estadoMatch =
         !filters.estado ||
         (filters.estado === 'Asignadas' ? e.asignada : !e.asignada);
-      return nombreMatch && estadoMatch;
-    });
-  }, [companies, filters]);
 
-  const handleEdit = (empresa) => navigate(`/admin/empresas/editar/${empresa.id}`);
+      return nombreMatch && estadoMatch && activeStatusMatch && asistenteMatch;
+    });
+  }, [companies, filters,loadingAssistants]);
+
+ 
+  const handleEdit = (company) => {
+    navigate(`/admin/empresas/editar/${company.id}`, {
+      state: { company }, 
+    });
+  };
   const handleView = (empresa) => navigate(`/admin/empresas/ver/${empresa.id}`);
   const handleAccounting = (empresa) => console.log('Contabilidad:', empresa);
 
@@ -44,9 +62,40 @@ const handleAssign = (empresa, userId) => {
   });
 };
 
-  const handleToggleStatus = (empresa, nuevoEstado) => {
-    toggleCompanyStatus(empresa.id, nuevoEstado);
+ const handleToggleCompanyStatus = async (empresa, newActiveStatus) => {
+    // Si newActiveStatus es 'false', significa que queremos desactivar la empresa
+    if (newActiveStatus === false) {
+      const result = await Swal.fire({
+        title: 'Confirmación',
+        text: `¿Está seguro que desea desactivar la empresa "${empresa.nombre}"?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, desactivar',
+        cancelButtonText: 'Cancelar',
+      });
+
+      if (result.isConfirmed) {
+        try {
+          // Llama a la función del contexto que actualiza el backend
+          const success = await toggleCompanyStatus(empresa.id, newActiveStatus);
+
+          if (success) {
+            // Muestra la alerta de éxito después de la actualización en el backend
+            await Swal.fire('¡Éxito!', `La empresa "${empresa.nombre}" ha sido desactivada con éxito.`, 'success');
+
+          } else {
+            Swal.fire('Error', `Hubo un problema al desactivar la empresa "${empresa.nombre}".`, 'error');
+          }
+        } catch (error) {
+          console.error("Error al desactivar la empresa:", error);
+          Swal.fire('Error', 'Ocurrió un error inesperado al intentar desactivar la empresa.', 'error');
+        }
+      }
+    }
+
   };
+  
+
 
   return (
     <div className="container py-4">
@@ -58,25 +107,24 @@ const handleAssign = (empresa, userId) => {
             filters={filters}
             onChange={setFilters}
             onSearch={() => {}}
-            assistantOptions={[
-              { label: 'Asistente 1', value: '1' },
-              { label: 'Asistente 2', value: '2' }
-            ]}
+            assistantOptions={assistantOptions} 
           />
         </div>
       </div>
 
-      <div className="mb-3 text-end">
+    
         <RegisterCompanyButton />
-      </div>
-
+       
+   
       <CompanyTable
         companies={filteredCompanies}
         onEdit={handleEdit}
         onView={handleView}
         onAccounting={handleAccounting}
         onAssign={handleAssign}
-        onToggleStatus={handleToggleStatus}
+        onToggleStatus={handleToggleCompanyStatus}
+        isDeactivatedView={false}
+
       />
     </div>
   );

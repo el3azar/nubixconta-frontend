@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getUsersByAssistant } from '../../../services/administration/usersByAssistanService';
+import { getUsersByAssistant } from '../../../services/administration/company/usersByAssistanService';
 import CompanyRow from './CompanyRow';
 
 
@@ -9,18 +9,23 @@ const CompanyTable = ({
   onView,
   onAccounting,
   onAssign,
-  onToggleStatus
+  onToggleStatus,
+  isDeactivatedView = false,
 }) => {
 const [assistantOptions, setAssistantOptions] = useState([]);
 
 useEffect(() => {
   const fetchAssistants = async () => {
+    try{
     const users = await getUsersByAssistant();
     const adaptedOptions = users.map(user => ({
       label: `${user.firstName} ${user.lastName}`,
-      value: user.userName, 
+      value: user.id, 
     }));
-    setAssistantOptions(adaptedOptions);
+        setAssistantOptions(adaptedOptions);
+    }catch{
+      console.error("Error al cargar asistentes:", error);
+    }
   };
 
   fetchAssistants();
@@ -53,6 +58,7 @@ useEffect(() => {
                 onAccounting={onAccounting}
                 onAssign={onAssign}
                 onToggleStatus={onToggleStatus}
+                isDeactivatedView={isDeactivatedView}
               />
             ))
           ) : (

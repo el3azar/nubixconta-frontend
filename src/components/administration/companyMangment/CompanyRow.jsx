@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import CompanyActions from './CompanyActions';
 import '../../../styles/administration/CompanyRowAdministration.module.css';
-import { getUsersByAssistant } from '../../../services/administration/usersByAssistanService';
-import { assignUserToCompany } from '../../../services/administration/assignUserToCompanyService';
+import { getUsersByAssistant } from '../../../services/administration/company/usersByAssistanService';
+import { assignUserToCompany } from '../../../services/administration/company/assignUserToCompanyService';
 import { showSuccess, showError } from '../../inventory/alerts';
 import Swal from "sweetalert2";
 const CompanyRow = ({
@@ -12,6 +12,8 @@ const CompanyRow = ({
   onView,
   onAccounting,
   onAssign,
+  onToggleStatus,
+  isDeactivatedView,
 }) => {
   const assignButtonRef = useRef(null);
   const selectBoxRef = useRef(null); 
@@ -22,26 +24,33 @@ const CompanyRow = ({
   const leftPosition = buttonRect
   ? buttonRect.left + buttonRect.width / 2 - 125 // 125 = mitad del select (250px)
   : 0;
+ 
+  
 useEffect(() => {
   const fetchAssistants = async () => {
-    const users = await getUsersByAssistant();
-
-    const adapted = users.map(user => ({
+    try{
+      const users = await getUsersByAssistant(); 
+      const adapted = users.map(user => ({
       label: `${user.firstName} ${user.lastName}`,
       value: user.id,
     }));
 
     setAssistantOptions(adapted);
+    }catch{
+    console.error("Error al cargar asistentes en CompanyRow:", error);
+    }
   };
 
   fetchAssistants();
 }, []);
+
   const handleAssignClick = () => {
     setShowSelect(prev => !prev);
   };
 const handleAssistantChange = async (value) => {
+   const selectedUserId = Number(value);
   const selectedUser = assistantOptions.find(opt => opt.value === Number(value));
-  const nombreUsuario = selectedUser?.label || value;
+  const nombreUsuario = selectedUser?.label || 'desconocido';
 
   setSelectedAssistant(value);
 
@@ -58,12 +67,15 @@ const confirm = await Swal.fire({
 
 if (!confirm.isConfirmed) return;
   try {
-    await assignUserToCompany(company.id, selectedUser.value);
+    await assignUserToCompany(company.id, selectedUserId);
+    //await assignUserToCompany(company.id, selectedUser.value);
      showSuccess("Empresa asignada con exito");
     onAssign({
       ...company,
       asignada: true,
-    }, value);
+      userId:selectedUserId,
+      assignedAssistantName: nombreUsuario,
+    });
   } catch (error) {
     showError('Ocurrió un error al asignar la empresa. Intente nuevamente.');
   } finally {
@@ -77,6 +89,7 @@ if (!confirm.isConfirmed) return;
       if (
         selectBoxRef.current &&
         !selectBoxRef.current.contains(event.target) &&
+         assignButtonRef.current &&
         !assignButtonRef.current.contains(event.target)
       ) {
         setShowSelect(false);
@@ -96,7 +109,7 @@ if (!confirm.isConfirmed) return;
   }, [showSelect]);
 
   return (
-    <tr className={`text-center align-middle ${!company.activa ? 'inactive-row' : ''}`}>
+    <tr className={`text-center align-middle ${!company.activeStatus ? 'inactive-row' : ''}`}>
       <td>{String(index).padStart(2, '0')}</td>
       <td>{company.nrc}</td>
       <td>{company.dui || company.nit}</td>
@@ -113,6 +126,8 @@ if (!confirm.isConfirmed) return;
             onView={() => onView(company)}
             onAccounting={() => onAccounting(company)}
             onAssign={handleAssignClick}
+            onToggleStatus={onToggleStatus}
+            isDeactivatedView={isDeactivatedView}
           />
         </div>
         {showSelect && (

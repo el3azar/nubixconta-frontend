@@ -41,6 +41,7 @@ import AccountsReceivable from '../components/accountsreceivable/AccountsReceiva
 import AccountsReceivableMenu from '../components/accountsreceivable/AccountsReceivableMenu';
 import AccountsReceivableReport from '../components/accountsreceivable/AccountsReceivableReport'; 
 import AccountsReceivableAccount from '../components/accountsreceivable/AccountsReceivableAccount'; 
+import DeactivatedCompaniesView from '../components/administration/companyMangment/DeactivatedCompaniesView';
 export default function Rutas() {
   return (
     <BrowserRouter>
@@ -72,6 +73,11 @@ export default function Rutas() {
                 <CompanyManagementView />
               </CompanyDataProvider>
             } />
+              <Route path="/admin/empresas/desactivadas" element=
+              {<CompanyDataProvider>
+              <DeactivatedCompaniesView />
+              </CompanyDataProvider>
+              } />
              {/* Rutas extras que necesites en gestion de empresas */}
             <Route path="/admin/empresas/registronuevo" element={
               <CompanyDataProvider>

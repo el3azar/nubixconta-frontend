@@ -1,7 +1,7 @@
 // src/components/administration/DashBoardEmpresas.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUserCompanies } from "../../services/administration/companiesServices";
+import { getUserCompanies } from "../../services/administration/company/companiesServices";
 import { useAuth } from "../../context/AuthContext";
 import { useCompany } from "../../context/CompanyContext";
 import { FaBuilding } from "react-icons/fa";
