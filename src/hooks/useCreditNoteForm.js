@@ -10,7 +10,8 @@ export const useCreditNoteForm = (clientId=null) => {
     resolver: zodResolver(creditNoteSchema),
     defaultValues: {
       documentNumber: '',
-      description: '', // <-- ¡AQUÍ ESTÁ LA CORRECCIÓN CRUCIAL!
+      description: '',
+      issueDate: new Date().toISOString().slice(0, 10), 
       saleId: null,
       clientId: parseInt(clientId, 10) || 0,
       subtotalAmount: 0,
@@ -81,11 +82,40 @@ export const useCreditNoteForm = (clientId=null) => {
     replace(detailsForForm); // Usamos 'replace' para actualizar el array
   };
 
+   // --- INICIO DE LA MODIFICACIÓN ---
+  // Se añade la función para preparar los datos para el envío,
+  // idéntica a la del hook de ventas.
+  const prepareSubmitData = (formData) => {
+    const cleanDetails = formData.details.map(({ impuesto, product, saleDetailId, ...rest }) => ({
+      ...rest,
+      subtotal: parseFloat((rest.quantity * rest.unitPrice).toFixed(2))
+    }));
+    
+    // Se construye el string de fecha y hora local para el backend.
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const timeString = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+    const localDateTimeString = `${year}-${month}-${day}T${timeString}`;
+
+    const finalDTO = {
+      ...formData,
+      details: cleanDetails,
+      issueDate: localDateTimeString, // Se envía la fecha y hora actuales
+      subtotalAmount: formData.subtotalAmount.toFixed(2),
+      vatAmount: formData.vatAmount.toFixed(2),
+      totalAmount: formData.totalAmount.toFixed(2),
+    };
+    return finalDTO;
+  };
+
   return {
     ...formMethods,
     fields,
     replace,
     remove,
-    updateFormWithSaleDetails
+    updateFormWithSaleDetails,
+    prepareSubmitData
   };
 };

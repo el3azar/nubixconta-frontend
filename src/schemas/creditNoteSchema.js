@@ -40,6 +40,9 @@ export const creditNoteSchema = z.object({
     .max(255, 'La descripción no puede exceder los 255 caracteres.'),
   // --- FIN DE LA CORRECCIÓN ---
 
+  // Se añade la validación para la fecha de emisión, que ahora es requerida.
+  issueDate: z.string().min(1, 'La fecha es obligatoria'),
+
   saleId: z.number()
     .min(1, 'Error: El ID de la venta asociada se ha perdido.'),
 

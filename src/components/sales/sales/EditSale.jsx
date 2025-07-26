@@ -51,7 +51,7 @@ export default function EditSale() {
 
   // 2. INSTANCIACIÓN DEL HOOK DEL FORMULARIO (ahora es más simple)
   const formLogic = useSaleForm();
-  const { reset } = formLogic.formMethods;
+  const { reset, setValue } = formLogic.formMethods; // <-- Se añade setValue
 
   // 3. LÓGICA PARA POBLAR EL FORMULARIO (corregida y robusta)
    useEffect(() => {
@@ -67,40 +67,40 @@ export default function EditSale() {
         }).then(() => navigate('/ventas/ventas'));
         return;
       }
+     // --- INICIO DE LA RESTAURACIÓN DE LA LÓGICA ORIGINAL ---
+      // Se puebla el formulario campo por campo, como en tu código original.
+      // Esto es más explícito y menos propenso a errores que el 'reset' masivo.
+      setValue('clientId', saleToEdit.customer.clientId);
+      setValue('documentNumber', saleToEdit.documentNumber);
+      setValue('saleDescription', saleToEdit.saleDescription);
+      
+      // Para la fecha, se establece explícitamente la fecha actual.
+      setValue('issueDate', new Date().toISOString().slice(0, 10));
 
-      const formValues = {
-        ...saleToEdit,
-        clientId: saleToEdit.customer.clientId,
-        issueDate: saleToEdit.issueDate.slice(0, 10),
-        // Se enriquece cada detalle con la información necesaria para la tabla.
-        saleDetails: saleToEdit.saleDetails.map(detail => {
-          let productName = '';
-          let productCode = '';
-
-          // Si es un producto, buscamos su nombre y código.
-          if (detail.product) {
-            const productInfo = productOptions.find(p => p.value === detail.product.idProduct);
-            productName = productInfo?.label || 'Producto no encontrado';
-            productCode = productInfo?.codigo || 'N/A';
-          }
-          
-          return {
-            productId: detail.product ? detail.product.idProduct : null,
-            serviceName: detail.serviceName,
-            quantity: detail.quantity,
-            unitPrice: detail.unitPrice,
-            subtotal: detail.subtotal,
-            impuesto: saleToEdit.vatAmount > 0,
-            // Guardamos los datos de visualización directamente en el objeto de la fila.
-            // Estos campos no están en el schema y se ignorarán en el submit, pero la tabla los usará.
-            _productName: productName, 
-            _productCode: productCode,
-          };
-        }),
-      };
-      reset(formValues);
+      // Se pueblan los detalles enriquecidos
+      const detailsForForm = saleToEdit.saleDetails.map(detail => {
+        let productName = '';
+        let productCode = '';
+        if (detail.product) {
+          const productInfo = productOptions.find(p => p.value === detail.product.idProduct);
+          productName = productInfo?.label || 'Producto no encontrado';
+          productCode = productInfo?.codigo || 'N/A';
+        }
+        return {
+          productId: detail.product ? detail.product.idProduct : null,
+          serviceName: detail.serviceName,
+          quantity: detail.quantity,
+          unitPrice: detail.unitPrice,
+          subtotal: detail.subtotal,
+          impuesto: saleToEdit.vatAmount > 0,
+          _productName: productName, 
+          _productCode: productCode,
+        };
+      });
+      setValue('saleDetails', detailsForForm);
+      // --- FIN DE LA RESTAURACIÓN ---
+    
     }
-    // La dependencia de isLoadingProducts asegura que el efecto se re-ejecute cuando los productos lleguen.
   }, [saleToEdit, reset, navigate, productOptions, isLoadingProducts]);
   // --- FIN DE LA CORRECCIÓN ---
 

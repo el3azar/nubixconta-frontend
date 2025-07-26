@@ -21,7 +21,7 @@ export const SaleDocumentHeader = ({ register, errors, editorTipo, setEditorTipo
           </div>
           <div className="col-md-3 col-sm-6 mb-md-0 mb-2">
             <label className="form-label">Fecha</label>
-            <input className="form-control" type="date" {...register('issueDate')} />
+            <input className="form-control" type="date" {...register('issueDate')} readOnly />
             {errors.issueDate && <small className='text-danger'>{errors.issueDate.message}</small>}
           </div>
           <div className="col-md-2 col-sm-6 mb-md-0 mb-2">
