@@ -4,7 +4,7 @@ import {
   createUser,
   updateUser,
 } from "../../../services/administration/userService";
-import { FaUser, FaEdit, FaTrash } from "react-icons/fa";
+import { FaUser, FaEdit, FaTrash, FaTrashAlt, FaEye, FaLink, FaEyeSlash } from "react-icons/fa";
 import Swal from "sweetalert2";
 import UserForm from "./UserForm";
 
@@ -53,9 +53,9 @@ const UserManagementDashboard = () => {
   const handleEdit = (user) => setSelectedUser(user);
 
   const handleSubmit = (formData) => {
-    const promise = formData.get("id")
-      ? updateUser(formData.get("id"), formData)
-      : createUser(formData);
+ const promise = formData.id
+  ? updateUser(formData.id, formData)
+  : createUser(formData);
 
     promise
       .then(() => {
@@ -83,17 +83,18 @@ const UserManagementDashboard = () => {
     }).then((result) => {
       if (!result.isConfirmed) return;
 
-      const fd = new FormData();
-      fd.append("id", user.id);
-      fd.append("firstName", user.firstName);
-      fd.append("lastName", user.lastName);
-      fd.append("email", user.email);
-      fd.append("userName", user.userName);
-      fd.append("password", user.password || "");
-      fd.append("file", "");
-      fd.append("status", !user.status);
+  const updatedUser = {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        userName: user.userName,
+        password: user.password || "",
+        status: !user.status
+      };
 
-      updateUser(user.id, fd)
+      updateUser(user.id, updatedUser)
+   
         .then(() => {
           toastSuccess(
             `Usuario ${!user.status ? "activado" : "desactivado"} correctamente`
@@ -146,19 +147,49 @@ const UserManagementDashboard = () => {
                   </strong>
                 </p>
 
-                <div className="d-flex justify-content-between">
+                <div className="d-flex justify-content-around mt-3"> {/* Cambiado a justify-content-around para distribuir los iconos */}
+                  {/* Botón Editar */}
                   <button
-                    className="btn btn-sm btn-primary"
+                    className="btn btn-outline-primary me-2" // me-2 para un pequeño margen a la derecha
                     onClick={() => handleEdit(u)}
+                    data-bs-toggle="tooltip" // Atributo para activar el tooltip
+                    data-bs-placement="top"  // Posición del tooltip
+                    title="Editar"           // Texto del tooltip
                   >
-                    <FaEdit /> Editar
+                    <FaEdit />
                   </button>
 
+                  {/* Botón Desactivar/Activar */}
                   <button
-                    className="btn btn-sm btn-danger"
+                    className={`btn btn-outline-${u.status ? "danger" : "success"} me-2`} // Color dinámico
                     onClick={() => handleToggleActive(u)}
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    title={u.status ? "Desactivar" : "Activar"} // Texto dinámico del tooltip
                   >
-                    <FaTrash /> {u.status ? "Desactivar" : "Activar"}
+                    <FaEyeSlash /> {/* Usamos FaTrashAlt como icono */}
+                  </button>
+
+                  {/* Botón Asignar Empresa */}
+                  <button
+                    className="btn btn-outline-info me-2" // Un color diferente para distinguir
+                    onClick={() => handleAssignCompany(u)}
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    title="Asignar empresa"
+                  >
+                    <FaLink /> {/* Icono de enlace */}
+                  </button>
+
+                  {/* Botón Empresas Asignadas */}
+                  <button
+                    className="btn btn-outline-secondary" // Otro color
+                    onClick={() => handleViewAssignedCompanies(u)}
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    title="Empresas asignadas"
+                  >
+                    <FaEye /> {/* Icono de ojo */}
                   </button>
                 </div>
               </div>

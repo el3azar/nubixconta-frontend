@@ -1,7 +1,7 @@
 // src/components/administration/DashBoardEmpresas.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUserCompanies } from "../../services/administration/companiesServices";
+import { getUserCompanies } from "../../services/administration/company/companiesServices";
 import { useAuth } from "../../context/AuthContext";
 import { useCompany } from "../../context/CompanyContext";
 import { FaBuilding } from "react-icons/fa";
@@ -41,11 +41,21 @@ const handleCardClick = (index) => {
 };
 
   return (
-    <DashboardCards
-      title="Empresas asignadas"
-      items={items}
-      onCardClick={handleCardClick}
-    />
+   <div
+      style={{
+        backgroundColor: "#ABAABC",
+        minHeight: "100vh",
+        width: "100%",
+        padding: "2rem 1rem",
+        boxSizing: "border-box"
+      }}
+    >
+      <DashboardCards
+        title="Empresas asignadas"
+        items={items}
+        onCardClick={handleCardClick}
+      />
+    </div>
   );
 };
 

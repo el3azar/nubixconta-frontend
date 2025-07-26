@@ -1,40 +1,49 @@
-import React from 'react';
-import { FaEdit, FaToggleOn, FaToggleOff } from 'react-icons/fa';
+import React, { useState } from "react";
+import styles from "../../styles/inventory/ProductRow.module.css";
+import { updateProduct } from "../../services/inventory/ProductEditService";
+import { showSuccess, showError } from "../../components/inventory/alerts";
+import { FaEdit } from "react-icons/fa";
 
-const ProductRow = ({ product, onEdit, onToggleStatus }) => {
-  const rowClass = product.existencias === 0 ? 'table-danger' : '';
+const ProductRow = ({ product, onEdit, onStatusUpdated }) => {
+  const [status, setStatus] = useState(product.productStatus);
+
+  const handleStatusChange = async () => {
+    const newStatus = !status;
+    try {
+      await updateProduct(product.idProduct, { productStatus: newStatus });
+      setStatus(newStatus);
+      if (onStatusUpdated) {
+        onStatusUpdated(product.idProduct, newStatus);
+      }
+      showSuccess("Estado del producto cambiado con éxito");
+    } catch (error) {
+      
+      showError("Ocurrió un error: " + error.message);
+    }
+  };
 
   return (
-    <tr className={rowClass}>
-      <td>{product.correlativo}</td> {/* 🟣 Cambiado */}
-      <td>{product.codigo}</td>
-      <td>{product.nombre}</td>
-      <td>{product.unidad}</td>
-      <td>{product.existencias}</td>
-      <td>
-        <div className="d-flex gap-3">
-          <FaEdit
-            role="button"
-            title="Editar"
-            onClick={() => onEdit(product)}
-            style={{ color: '#1B043B', cursor: 'pointer' }}
+    <tr className={!status ? styles.disabledRow : ""}>
+      <td>{product.productCode}</td>
+      <td>{product.productName}</td>
+      <td>{product.unit}</td>
+      <td>{product.stockQuantity}</td>
+      <td>{(product.stockQuantity) *2}</td>
+      <td>{new Date(product.productDate).toLocaleDateString()}</td>
+      <td className="d-flex gap-3 justify-content-center align-items-center">
+        <label className={styles.switch}>
+          <input
+            type="checkbox"
+            checked={status}
+            onChange={handleStatusChange}
           />
-          {product.activo ? (
-            <FaToggleOn
-              role="button"
-              title="Desactivar"
-              onClick={() => onToggleStatus(product)}
-              style={{ color: 'green', cursor: 'pointer' }}
-            />
-          ) : (
-            <FaToggleOff
-              role="button"
-              title="Activar"
-              onClick={() => onToggleStatus(product)}
-              style={{ color: 'gray', cursor: 'pointer' }}
-            />
-          )}
-        </div>
+          <span className={styles.slider}></span>
+        </label>
+        <FaEdit
+          title="Editar producto"
+          style={{ cursor: "pointer", color: "#1B043B" }}
+          onClick={() => onEdit(product)}
+        />
       </td>
     </tr>
   );

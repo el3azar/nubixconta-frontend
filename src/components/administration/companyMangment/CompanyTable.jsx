@@ -1,5 +1,7 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
+import { getUsersByAssistant } from '../../../services/administration/company/usersByAssistanService';
 import CompanyRow from './CompanyRow';
+
 
 const CompanyTable = ({
   companies = [],
@@ -7,8 +9,29 @@ const CompanyTable = ({
   onView,
   onAccounting,
   onAssign,
-  onToggleStatus
+  onToggleStatus,
+  isDeactivatedView = false,
 }) => {
+const [assistantOptions, setAssistantOptions] = useState([]);
+
+useEffect(() => {
+  const fetchAssistants = async () => {
+    try{
+    const users = await getUsersByAssistant();
+    const adaptedOptions = users.map(user => ({
+      label: `${user.firstName} ${user.lastName}`,
+      value: user.id, 
+    }));
+        setAssistantOptions(adaptedOptions);
+    }catch{
+      console.error("Error al cargar asistentes:", error);
+    }
+  };
+
+  fetchAssistants();
+}, []);
+
+
   return (
     <div className="table-responsive shadow-sm rounded border">
       <table className="table table-bordered table-hover align-middle text-center w-100 mb-0">
@@ -16,23 +39,26 @@ const CompanyTable = ({
           <tr>
             <th style={{ width: '5%' }}>N°</th>
             <th style={{ width: '15%' }}>NRC</th>
+            <th style={{ width: '20%' }}>DUI/NIT</th>
             <th style={{ width: '35%' }}>Nombre</th>
-            <th style={{ width: '15%' }}>Estado</th>
+            <th style={{ width: '10%' }}>Estado</th>
             <th style={{ width: '30%' }}>Acciones</th>
           </tr>
         </thead>
         <tbody>
           {companies.length > 0 ? (
             companies.map((company, index) => (
-              <CompanyRow
+            <CompanyRow
                 key={company.id}
                 index={index + 1}
                 company={company}
-                onEdit={onEdit} // ✅ Pasamos función de edición
+                assistantOptions={assistantOptions}
+                onEdit={onEdit}
                 onView={onView}
                 onAccounting={onAccounting}
                 onAssign={onAssign}
                 onToggleStatus={onToggleStatus}
+                isDeactivatedView={isDeactivatedView}
               />
             ))
           ) : (

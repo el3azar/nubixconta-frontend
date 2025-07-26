@@ -1,10 +1,10 @@
-//La funcion de este componente es para poder registrar una liquidacion de venta total o parcial
 import React, { useState, useEffect } from "react";
 import AutocompleteSelect from "./AutocompleteSelect";
 import styles from "../../styles/accountsreceivable/RegisterReceivableLiquidacion.module.css";
 import { getAllSales } from "../../services/salesServices";
-import { getBankAcount } from "../../services/bankService";
-import { registrarLiquidacionVenta } from "../../services/liquidacionVentaServices";
+import { getBankAcount } from "../../services/accountsreceivable/bankService";
+import { registrarLiquidacionVenta } from "../../services/accountsreceivable/liquidacionVentaServices";
+import { showSuccess, showError } from "../../components/inventory/alerts";
 
 const RegisterReceivableLiquidacion = ({ onClose }) => {
   const [tipoLiquidacion, setTipoLiquidacion] = useState("VENTA");
@@ -19,9 +19,9 @@ const RegisterReceivableLiquidacion = ({ onClose }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const ventas = await getAllSales();//carga las ventas que viene de la api
+      const ventas = await getAllSales();
       setDocumentos(ventas);
-      const cuentas = await getBankAcount();//Carga las cuentas bancarias que vienen de la api
+      const cuentas = await getBankAcount();
       setCuentas(cuentas);
     };
     fetchData();
@@ -29,18 +29,18 @@ const RegisterReceivableLiquidacion = ({ onClose }) => {
 
   const handleRegistrar = async () => {
     if (!ventaSeleccionada?.saleId) {
-      alert("Debes seleccionar un documento válido.");
+      showError("Debes seleccionar un documento válido.");
       return;
     }
 
     const cuentaObj = cuentas.find((c) => c.accountName === cuentaSeleccionada);
     if (!cuentaObj) {
-      alert("Debes seleccionar una cuenta válida.");
+      showError("Debes seleccionar una cuenta válida.");
       return;
     }
 
     if (tipoLiquidacion === "PARCIAL" && (!montoAbono || parseFloat(montoAbono) <= 0)) {
-      alert("Debe ingresar un monto válido para abonar.");
+      showError("Debe ingresar un monto válido para abonar.");
       return;
     }
 
@@ -58,14 +58,14 @@ const RegisterReceivableLiquidacion = ({ onClose }) => {
       });
 
       if (result.success) {
-        alert("Liquidación registrada con éxito.");
+        showSuccess("Liquidación registrada con éxito.");
         onClose();
       } else {
-        alert("Error al registrar: " + result.message);
+        showError("Error al registrar: " + result.message);
       }
     } catch (error) {
       console.error("Error al registrar liquidación:", error);
-      alert("Ocurrió un error: " + error.message);
+      showError("Ocurrió un error: " + error.message);
     }
   };
 
@@ -107,7 +107,6 @@ const RegisterReceivableLiquidacion = ({ onClose }) => {
             onSelect={(value) => {
               const venta = documentos.find((v) => v.documentNumber === value);
               setVentaSeleccionada(venta);
-              console.log("Venta seleccionada:", venta);
             }}
           />
 

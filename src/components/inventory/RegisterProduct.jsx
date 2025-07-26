@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import CancelRegister from './CancelRegister';
 import { showSuccess, showError } from './alerts';
+import { createProduct } from '../../services/inventory/productService'; // Asegúrate de que esta ruta es correcta
 import './alerts.css';
 
-const RegisterProduct = ({ show, onClose, onSave, existingProducts }) => {
+const RegisterProduct = ({ show, onClose }) => {
   const [formData, setFormData] = useState({
     correlativo: '',
     codigo: '',
@@ -18,32 +19,27 @@ const RegisterProduct = ({ show, onClose, onSave, existingProducts }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Limitar longitud de caracteres en tiempo real
     const limits = {
       codigo: 10,
       nombre: 50,
       unidad: 20
     };
 
-    if (limits[name]) {
-      if (value.length > limits[name]) return;
-    }
+    if (limits[name] && value.length > limits[name]) return;
 
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
     const { correlativo, codigo, nombre, unidad, cantidad } = formData;
 
-    // Validación de campos vacíos
+    // Validaciones
     if (!correlativo || !codigo || !nombre || !unidad || !cantidad) {
       showError('NOTA: Hacen falta uno o varios datos del registro');
       return;
     }
 
-    // Validación de tipo de dato
     if (!/^\d+$/.test(correlativo)) {
       showError('El campo "Correlativo" debe contener solo números');
       return;
@@ -54,33 +50,34 @@ const RegisterProduct = ({ show, onClose, onSave, existingProducts }) => {
       return;
     }
 
-    // Validación de existencia por correlativo
-    const exists = existingProducts.some(p =>
-      p.correlativo.toLowerCase() === correlativo.toLowerCase()
-    );
+    try {
+      const producto = {
+        productCode: codigo,
+        productName: nombre,
+        unit: unidad,
+        stockQuantity: parseInt(cantidad),
+        productDate: new Date().toISOString(),
+        productStatus: true
+      };
 
-    if (exists) {
-      showError('NOTA: El registro ya existe');
-      return;
+      await createProduct(producto);
+
+      showSuccess('El producto fue registrado con éxito');
+
+      // Limpiar formulario
+      setFormData({
+        correlativo: '',
+        codigo: '',
+        nombre: '',
+        unidad: '',
+        cantidad: ''
+      });
+
+      onClose(); 
+
+    } catch (error) {
+      showError('Ocurrió un error al registrar el producto');
     }
-
-    // Si todo es válido, guardar
-    onSave({
-      ...formData,
-      existencias: parseInt(cantidad),
-      activo: true,
-    });
-
-    showSuccess('El Registro se guardó con éxito');
-
-    // Limpiar campos
-    setFormData({
-      correlativo: '',
-      codigo: '',
-      nombre: '',
-      unidad: '',
-      cantidad: ''
-    });
   };
 
   const handleCancelClick = () => {
@@ -89,12 +86,14 @@ const RegisterProduct = ({ show, onClose, onSave, existingProducts }) => {
 
   const handleConfirmCancel = () => {
     setShowCancelModal(false);
-    onClose();
+    onClose(); // Cierra el modal al cancelar
   };
 
   const handleCancelConfirmModal = () => {
-    setShowCancelModal(false);
+    setShowCancelModal(false); // Cierra solo el modal de confirmación
   };
+
+  if (!show) return null;
 
   return (
     <>
@@ -176,7 +175,6 @@ const RegisterProduct = ({ show, onClose, onSave, existingProducts }) => {
                 <button type="submit" className="btn" style={{ backgroundColor: '#1B043B', color: '#FFFFFF' }}>
                   Guardar Nuevo Producto
                 </button>
-
                 <button
                   type="button"
                   className="btn"
@@ -191,7 +189,6 @@ const RegisterProduct = ({ show, onClose, onSave, existingProducts }) => {
         </div>
       </div>
 
-      {/* Modal de confirmación */}
       <CancelRegister
         show={showCancelModal}
         onConfirm={handleConfirmCancel}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import CancelRegister from './CancelRegister';
-import { showSuccess, showError } from './alerts'; // Notificaciones SweetAlert2
+import { showSuccess, showError } from './alerts';
 import './alerts.css';
 
 const EditProduct = ({ show, product, onSave, onCancel }) => {
@@ -16,10 +16,10 @@ const EditProduct = ({ show, product, onSave, onCancel }) => {
   useEffect(() => {
     if (product) {
       setFormData({
-        codigo: product.codigo || '',
-        nombre: product.nombre || '',
-        unidad: product.unidad || '',
-        cantidad: product.existencias?.toString() || ''
+        codigo: product.productCode || '',
+        nombre: product.productName || '',
+        unidad: product.unit || '',
+        cantidad: product.stockQuantity?.toString() || ''
       });
     }
   }, [product]);
@@ -45,26 +45,23 @@ const EditProduct = ({ show, product, onSave, onCancel }) => {
 
     const { codigo, nombre, unidad, cantidad } = formData;
 
-    // Validación de campos vacíos
     if (!codigo || !nombre || !unidad || !cantidad) {
       showError('NOTA: Hacen falta uno o varios datos del registro');
       return;
     }
 
-    // Validación de tipo de dato
     if (!/^\d+$/.test(cantidad)) {
       showError('NOTA: Se está ingresando información incorrecta en uno o más campos');
       return;
     }
 
-    // Guardar cambios
-    onSave({
-      ...product,
-      codigo,
-      nombre,
-      unidad,
-      existencias: parseInt(cantidad)
-    });
+   onSave({
+  productCode: codigo,
+  productName: nombre,
+  unit: unidad,
+  stockQuantity: parseInt(cantidad)
+});
+
 
     showSuccess('El Registro se actualizó con éxito');
   };

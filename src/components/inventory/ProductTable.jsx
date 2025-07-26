@@ -13,22 +13,25 @@ const ProductTable = ({ products, handleSort, sortField, sortDirection, onEdit, 
       <table className="table table-hover mb-0">
         <thead className="table-dark">
           <tr>
-            <th>Correlativo</th> {/* 🟣 Cambiado */}
+            <th>Correlativo</th>
             <th>Código</th>
             <th role="button" onClick={() => handleSort('nombre')}>
-              Nombre {renderSortIcon('nombre')}
+              Nombre{renderSortIcon('nombre')}
             </th>
             <th>Unidad</th>
+            <th>Unidadx2</th>
             <th role="button" onClick={() => handleSort('existencias')}>
-              Existencias {renderSortIcon('existencias')}
+              Existencias{renderSortIcon('existencias')}
             </th>
             <th>Acciones</th>
+            
           </tr>
         </thead>
         <tbody>
           {products.map((product, index) => (
             <ProductRow
               key={product.id || index}
+              index={index}
               product={product}
               onEdit={onEdit}
               onToggleStatus={onToggleStatus}
@@ -41,3 +44,4 @@ const ProductTable = ({ products, handleSort, sortField, sortDirection, onEdit, 
 };
 
 export default ProductTable;
+

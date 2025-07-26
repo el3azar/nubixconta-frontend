@@ -20,6 +20,13 @@ import DashBoardEmpresas from '../components/administration/DashBoardEmpresas';
 import DashBoardGeneral from '../components/administration/DashBoardGeneral';
 import DashBoardGeneralAdmin from '../components/administration/DashBoardGeneralAdmin';
 import { CompanyProvider } from '../context/CompanyContext';
+import ViewCustomers from '../components/sales/customer/ViewCustomers';
+import NewCustomer from '../components/sales/customer/NewCustomer';
+import EditCustomer from "../components/sales/customer/EditCustomer";
+import DesactivatedCustomer from '../components/sales/customer/DesactivatedCustomer';
+import Sales from '../components/sales/sales/Sales';
+import NewSale from '../components/sales/sales/NewSale';
+import EditSale from '../components/sales/sales/EditSale';
 import DashboardInventory from '../components/inventory/DashBoardInventory';
 import ProductList from '../components/inventory/ProductList';
 import ProductMovementList from '../components/inventory/ProductMovementList';
@@ -30,7 +37,11 @@ import { CompanyDataProvider } from '../components/administration/companyMangmen
 import RegisterCompanyView from '../components/administration/companyMangment/RegisterCompanyView';
 import EditCompanyView from '../components/administration/companyMangment/EditCompanyView';
 import ViewCompanyDetails from '../components/administration/companyMangment/ViewCompanyDetails';
-
+import AccountsReceivable from '../components/accountsreceivable/AccountsReceivable';
+import AccountsReceivableMenu from '../components/accountsreceivable/AccountsReceivableMenu';
+import AccountsReceivableReport from '../components/accountsreceivable/AccountsReceivableReport'; 
+import AccountsReceivableAccount from '../components/accountsreceivable/AccountsReceivableAccount'; 
+import DeactivatedCompaniesView from '../components/administration/companyMangment/DeactivatedCompaniesView';
 export default function Rutas() {
   return (
     <BrowserRouter>
@@ -62,6 +73,11 @@ export default function Rutas() {
                 <CompanyManagementView />
               </CompanyDataProvider>
             } />
+              <Route path="/admin/empresas/desactivadas" element=
+              {<CompanyDataProvider>
+              <DeactivatedCompaniesView />
+              </CompanyDataProvider>
+              } />
              {/* Rutas extras que necesites en gestion de empresas */}
             <Route path="/admin/empresas/registronuevo" element={
               <CompanyDataProvider>
@@ -91,12 +107,45 @@ export default function Rutas() {
             {/* ======== SECCIÓN: MÓDULOS OPERATIVOS ======== */}
             {/* Cada módulo principal (ventas, cuentas, inventario, etc.) va aquí */}
             <Route path="/home" element={<DashBoardGeneral />} />
-            {/* 
-              Reemplaza <div> por tu componente principal del módulo.
-              Ejemplo:
-                <Route path="/ventas" element={<VentasDashboard />} />
-            */}
+
+            {/* INICIO RUTAS VENTAS */}
             <Route path="/ventas" element={<DashBoardSales />} />
+            <Route path="/ventas/clientes/desactivated" element={<DesactivatedCustomer />} />
+            <Route path="/ventas/clientes" element={<ViewCustomers/>} />
+            <Route path="/ventas/clientes/nuevo" element={<NewCustomer />} />
+            
+            
+            <Route path="/ventas/clientes/editar/:id" element={<EditCustomer />} />
+            <Route path="/ventas/ventas" element={<Sales />} />
+            <Route path="/ventas/nueva/:clientId" element={<NewSale />} />
+             <Route path="/ventas/editar/:saleId" element={<EditSale />} />
+
+
+            <Route path="/ventas/nota-credito" element={<div>Notas de credito</div>} />
+            <Route path="/ventas/reportes" element={<div>Reportes</div>}/>
+
+            {/* FIN RUTAS VENTAS*/}
+
+            {/* Rutas del módulo de Cuentas por Cobrar */}
+            <Route path="/cuentas" element={<AccountsReceivableMenu/>} />
+            <Route path="/cuentas/cobros" element={<AccountsReceivable />} />
+            <Route path="/cuentas/reportes" element={<AccountsReceivableReport />} />
+            <Route path="/cuentas/estado_cuenta" element={<AccountsReceivableAccount />} />
+            {/* Rutas extras que necesites en CXC */}
+
+   
+            {/* Rutas extras que necesites en Inventario */}
+
+            {/* Ruta comodín: muestra mensaje o componente personalizado para errores */}
+            <Route path="*" element={<div>404 - Página no encontrada</div>} />
+            {/* Rutas extras que necesites en ventas*/}
+            <Route path="/cuentas" element={<div>Cuentas por Cobrar</div>} />
+             {/* Rutas extras que necesites en CXC*/}
+            <Route path="/inventario" element={<DashboardInventory/>} />
+             {/* Rutas extras que necesites en Inventario*/}
+             <Route path="/inventario/productos" element={<ProductList />} />
+             <Route path="/inventario/movimientosproductos" element={<ProductMovementList />} />
+            
             {/* Rutas extras que necesites en ventas*/}
             <Route path="/cuentas" element={<div>Cuentas por Cobrar</div>} />
              {/* Rutas extras que necesites en CXC*/}

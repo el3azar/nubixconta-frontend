@@ -12,4 +12,16 @@
   background-color: #212529; /* casi negro */
   border-color: #212529;
 }
+.assistant-select-dropdown {
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  margin-right: 5rem;
+}
 
+.table-responsive {
+    overflow-x: auto;
+  overflow-y: visible;
+}

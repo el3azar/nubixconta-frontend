@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import DateRangeFilter from '../../components/accountsreceivable/DateRangeFilter';
 import styles from "../../styles/accountsreceivable/AccountsReceivableReport.module.css";
 import { FaFilePdf, FaFileExcel } from "react-icons/fa";
-import { getAccountsReceivable } from "../../services/accountsReceivableReportService";
+import { getAccountsReceivable } from "../../services/accountsreceivable/accountsReceivableReportService";
 
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -133,7 +133,7 @@ const AccountsReceivableReport = () => {
             {reportData.map((item) => (
               <tr key={item.id}>
                 <td>{item.sale.documentNumber}</td>
-                <td>{item.sale.customer.customerName}</td>
+                <td>{item.sale.customerName}</td>
                 <td>{formatDate(item.sale.saleDate)}</td>
                 <td>{getDueDate(item.sale.saleDate, item.creditDay)}</td>
                 <td>${item.sale.totalAmount.toFixed(2)}</td>
