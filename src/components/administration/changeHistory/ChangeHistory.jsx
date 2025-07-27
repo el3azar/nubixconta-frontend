@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react'
 import Select from 'react-select'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import { getAllUsers, getChangeHistoryByUser, getChangeHistoryByUserAndDates, getChangeHistoryWithoutCompany, getChangeHistoryByDateRange
+import { getAllUsers, getChangeHistory, getChangeHistoryByUser, getChangeHistoryByUserAndDates, getChangeHistoryWithoutCompany, getChangeHistoryByDateRange
 } from '../../../services/administration/historyServices'
 import styles from '../../../styles/administration/changeHistory.module.css'
+import { get } from 'react-hook-form'
 
-export default function BitacoraCambios() {
+export default function ChangeHistory() {
   const [users, setUsers] = useState([])
   const [selectedUser, setSelectedUser] = useState(null)
   const [startDate, setStartDate] = useState(null)
@@ -17,12 +18,19 @@ export default function BitacoraCambios() {
   useEffect(() => {
     getAllUsers()
       .then(res => setUsers(
-        res.data.map(u => ({ value: u.id, label: u.username }))
+        res.data.map(u => ({ value: u.id, label: u.userName }))
       ))
       .catch(err => console.error(err))
   }, [])
 
-  // 2) Función al click de “Buscar”
+  // 2) Al montar, cargamos el historial completo
+  useEffect(() => {
+    getChangeHistory()
+      .then(res => setHistory(res.data))
+      .catch(err => console.error(err))
+  }, [])
+
+  // 3) Función al click de “Buscar”
   const onSearch = () => {
     if (selectedUser && startDate && endDate) {
       // Usuario + rango de fechas
@@ -43,7 +51,8 @@ export default function BitacoraCambios() {
       ).then(res => setHistory(res.data))
     } else {
       // Sin filtro: podrías recuperar todo… o limpiar
-      setHistory([])
+      getChangeHistory()
+        .then(res => setHistory(res.data))
     }
   }
 
@@ -81,7 +90,7 @@ export default function BitacoraCambios() {
         </div>
 
         <button className={styles.searchBtn} onClick={onSearch}>
-          Buscar 🔍
+          Buscar
         </button>
       </div>
 
@@ -97,14 +106,14 @@ export default function BitacoraCambios() {
           </tr>
         </thead>
         <tbody>
-          {history.map(item => (
+          {history.map((item) => (
             <tr key={item.id}>
-              <td>{item.user?.username}</td>
+              <td>{item.userFullName || '-'}</td>
               <td>{new Date(item.date).toLocaleDateString()}</td>
               <td>{new Date(item.date).toLocaleTimeString()}</td>
               <td>{item.actionPerformed}</td>
               <td>{item.moduleName}</td>
-              <td>{item.company?.name || '-'}</td>
+              <td>{item.companyName}</td>
             </tr>
           ))}
           {history.length === 0 && (
