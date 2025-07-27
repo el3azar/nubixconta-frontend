@@ -28,7 +28,6 @@ export const saleSchema = z.object({
   clientId: z.number().int().positive({ message: 'El cliente es inválido.'}),
   documentNumber: z.string().min(1, 'El número de documento es obligatorio').max(20),
   issueDate: z.string().min(1, 'La fecha es obligatoria'),
-  saleType: z.string().min(1, 'El tipo de venta es obligatorio'),
   saleDescription: z.string().min(1, 'La descripción es obligatoria').max(255),
   moduleType: z.string().min(1, 'El módulo es obligatorio'),
 

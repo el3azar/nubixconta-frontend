@@ -1,31 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import {
-  FaSearch, FaPlusCircle, FaEye, FaPen, FaTrashAlt, FaCheckCircle, FaTimesCircle
-} from 'react-icons/fa';
-import { Link } from 'react-router-dom';
-import Swal from 'sweetalert2';
-import 'sweetalert2/dist/sweetalert2.min.css';
-import { SaleService } from '../../../services/sales/SaleService';
+// src/components/sales/creditnote/CreditNote.jsx
+
+import React from 'react';
 import { DocumentListView } from '../../shared/DocumentListView';
 import SubMenu from "../SubMenu";
 import { CreditNoteService } from '../../../services/sales/CreditNoteService';
+import { DefaultFilterComponent, DefaultActionsComponent } from '../../shared/DocumentViewDefaults';
+import { formatDate } from '../../../utils/dateFormatter';
 
+// Configuración de columnas específica para Notas de Crédito
+const creditNoteColumns = [
+  { header: 'Correlativo', accessor: 'idNotaCredit' },
+  { header: 'N° Doc.', accessor: 'documentNumber' },
+  { header: 'Fecha', cell: (doc) => formatDate(doc.creditNoteDate || doc.issueDate) },
+  { header: 'Estado', accessor: 'creditNoteStatus' },
+  { header: 'Cliente', cell: (doc) => doc.sale?.customer?.customerName || 'N/A' },
+  { header: 'Días Crédito', cell: (doc) => doc.sale?.customer?.creditDay || '-' },
+  // Columna condicional que existía antes
+  { header: 'Venta Afectada', cell: (doc) => doc.sale?.documentNumber || 'N/A' },
+  { header: 'Descripción', accessor: 'description' },
+  { header: 'Total', cell: (doc) => `$${doc.totalAmount?.toFixed(2)}` },
+];
 
 export default function CreditNote() {
   const creditNoteService = CreditNoteService();
 
-  // El "Adaptador" traduce los nombres de funciones de CreditNoteService
-  // a los nombres genéricos que espera DocumentListView.
   const serviceAdapter = {
     getAll: (sortBy) => creditNoteService.getAllCreditNotes(sortBy),
-    searchByDate: (filters) => {
-      // DocumentListView envía { startDate, endDate }.
-      // CreditNoteService espera { start, end }.
-      // Este bloque hace la "traducción".
-      const correctFilters = {
-        start: filters.startDate,
-        end: filters.endDate,
-      };
+    search: (filters) => {
+      // El adaptador traduce los nombres de filtros si es necesario
+      const correctFilters = { start: filters.startDate, end: filters.endDate };
       return creditNoteService.searchByDateAndStatus(correctFilters);
     },
     approve: (id) => creditNoteService.applyCreditNote(id),
@@ -33,9 +36,8 @@ export default function CreditNote() {
     delete: (id) => creditNoteService.deleteCreditNote(id),
   };
 
-  // Rutas específicas para este módulo
   const routePaths = {
-    new: '/ventas/clientes', // Apunta a la ruta futura
+    new: '/ventas/clientes',
     edit: '/ventas/editar-nota-credito',
     view: '/notas-credito/ver',
   };
@@ -44,11 +46,16 @@ export default function CreditNote() {
     <>
       <SubMenu />
       <DocumentListView
-        documentType="Nota de Crédito"
-        queryKey="creditNotes" // Clave única para el caché de TanStack
+        pageTitle="Filtrar Notas de Crédito"
+        listTitle="Notas de Crédito"
+        queryKey="creditNotes"
         documentService={serviceAdapter}
         routePaths={routePaths}
         newDocumentMessage="Redirigiendo para seleccionar un cliente..."
+        // --- PROPS NUEVAS ---
+        columns={creditNoteColumns}
+        FilterComponent={DefaultFilterComponent}
+        ActionsComponent={DefaultActionsComponent}
       />
     </>
   );
