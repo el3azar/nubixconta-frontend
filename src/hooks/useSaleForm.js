@@ -23,7 +23,13 @@ export const useSaleForm = () => { // Ya no necesita initialData como argumento
       clientId: 0,
       documentNumber: '',
       saleDescription: '',
-      issueDate: new Date().toISOString().slice(0, 10),
+      issueDate: (() => {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      })(),
       saleType: 'CONTADO',
       moduleType: 'Ventas',
       subtotalAmount: 0,
@@ -161,12 +167,15 @@ export const useSaleForm = () => { // Ya no necesita initialData como argumento
   // =================================================================
   const prepareSubmitData = (formData) => {
     const cleanDetails = formData.saleDetails.map(({ impuesto, _productName, _productCode,...rest }) => rest);
-    
-    // Se corrige la fuente de la fecha, debe ser la del formulario.
-    const formDate = formData.issueDate;
+    // Construimos una fecha y hora completamente nuevas a partir del momento del envío.
     const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
     const timeString = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-    const localDateTimeString = `${formDate}T${timeString}`;
+
+    // Este es el string final que se enviará, siempre basado en la fecha y hora actuales.
+    const localDateTimeString = `${year}-${month}-${day}T${timeString}`;
 
     return {
       ...formData,

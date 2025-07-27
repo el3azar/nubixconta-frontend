@@ -1,11 +1,10 @@
-// src/components/sales/form-components/SaleDocumentHeader.jsx
 import React from 'react';
+// Se elimina la importación de 'styles' porque usaremos clases de Bootstrap
+// y estilos en línea que ya funcionaban.
 
-/**
- * Componente de presentación para los campos de la cabecera del documento (Venta).
- */
-export const SaleDocumentHeader = ({ register, errors, editorTipo, setEditorTipo }) => {
+export const DocumentHeader = ({ register, errors, children }) => {
   return (
+    // Se restaura la estructura y clases originales que controlan el diseño
     <section className="card shadow-sm rounded-4 mb-3 border-0" style={{ background: '#C9C9CE' }}>
       <div className="card-body">
         <div className="row g-3 align-items-end">
@@ -21,16 +20,11 @@ export const SaleDocumentHeader = ({ register, errors, editorTipo, setEditorTipo
           </div>
           <div className="col-md-3 col-sm-6 mb-md-0 mb-2">
             <label className="form-label">Fecha</label>
-            <input className="form-control" type="date" {...register('issueDate')} />
+            <input className="form-control" type="date" {...register('issueDate')} readOnly />
             {errors.issueDate && <small className='text-danger'>{errors.issueDate.message}</small>}
           </div>
-          <div className="col-md-2 col-sm-6 mb-md-0 mb-2">
-            <label className="form-label">Tipo de Ítem</label>
-            <select className="form-select" value={editorTipo} onChange={e => setEditorTipo(e.target.value)}>
-              <option>Producto</option>
-              <option>Servicio</option>
-            </select>
-          </div>
+          {/* 'children' sigue siendo la ranura para el 'Tipo de Ítem' */}
+          {children} 
         </div>
       </div>
     </section>

@@ -10,7 +10,14 @@ export const useCreditNoteForm = (clientId=null) => {
     resolver: zodResolver(creditNoteSchema),
     defaultValues: {
       documentNumber: '',
-      description: '', // <-- ¡AQUÍ ESTÁ LA CORRECCIÓN CRUCIAL!
+      description: '',
+       issueDate: (() => {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      })(),
       saleId: null,
       clientId: parseInt(clientId, 10) || 0,
       subtotalAmount: 0,
@@ -81,11 +88,60 @@ export const useCreditNoteForm = (clientId=null) => {
     replace(detailsForForm); // Usamos 'replace' para actualizar el array
   };
 
+   
+  // --- INICIO DE LA RESTAURACIÓN DE LA ALERTA ---
+  const handleDeleteLine = (index) => {
+    Swal.fire({
+      title: '¿Eliminar este detalle?',
+      text: 'No podrás revertir esta acción.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then(result => {
+      if (result.isConfirmed) {
+        remove(index);
+        Swal.fire('Eliminado', 'El detalle ha sido eliminado.', 'success');
+      }
+    });
+  };
+  // --- FIN DE LA RESTAURACIÓN DE LA ALERTA ---
+
+   // --- INICIO DE LA MODIFICACIÓN ---
+  // Se añade la función para preparar los datos para el envío,
+  // idéntica a la del hook de ventas.
+  const prepareSubmitData = (formData) => {
+    const cleanDetails = formData.details.map(({ impuesto, product, saleDetailId, ...rest }) => ({
+      ...rest,
+      subtotal: parseFloat((rest.quantity * rest.unitPrice).toFixed(2))
+    }));
+    
+    // Se construye el string de fecha y hora local para el backend.
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const timeString = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+    const localDateTimeString = `${year}-${month}-${day}T${timeString}`;
+
+    const finalDTO = {
+      ...formData,
+      details: cleanDetails,
+      issueDate: localDateTimeString, // Se envía la fecha y hora actuales
+      subtotalAmount: formData.subtotalAmount.toFixed(2),
+      vatAmount: formData.vatAmount.toFixed(2),
+      totalAmount: formData.totalAmount.toFixed(2),
+    };
+    return finalDTO;
+  };
+
   return {
-    ...formMethods,
+    formMethods,
     fields,
+    handleDeleteLine,
     replace,
     remove,
-    updateFormWithSaleDetails
+    updateFormWithSaleDetails,
+    prepareSubmitData
   };
 };

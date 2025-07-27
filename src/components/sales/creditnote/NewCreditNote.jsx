@@ -1,6 +1,6 @@
 // src/components/sales/creditnote/NewCreditNote.jsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { SaleService } from '../../../services/sales/SaleService';
@@ -8,39 +8,44 @@ import { CreditNoteService } from '../../../services/sales/CreditNoteService';
 import { useCustomerService } from '../../../services/sales/customerService';
 import { useCreditNoteForm } from '../../../hooks/useCreditNoteForm';
 import { SelectableSalesTable } from './SelectableSalesTable';
-import { CreditNoteForm } from './CreditNoteForm';
+import CreditNoteForm  from './CreditNoteForm';
 import Swal from 'sweetalert2';
-import styles from '../../../styles/sales/NewCreditNote.module.css';
-
-
-const IVA_RATE = 0.13;
+import styles from '../../../styles/shared/DocumentForm.module.css'; // Usa el CSS compartido
 
 export default function NewCreditNote() {
-   const { clientId } = useParams();
+  const { clientId } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const saleService = SaleService();
   const creditNoteService = CreditNoteService();
   const { getCustomerById } = useCustomerService();
   const [selectedSale, setSelectedSale] = useState(null);
-  const formLogic = useCreditNoteForm(clientId);
-  const { fields, remove, updateFormWithSaleDetails } = formLogic;
 
-  // Query para obtener la info del cliente
+  const formLogic = useCreditNoteForm();
+  // --- INICIO DE LA CORRECCIÓN ---
+  // Se desestructura correctamente, accediendo a 'setValue' desde 'formMethods'
+  const { fields, remove, updateFormWithSaleDetails, prepareSubmitData, formMethods } = formLogic;
+  const { setValue } = formMethods;
+  // --- FIN DE LA CORRECCIÓN ---
+
+  useEffect(() => {
+    if (clientId) {
+      setValue('clientId', parseInt(clientId, 10));
+    }
+  }, [clientId, setValue]);
+
   const { data: customerData, isLoading: isLoadingCustomer } = useQuery({
     queryKey: ['customer', clientId],
     queryFn: () => getCustomerById(clientId),
     enabled: !!clientId,
   });
 
-  // Query para obtener las ventas aplicadas del cliente
   const { data: appliedSales = [], isLoading: isLoadingSales } = useQuery({
     queryKey: ['appliedSales', clientId],
     queryFn: () => saleService.getAppliedSalesByCustomer(clientId),
     enabled: !!clientId,
   });
 
-  // Mutación para CREAR la nota de crédito
   const { mutate: submitCreditNote, isPending: isSaving } = useMutation({
     mutationFn: (data) => creditNoteService.createCreditNote(data),
     onSuccess: (savedNote) => {
@@ -58,7 +63,6 @@ export default function NewCreditNote() {
     updateFormWithSaleDetails(sale);
   };
   
- // Añadimos una alerta de confirmación antes de navegar.
   const handleCancel = () => {
     Swal.fire({
       title: '¿Cancelar Creación?',
@@ -74,47 +78,14 @@ export default function NewCreditNote() {
     });
   };
 
-  // Función que se pasa al formulario para el submit.
-   const onFormSubmit = (formData) => {
-    // 1. Recalcular los totales desde cero usando los datos validados de 'formData.details'.
-    // Esto garantiza una consistencia perfecta.
-    const calculatedSubtotal = formData.details.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
-    const calculatedVat = formData.details.reduce((sum, item) => {
-      return item.impuesto ? sum + (item.quantity * item.unitPrice * IVA_RATE) : sum;
-    }, 0);
-    const calculatedTotal = calculatedSubtotal + calculatedVat;
-    
-    // 2. Limpiamos los campos extra que no necesita el DTO.
-    const cleanDetails = formData.details.map(({ impuesto, product, saleDetailId, ...rest }) => ({
-      ...rest,
-      subtotal: parseFloat((rest.quantity * rest.unitPrice).toFixed(2)) // Aseguramos el subtotal de línea
-    }));
-
-    //3.  Construimos el DTO final de forma más robusta.
-    // Usamos el spread operator en formData para asegurarnos de incluir todos
-    // los campos validados por Zod (documentNumber, description, saleId, totales)
-    // y luego sobreescribimos 'details' con la versión limpia.
-    const finalDTO = {
-      ...formData,
-      details: cleanDetails,
-    };
-
-     // Convertimos los totales a string para una serialización segura,
-    // el backend los convertirá a BigDecimal.
-    finalDTO.subtotalAmount = finalDTO.subtotalAmount.toFixed(2);
-    finalDTO.vatAmount = finalDTO.vatAmount.toFixed(2);
-    finalDTO.totalAmount = finalDTO.totalAmount.toFixed(2);
-
-    console.log("✅ Enviando DTO al API:", finalDTO);
+  const onFormSubmit = (formData) => {
+    const finalDTO = formLogic.prepareSubmitData(formData);
     submitCreditNote(finalDTO);
   };
 
-  if (isLoadingCustomer) return <div className={styles.container}><h2>Cargando datos...</h2></div>;
-  if (!customerData) return <div className={styles.container}><h2>Cliente no encontrado.</h2></div>;
-
   return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>Nueva Nota de Crédito</h2>
+    <main className={styles.container}>
+      <h1 className={styles.title}>Nueva Nota de Crédito</h1>
       <SelectableSalesTable
         sales={appliedSales}
         selectedSaleId={selectedSale?.saleId}
@@ -123,17 +94,19 @@ export default function NewCreditNote() {
       />
       
       {selectedSale && (
-      <CreditNoteForm
+        <CreditNoteForm
           customer={customerData}
-          formMethods={formLogic} // Pasamos el objeto completo de métodos del formulario
+          // --- INICIO DE LA CORRECCIÓN ---
+          formMethods={formLogic.formMethods} // Se pasa el objeto correcto
           fields={fields}
           remove={remove}
+          // --- FIN DE LA CORRECCIÓN ---
           onCancel={handleCancel}
           isSaving={isSaving}
           onSubmit={onFormSubmit}
           submitButtonText="Registrar Nota de Crédito"
         />
       )}
-    </div>
+    </main>
   );
 }
