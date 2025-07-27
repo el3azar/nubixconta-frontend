@@ -48,6 +48,33 @@ const getAllSales = async (sortBy = 'status') => { // Acepta el parámetro, con 
     return response.data;
   };
 
+   // --- INICIO DEL NUEVO MÉTODO ---
+  /**
+   * Busca ventas para el reporte combinando múltiples criterios opcionales.
+   * Llama al endpoint GET /sales/report.
+   * @param {Object} filters - Objeto con los filtros { startDate, endDate, customerName, customerLastName }.
+   * @returns {Promise<Array>} Lista de ventas para el reporte.
+   */
+  const searchSalesByCriteria = async (filters = {}) => {
+    // URLSearchParams es la forma más segura y limpia de construir query strings.
+    // Automáticamente maneja la codificación y solo añade los parámetros que tienen valor.
+    const params = new URLSearchParams();
+    
+    // Añadimos cada filtro a los parámetros solo si existe
+    if (filters.startDate) params.append('startDate', filters.startDate);
+    if (filters.endDate) params.append('endDate', filters.endDate);
+    if (filters.customerName) params.append('customerName', filters.customerName);
+    if (filters.customerLastName) params.append('customerLastName', filters.customerLastName);
+
+    // Hacemos la petición al nuevo endpoint de reportes.
+    const response = await axios.get(
+      `${API_URL}/report?${params.toString()}`,
+      getAuthHeader(token)
+    );
+    return response.data;
+  };
+  // --- FIN DEL NUEVO MÉTODO ---
+
   /**
    * Elimina una venta (solo si está en estado PENDIENTE)
    * @param {number} saleId
@@ -142,6 +169,7 @@ const getAllSales = async (sortBy = 'status') => { // Acepta el parámetro, con 
   return {
     getAllSales,
     searchSalesByDate,
+    searchSalesByCriteria,
     deleteSale,
     approveSale,
     cancelSale,

@@ -30,7 +30,6 @@ export const useSaleForm = () => { // Ya no necesita initialData como argumento
         const day = String(today.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
       })(),
-      saleType: 'CONTADO',
       moduleType: 'Ventas',
       subtotalAmount: 0,
       vatAmount: 0,
@@ -177,8 +176,10 @@ export const useSaleForm = () => { // Ya no necesita initialData como argumento
     // Este es el string final que se enviará, siempre basado en la fecha y hora actuales.
     const localDateTimeString = `${year}-${month}-${day}T${timeString}`;
 
+    const { saleType, ...restOfFormData } = formData;
+
     return {
-      ...formData,
+     ...restOfFormData, 
       saleDetails: cleanDetails,
       issueDate: localDateTimeString
     };
