@@ -1,6 +1,5 @@
 // src/components/sales/sales/NewSale.jsx
-import React from 'react';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCustomerService } from '../../../services/sales/customerService';
@@ -10,25 +9,15 @@ import { useSaleForm } from '../../../hooks/useSaleForm';
 import SaleForm from './SaleForm';
 import Swal from 'sweetalert2';
 
-/**
- * Componente "Contenedor" para crear una nueva venta.
- * RESPONSABILIDADES:
- * 1. Cargar datos necesarios (cliente, productos) usando React Query.
- * 2. Instanciar el hook `useSaleForm` para obtener toda la lógica del formulario.
- * 3. Configurar y ejecutar la mutación de `createSale`.
- * 4. Renderizar el componente de presentación `SaleForm` pasándole los datos y la lógica.
- */
 export default function NewSale() {
   const { clientId } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   
-  // Servicios
   const { createSale } = SaleService();
   const { getActiveProducts } = useProductService();
   const { getCustomerById } = useCustomerService();
   
-  // 1. LÓGICA DE DATOS (QUERIES)
   const { data: client, isLoading: isLoadingClient } = useQuery({
     queryKey: ['customer', clientId],
     queryFn: () => getCustomerById(clientId),
@@ -44,7 +33,6 @@ export default function NewSale() {
     initialData: [],
   });
 
- // El hook se llama sin argumentos.
   const formLogic = useSaleForm();
 
   useEffect(() => {
@@ -53,7 +41,6 @@ export default function NewSale() {
     }
   }, [clientId, formLogic.formMethods.setValue]);
 
-  // 3. LÓGICA DE DATOS (MUTATION)
   const { mutate: submitSale, isPending: isSaving } = useMutation({
     mutationFn: (saleData) => createSale(saleData),
     onSuccess: (savedSale) => {
@@ -66,7 +53,6 @@ export default function NewSale() {
     }
   });
 
-  // 4. MANEJADORES DE EVENTOS DEL CONTENEDOR
   const onFormSubmit = (formData) => {
     const dto = formLogic.prepareSubmitData(formData);
     submitSale(dto);
@@ -81,7 +67,6 @@ export default function NewSale() {
     });
   };
 
-  // 5. RENDERIZADO
   return (
     <SaleForm
       title="Nueva Venta"

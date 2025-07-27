@@ -23,7 +23,13 @@ export const useSaleForm = () => { // Ya no necesita initialData como argumento
       clientId: 0,
       documentNumber: '',
       saleDescription: '',
-      issueDate: new Date().toISOString().slice(0, 10),
+      issueDate: (() => {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      })(),
       saleType: 'CONTADO',
       moduleType: 'Ventas',
       subtotalAmount: 0,

@@ -8,9 +8,9 @@ import { CreditNoteService } from '../../../services/sales/CreditNoteService';
 import { useCustomerService } from '../../../services/sales/customerService';
 import { useCreditNoteForm } from '../../../hooks/useCreditNoteForm';
 import { SelectableSalesTable } from './SelectableSalesTable';
-import { CreditNoteForm } from './CreditNoteForm';
+import CreditNoteForm  from './CreditNoteForm';
 import Swal from 'sweetalert2';
-import styles from '../../../styles/sales/NewCreditNote.module.css';
+import styles from '../../../styles/shared/DocumentForm.module.css'; // Usa el CSS compartido
 
 export default function NewCreditNote() {
   const { clientId } = useParams();
@@ -21,32 +21,31 @@ export default function NewCreditNote() {
   const { getCustomerById } = useCustomerService();
   const [selectedSale, setSelectedSale] = useState(null);
 
-  // Se instancia el hook, que ahora maneja su propia lógica interna
   const formLogic = useCreditNoteForm();
-  const { fields, remove, updateFormWithSaleDetails, setValue } = formLogic;
+  // --- INICIO DE LA CORRECCIÓN ---
+  // Se desestructura correctamente, accediendo a 'setValue' desde 'formMethods'
+  const { fields, remove, updateFormWithSaleDetails, prepareSubmitData, formMethods } = formLogic;
+  const { setValue } = formMethods;
+  // --- FIN DE LA CORRECCIÓN ---
 
-  // Efecto para establecer el clientId en el formulario una vez que esté disponible.
   useEffect(() => {
     if (clientId) {
       setValue('clientId', parseInt(clientId, 10));
     }
   }, [clientId, setValue]);
 
-  // Query para obtener la info del cliente
   const { data: customerData, isLoading: isLoadingCustomer } = useQuery({
     queryKey: ['customer', clientId],
     queryFn: () => getCustomerById(clientId),
     enabled: !!clientId,
   });
 
-  // Query para obtener las ventas aplicadas del cliente
   const { data: appliedSales = [], isLoading: isLoadingSales } = useQuery({
     queryKey: ['appliedSales', clientId],
     queryFn: () => saleService.getAppliedSalesByCustomer(clientId),
     enabled: !!clientId,
   });
 
-  // Mutación para CREAR la nota de crédito
   const { mutate: submitCreditNote, isPending: isSaving } = useMutation({
     mutationFn: (data) => creditNoteService.createCreditNote(data),
     onSuccess: (savedNote) => {
@@ -79,21 +78,14 @@ export default function NewCreditNote() {
     });
   };
 
-  /**
-   * Función que se pasa al formulario para el submit.
-   * Ahora delega toda la preparación de datos al hook.
-   */
   const onFormSubmit = (formData) => {
     const finalDTO = formLogic.prepareSubmitData(formData);
     submitCreditNote(finalDTO);
   };
 
-  if (isLoadingCustomer) return <div className={styles.container}><h2>Cargando datos...</h2></div>;
-  if (!customerData && !isLoadingCustomer) return <div className={styles.container}><h2>Cliente no encontrado.</h2></div>;
-
   return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>Nueva Nota de Crédito</h2>
+    <main className={styles.container}>
+      <h1 className={styles.title}>Nueva Nota de Crédito</h1>
       <SelectableSalesTable
         sales={appliedSales}
         selectedSaleId={selectedSale?.saleId}
@@ -104,15 +96,17 @@ export default function NewCreditNote() {
       {selectedSale && (
         <CreditNoteForm
           customer={customerData}
-          formMethods={formLogic}
+          // --- INICIO DE LA CORRECCIÓN ---
+          formMethods={formLogic.formMethods} // Se pasa el objeto correcto
           fields={fields}
           remove={remove}
+          // --- FIN DE LA CORRECCIÓN ---
           onCancel={handleCancel}
           isSaving={isSaving}
           onSubmit={onFormSubmit}
           submitButtonText="Registrar Nota de Crédito"
         />
       )}
-    </div>
+    </main>
   );
 }

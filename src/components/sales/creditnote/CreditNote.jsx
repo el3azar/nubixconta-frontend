@@ -3,7 +3,6 @@ import {
   FaSearch, FaPlusCircle, FaEye, FaPen, FaTrashAlt, FaCheckCircle, FaTimesCircle
 } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import styles from '../../../styles/sales/Sales.module.css';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import { SaleService } from '../../../services/sales/SaleService';

@@ -11,7 +11,13 @@ export const useCreditNoteForm = (clientId=null) => {
     defaultValues: {
       documentNumber: '',
       description: '',
-      issueDate: new Date().toISOString().slice(0, 10), 
+       issueDate: (() => {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      })(),
       saleId: null,
       clientId: parseInt(clientId, 10) || 0,
       subtotalAmount: 0,
@@ -82,6 +88,25 @@ export const useCreditNoteForm = (clientId=null) => {
     replace(detailsForForm); // Usamos 'replace' para actualizar el array
   };
 
+   
+  // --- INICIO DE LA RESTAURACIÓN DE LA ALERTA ---
+  const handleDeleteLine = (index) => {
+    Swal.fire({
+      title: '¿Eliminar este detalle?',
+      text: 'No podrás revertir esta acción.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then(result => {
+      if (result.isConfirmed) {
+        remove(index);
+        Swal.fire('Eliminado', 'El detalle ha sido eliminado.', 'success');
+      }
+    });
+  };
+  // --- FIN DE LA RESTAURACIÓN DE LA ALERTA ---
+
    // --- INICIO DE LA MODIFICACIÓN ---
   // Se añade la función para preparar los datos para el envío,
   // idéntica a la del hook de ventas.
@@ -111,8 +136,9 @@ export const useCreditNoteForm = (clientId=null) => {
   };
 
   return {
-    ...formMethods,
+    formMethods,
     fields,
+    handleDeleteLine,
     replace,
     remove,
     updateFormWithSaleDetails,

@@ -33,7 +33,7 @@ import Swal from 'sweetalert2';
 import toast from 'react-hot-toast';
 import { FaSearch, FaPlusCircle, FaArrowRight } from 'react-icons/fa';
 import { DocumentTable } from './DocumentTable';
-import styles from '../../styles/sales/Sales.module.css'; // Usamos un único CSS para mantener el estilo
+import styles from '../../styles/shared/DocumentView.module.css'; // Importamos estilos específicos para este componente
 
 export const DocumentListView = ({
   documentType,   // "Venta" o "Nota de Crédito"

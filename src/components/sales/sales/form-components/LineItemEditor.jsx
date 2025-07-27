@@ -1,21 +1,19 @@
-// src/components/sales/form-components/LineItemEditor.jsx
 import React from 'react';
 import Select from 'react-select';
 import { FaPlus } from 'react-icons/fa';
 import makeAnimated from 'react-select/animated';
-import styles from '../../../../styles/sales/SaleForm.module.css';
+// Mantenemos la importación al CSS compartido SÓLO para la clase del botón (.actionButton)
+import styles from '../../../../styles/shared/DocumentForm.module.css';
 
 const animatedComponents = makeAnimated();
 
-/**
- * Componente de UI para crear/editar una línea de detalle antes de añadirla a la venta.
- */
 export const LineItemEditor = ({
   editor,
   productOptions,
   isLoadingProducts
 }) => {
   return (
+    // Se restaura la estructura y clases originales que controlan el diseño
     <section className="card shadow-sm rounded-4 mb-3 border-0" style={{ background: '#C9C9CE' }}>
       <div className="card-body">
         <h5 className="mb-3">{editor.tipo === 'Producto' ? 'Buscar Producto' : 'Añadir Servicio'}</h5>
