@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import styles from "../../../styles/sales/ViewCustomers.module.css";
 
 export default function UserForm({ user, onSubmit }) {
   const { register, handleSubmit, reset } = useForm();
@@ -48,7 +49,7 @@ export default function UserForm({ user, onSubmit }) {
           <input placeholder="Contraseña" className="form-control" type="password" {...register("password")} required />
         </div>
       </div>
-      <button type="submit" className="btn btn-success w-100">Guardar</button>
+      <button type="submit" className={`btn w-100 ${styles.actionButton}`}>Guardar</button>
     </form>
   );
 }
