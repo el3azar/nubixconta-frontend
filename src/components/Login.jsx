@@ -20,7 +20,6 @@ export default function Login() {
         };
 
         const response = await loginService(payload);
-        console.log("Respuesta del login:", response);
         if (response?.token) {
             login(response.token, response.role); 
             localStorage.setItem("token", response.token); // ✅ GUARDAR EL TOKEN AQUÍ

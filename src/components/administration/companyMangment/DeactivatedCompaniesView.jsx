@@ -33,7 +33,7 @@ const DeactivatedCompaniesView = () => {
       .filter((e) => {
         const nombreMatch = e.nombre.toLowerCase().includes(filters.nombre.toLowerCase());
        const asistenteMatch = filters.asistente
-          ? String(e.userId) === filters.asistente // Compara el userId de la empresa (convertido a string) con el valor del select
+          ? String(e.userId) === filters.asistente 
           : true;
         
         return nombreMatch && asistenteMatch;
@@ -53,7 +53,7 @@ const DeactivatedCompaniesView = () => {
 
     if (result.isConfirmed) {
       try {
-        const success = await toggleCompanyStatus(company.id, true); // Cambiar activeStatus a true
+        const success = await toggleCompanyStatus(company.id, true);
 
         if (success) {
           await Swal.fire('¡Éxito!', `La empresa "${company.nombre}" ha sido reactivada con éxito.`, 'success');

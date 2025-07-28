@@ -53,8 +53,6 @@ const handleAssign = (empresa, userId) => {
   // Crea un nuevo objeto empresa actualizado con asignada = true
   const updatedCompany = { ...empresa, asignada: true };
   updateCompany(updatedCompany);
-
-  // Opcional: podrías mostrar un mensaje de éxito o refrescar lista
   Swal.fire({
     icon: 'success',
     title: `Empresa ${empresa.nombre} asignada con éxito`,

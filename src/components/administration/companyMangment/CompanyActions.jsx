@@ -12,14 +12,11 @@ const CompanyActions = ({
   isDeactivatedView = false,
 }) => {
 
-    // Lógica condicional para renderizar iconos
   if (isDeactivatedView) {
-    // Si estamos en la vista de empresas desactivadas, solo mostrar FaEye (para activar)
     return (
       <div className="d-flex justify-content-center gap-3">
          <FaEye title="Reactivar" className={styles.icono} onClick={() => onToggleStatus(empresa)} />
-        {/* Puedes añadir FaEye para ver detalles si lo deseas en esta vista */}
-       
+   
       </div>
     );
   }

@@ -8,6 +8,7 @@ import { FaUser, FaEdit, FaTrash, FaTrashAlt, FaEye, FaLink, FaEyeSlash } from "
 import Swal from "sweetalert2";
 import UserForm from "./UserForm";
 
+
 const UserManagementDashboard = () => {
   const [users, setUsers] = useState([]);
   const [query, setQuery] = useState("");
@@ -32,19 +33,18 @@ const UserManagementDashboard = () => {
   /* -------------- cargar usuarios -------------- */
   const fetchUsers = () =>
     getAllUsers()
-      .then((res) => setUsers(res.data))
-      .catch((err) => toastError("Error al obtener usuarios"));
-
-  useEffect(() => {
+    .then((res) => setUsers(res.data))
+    .catch((err) => toastError("Error al obtener usuarios"));
+    useEffect(() => {
     fetchUsers();
-  }, []);
+}, []);
 
   /* -------------- búsqueda segura -------------- */
   const handleSearch = (e) => setQuery(e.target.value.toLowerCase());
   const safe = (v = "") => (v || "").toString().toLowerCase();
 
   const filteredUsers = users.filter((u) =>
-    [u.firstName, u.lastName, u.email, u.userName].some((field) =>
+    [u.firstName, u.lastName, u.email, u.userName,u.role].some((field) =>
       safe(field).includes(query)
     )
   );
@@ -146,7 +146,12 @@ const UserManagementDashboard = () => {
                     {u.status ? "Activo" : "Inactivo"}
                   </strong>
                 </p>
-
+             <p className="card-text">
+                  Rol:{" "}
+                  <strong>
+                    {u.role ? "Administrador" : "Asistente"}
+                  </strong>
+                </p>
                 <div className="d-flex justify-content-around mt-3"> {/* Cambiado a justify-content-around para distribuir los iconos */}
                   {/* Botón Editar */}
                   <button
@@ -159,6 +164,9 @@ const UserManagementDashboard = () => {
                     <FaEdit />
                   </button>
 
+                  {/* Resto de botones: solo visibles si el rol NO es Administrador (es decir, es Asistente) */}
+                 {!u.role && (
+                  <>
                   {/* Botón Desactivar/Activar */}
                   <button
                     className={`btn btn-outline-${u.status ? "danger" : "success"} me-2`} // Color dinámico
@@ -191,6 +199,8 @@ const UserManagementDashboard = () => {
                   >
                     <FaEye /> {/* Icono de ojo */}
                   </button>
+                 </>
+                 )}
                 </div>
               </div>
             </div>

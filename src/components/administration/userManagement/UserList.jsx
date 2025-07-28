@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { getAllUsers } from "../../../services/administration/userService";
+/*import React, { useEffect, useState } from "react";
+import { getUsersByAssistant } from "../../../services/administration/company/usersByAssistanService";
+
 
 const UserList = ({ onEdit }) => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    getAllUsers()
-      .then((res) => setUsers(res.data))
+    getUsersByAssistant()
+      .then((res) => {
+        setUsers(res);
+      })
       .catch((err) => console.error("Error al cargar usuarios:", err));
   }, []);
 
@@ -42,3 +45,4 @@ const UserList = ({ onEdit }) => {
 };
 
 export default UserList;
+*/

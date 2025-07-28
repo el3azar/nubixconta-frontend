@@ -73,6 +73,18 @@
   color: #10031C;
 }
 
+/* Este estilo se aplicará al botón que NO esté seleccionado. */
+.inactiveSortButton {
+  background-color: transparent; /* Fondo transparente */
+  color: #10031C;             /* Texto oscuro */
+}
+
+/* Opcional: Para que el botón inactivo vuelva a ser sólido al pasar el ratón */
+.inactiveSortButton:hover {
+  background-color: #10031C;
+  color: #fff;
+}
+
 /* Tabla */
 .tableContainer {
   background: #fff;

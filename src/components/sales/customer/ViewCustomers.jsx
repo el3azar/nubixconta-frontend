@@ -170,8 +170,8 @@ const handleDeactivate = (id, name) => {
                           <button className={styles.iconBtn} title="Crear Venta" onClick={() => navigate(`/ventas/nueva/${cliente.clientId}`)}>
                             <i className="bi bi-receipt" />
                           </button>
-                          <button className={styles.iconBtn} title="Documentos">
-                            <i className="bi bi-folder" /> {/* Ícono cambiado para 'Documentos' */}
+                          <button className={styles.iconBtn} title="Crear Nota de Crédito" onClick={() => navigate(`/ventas/nueva-nota-credito/${cliente.clientId}`)}>
+                            <i className="bi bi-file-earmark-text" /> 
                           </button>
                         </div>
                      </td>

@@ -24,14 +24,15 @@ export const SaleService = () => {
   //      MÉTODOS PRINCIPALES
   // ============================
 
-  /**
-   * Obtiene todas las ventas (sin filtros)
-   * @returns {Promise<Array>} Lista de ventas
-   */
-  const getAllSales = async () => {
-    const response = await axios.get(API_URL, getAuthHeader(token));
-    return response.data;
-  };
+/**
+ * Obtiene todas las ventas con un ordenamiento específico.
+ * @param {string} sortBy - Criterio de ordenamiento ('status' o 'date').
+ * @returns {Promise<Array>} Lista de ventas ordenadas.
+ */
+const getAllSales = async (sortBy = 'status') => { // Acepta el parámetro, con 'status' por defecto.
+  const response = await axios.get(`${API_URL}?sortBy=${sortBy}`, getAuthHeader(token));
+  return response.data;
+};
 
   /**
    * Busca ventas dentro de un rango de fechas (por filtro)
@@ -46,6 +47,33 @@ export const SaleService = () => {
     );
     return response.data;
   };
+
+   // --- INICIO DEL NUEVO MÉTODO ---
+  /**
+   * Busca ventas para el reporte combinando múltiples criterios opcionales.
+   * Llama al endpoint GET /sales/report.
+   * @param {Object} filters - Objeto con los filtros { startDate, endDate, customerName, customerLastName }.
+   * @returns {Promise<Array>} Lista de ventas para el reporte.
+   */
+  const searchSalesByCriteria = async (filters = {}) => {
+    // URLSearchParams es la forma más segura y limpia de construir query strings.
+    // Automáticamente maneja la codificación y solo añade los parámetros que tienen valor.
+    const params = new URLSearchParams();
+    
+    // Añadimos cada filtro a los parámetros solo si existe
+    if (filters.startDate) params.append('startDate', filters.startDate);
+    if (filters.endDate) params.append('endDate', filters.endDate);
+    if (filters.customerName) params.append('customerName', filters.customerName);
+    if (filters.customerLastName) params.append('customerLastName', filters.customerLastName);
+
+    // Hacemos la petición al nuevo endpoint de reportes.
+    const response = await axios.get(
+      `${API_URL}/report?${params.toString()}`,
+      getAuthHeader(token)
+    );
+    return response.data;
+  };
+  // --- FIN DEL NUEVO MÉTODO ---
 
   /**
    * Elimina una venta (solo si está en estado PENDIENTE)
@@ -90,7 +118,16 @@ export const SaleService = () => {
     const response = await axios.get(`${API_URL}/${saleId}`, getAuthHeader(token));
     return response.data;
   };
-
+  /**
+   * Busca y devuelve todas las ventas en estado 'APLICADA' para un cliente específico.
+   * y que no tenga una nota de crédito asociada en estado PENDIENTE o APLICADA.
+   * @param {number} clientId - El ID del cliente.
+   * @returns {Promise<Array>} Una lista de ventas aplicadas del cliente.
+   */
+  const getAppliedSalesByCustomer = async (clientId) => {
+    const response = await axios.get(`${API_URL}/customer/${clientId}/available-for-credit-note`, getAuthHeader(token));
+    return response.data;
+  };
   /**
    * Crea una nueva venta
    * @param {Object} saleData (SaleCreateDTO)
@@ -112,7 +149,7 @@ export const SaleService = () => {
     return response.data;
   };
 
-  // (Opcional) Búsqueda por cliente, por si implementas esa vista
+  //Búsqueda por cliente, por si implementas esa vista
   const searchSalesByCustomer = async (filters) => {
     const params = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
@@ -132,11 +169,13 @@ export const SaleService = () => {
   return {
     getAllSales,
     searchSalesByDate,
+    searchSalesByCriteria,
     deleteSale,
     approveSale,
     cancelSale,
     getSaleById,
     createSale,
+    getAppliedSalesByCustomer,
     updateSale,
     searchSalesByCustomer,    // Solo si implementas búsqueda avanzada
     getSaleDetailsBySaleId,   // Solo si necesitas mostrar detalles por separado

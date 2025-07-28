@@ -1,7 +1,3 @@
-import React from 'react';
-
-import { FiSearch } from 'react-icons/fi';
-
 const CompanySearchBar = ({ filters, onChange, onSearch, assistantOptions }) => {
   return (
     <div
@@ -27,9 +23,9 @@ const CompanySearchBar = ({ filters, onChange, onSearch, assistantOptions }) => 
         <div className="col-md-4">
           <label className="form-label text-dark">Asistente asignado</label>
           <select
-            value={filters.asistente || ''} // Asegúrate de que el valor sea "" para "Todos"
+            value={filters.asistente || ''} 
             onChange={(e) => onChange({ ...filters, asistente: e.target.value })}
-            className="form-select" // Clase de Bootstrap para select
+            className="form-select" 
           >
             {/* Renderiza las opciones pasadas por props */}
             {assistantOptions.map((option) => (

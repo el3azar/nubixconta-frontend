@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { useCompany } from './CompanyDataContext'; // Ajusta la ruta si es necesario
+import { useCompany } from './CompanyDataContext'; 
 import { IMaskInput } from 'react-imask';
 import formStyles from '../../../styles/sales/CustomerForm.module.css';
-const EditCompanyView = () => {
+
+  const EditCompanyView = () => {
   const navigate = useNavigate();
   const { id } = useParams(); 
- const location = useLocation();
+  const location = useLocation();
   const empresaFromState = location.state?.company;
-  const { getCompanyById, updateCompany } = useCompany(); // 📡 Traemos funciones del contexto
+  const { getCompanyById, updateCompany } = useCompany(); 
 
   // Estado del formulario
 const [form, setForm] = useState({
@@ -50,7 +51,6 @@ useEffect(() => {
   fetchCompany();
 }, [id,getCompanyById]);
 
-  // 🔁 Manejador de inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
