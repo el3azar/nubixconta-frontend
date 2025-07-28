@@ -33,6 +33,7 @@ import ProductMovementList from '../components/inventory/ProductMovementList';
 import CompanyManagementView from '../components/administration/companyMangment/CompanyManagementView';
 import UserManagementDashboard from '../components/administration/userManagement/UserManagementDashboard';
 import ChangeHistory from '../components/administration/changeHistory/ChangeHistory'
+import AccessHistory from '../components/administration/changeHistory/AccessHistory'
 import { CompanyDataProvider } from '../components/administration/companyMangment/CompanyDataContext';
 import RegisterCompanyView from '../components/administration/companyMangment/RegisterCompanyView';
 import EditCompanyView from '../components/administration/companyMangment/EditCompanyView';
@@ -101,7 +102,7 @@ export default function Rutas() {
 
             <Route path="/admin/bitacora-cambios" element={<ChangeHistory />} />
              {/* Rutas extras que necesites en Bitácora de cambios*/}
-            <Route path="/admin/bitacora-accesos" element={<div>Bitácora de accesos</div>} />
+            <Route path="/admin/bitacora-accesos" element={<AccessHistory />} />
             {/* Rutas extras que necesites en Bitácora de accesos*/}
 
             {/* ======== SECCIÓN: MÓDULOS OPERATIVOS ======== */}

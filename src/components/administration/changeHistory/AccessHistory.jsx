@@ -1,3 +1,5 @@
+// ESTA VISTA QUEDA PENDIENTE DE REVISIÓN Y MEJORA
+
 import React, { useState, useEffect } from 'react'
 import Select from 'react-select'
 import DatePicker from 'react-datepicker'
@@ -100,9 +102,9 @@ export default function ChangeHistory() {
             <th>Usuario</th>
             <th>Fecha</th>
             <th>Hora</th>
-            <th>Acción realizada</th>
+            {/* <th>Acción realizada</th> */}
             <th>Módulo</th>
-            <th>Empresa</th>
+            {/* <th>Empresa</th> */}
           </tr>
         </thead>
         <tbody>
@@ -111,9 +113,9 @@ export default function ChangeHistory() {
               <td>{item.userFullName || '-'}</td>
               <td>{new Date(item.date).toLocaleDateString()}</td>
               <td>{new Date(item.date).toLocaleTimeString()}</td>
-              <td>{item.actionPerformed}</td>
+              {/* <td>{item.actionPerformed}</td> */}
               <td>{item.moduleName}</td>
-              <td>{item.companyName}</td>
+              {/* <td>{item.companyName}</td> */}
             </tr>
           ))}
           {history.length === 0 && (
