@@ -2,7 +2,7 @@ import React from 'react';
 import ProductRow from './ProductRow';
 import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 
-const ProductTable = ({ products, handleSort, sortField, sortDirection, onEdit, onToggleStatus }) => {
+const ProductTable = ({  products = [], handleSort, sortField, sortDirection, onEdit, onToggleStatus }) => {
   const renderSortIcon = (field) => {
     if (sortField !== field) return <FaSort className="ms-2" />;
     return sortDirection === 'asc' ? <FaSortUp className="ms-2" /> : <FaSortDown className="ms-2" />;
@@ -28,15 +28,15 @@ const ProductTable = ({ products, handleSort, sortField, sortDirection, onEdit, 
           </tr>
         </thead>
         <tbody>
-          {products.map((product, index) => (
-            <ProductRow
-              key={product.id || index}
-              index={index}
-              product={product}
-              onEdit={onEdit}
-              onToggleStatus={onToggleStatus}
-            />
-          ))}
+         {(Array.isArray(products) ? products : []).map((product, index) => (
+    <ProductRow
+      key={product.id || index}
+      index={index}
+      product={product}
+      onEdit={onEdit}
+      onToggleStatus={onToggleStatus}
+    />
+  ))}
         </tbody>
       </table>
     </div>
