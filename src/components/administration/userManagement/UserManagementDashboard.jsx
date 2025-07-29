@@ -4,10 +4,12 @@ import {
   createUser,
   updateUser,
 } from "../../../services/administration/userService";
-import { FaUser, FaEdit, FaTrash, FaTrashAlt, FaEye, FaLink, FaEyeSlash } from "react-icons/fa";
+import styles from "../../../styles/administration/UserManagementDashboard.module.css";
+import { FaUser, FaEdit, FaEye, FaLink, FaEyeSlash } from "react-icons/fa";
+import {  FiUserPlus } from 'react-icons/fi';
 import Swal from "sweetalert2";
 import UserForm from "./UserForm";
-
+import { Building2 } from "lucide-react"
 
 const UserManagementDashboard = () => {
   const [users, setUsers] = useState([]);
@@ -155,7 +157,7 @@ const UserManagementDashboard = () => {
                 <div className="d-flex justify-content-around mt-3"> {/* Cambiado a justify-content-around para distribuir los iconos */}
                   {/* Botón Editar */}
                   <button
-                    className="btn btn-outline-primary me-2" // me-2 para un pequeño margen a la derecha
+                    className={`btn me-2 ${styles.iconButton}`} // me-2 para un pequeño margen a la derecha
                     onClick={() => handleEdit(u)}
                     data-bs-toggle="tooltip" // Atributo para activar el tooltip
                     data-bs-placement="top"  // Posición del tooltip
@@ -169,7 +171,7 @@ const UserManagementDashboard = () => {
                   <>
                   {/* Botón Desactivar/Activar */}
                   <button
-                    className={`btn btn-outline-${u.status ? "danger" : "success"} me-2`} // Color dinámico
+                     className={`btn btn-outline-${u.status ? "danger" : "success"} me-2`} // Color dinámico
                     onClick={() => handleToggleActive(u)}
                     data-bs-toggle="tooltip"
                     data-bs-placement="top"
@@ -180,24 +182,24 @@ const UserManagementDashboard = () => {
 
                   {/* Botón Asignar Empresa */}
                   <button
-                    className="btn btn-outline-info me-2" // Un color diferente para distinguir
+                    className={`btn me-2 ${styles.iconButton}`} // Un color diferente para distinguir
                     onClick={() => handleAssignCompany(u)}
                     data-bs-toggle="tooltip"
                     data-bs-placement="top"
                     title="Asignar empresa"
                   >
-                    <FaLink /> {/* Icono de enlace */}
+                    <FiUserPlus /> {/* Icono de enlace */}
                   </button>
 
                   {/* Botón Empresas Asignadas */}
                   <button
-                    className="btn btn-outline-secondary" // Otro color
+                    className={`btn me-2 ${styles.iconButton}`} // Otro color
                     onClick={() => handleViewAssignedCompanies(u)}
                     data-bs-toggle="tooltip"
                     data-bs-placement="top"
                     title="Empresas asignadas"
                   >
-                    <FaEye /> {/* Icono de ojo */}
+                    <Building2/> {/* Icono de ojo */}
                   </button>
                  </>
                  )}
