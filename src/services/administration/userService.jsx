@@ -25,12 +25,4 @@ export const updateUser = (id, user) =>
     headers: getAuthHeaders(),
   });
 
-// DESACTIVAR USUARIO (JSON)
-export const deactivateUser = (id) =>
-  axios.put(
-    `${API_URL}/${id}`,
-    { status: false },
-    {
-      headers:getAuthHeaders(),
-    }
-  );
+
