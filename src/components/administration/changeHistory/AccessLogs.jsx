@@ -4,17 +4,19 @@ import React, { useState, useEffect } from 'react'
 import Select from 'react-select'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import { getAllUsers, getChangeHistory, getChangeHistoryByUser, getChangeHistoryByUserAndDates, getChangeHistoryWithoutCompany, getChangeHistoryByDateRange
-} from '../../../services/administration/historyServices'
+import { getAllUsers, getAccessLogs, getAccessLogsByUser, getAccessLogsByUserAndDates, getAccessLogsByDateRange
+} from '../../../services/administration/accessServices'
 import styles from '../../../styles/administration/changeHistory.module.css'
 import { get } from 'react-hook-form'
+import { en } from 'zod/v4/locales'
+import { ScissorsLineDashed } from 'lucide-react'
 
-export default function ChangeHistory() {
+export default function AccessLogs() {
   const [users, setUsers] = useState([])
   const [selectedUser, setSelectedUser] = useState(null)
   const [startDate, setStartDate] = useState(null)
   const [endDate, setEndDate] = useState(null)
-  const [history, setHistory] = useState([])
+  const [access, setAccessLogs] = useState([])
 
   // 1) Al montar, cargamos el listado de usuarios para el select
   useEffect(() => {
@@ -27,40 +29,40 @@ export default function ChangeHistory() {
 
   // 2) Al montar, cargamos el historial completo
   useEffect(() => {
-    getChangeHistory()
-      .then(res => setHistory(res.data))
+    getAccessLogs()
+      .then(res => setAccessLogs(res.data))
       .catch(err => console.error(err))
   }, [])
-
+  
   // 3) Función al click de “Buscar”
   const onSearch = () => {
     if (selectedUser && startDate && endDate) {
       // Usuario + rango de fechas
-      getChangeHistoryByUserAndDates(
+      getAccessLogsByUserAndDates(
         selectedUser.value,
         startDate.toISOString(),
         endDate.toISOString()
-      ).then(res => setHistory(res.data))
+      ).then(res => setAccessLogs(res.data))
     } else if (selectedUser) {
       // Solo usuario
-      getChangeHistoryByUser(selectedUser.value)
-        .then(res => setHistory(res.data))
+      getAccessLogsByUser(selectedUser.value)
+        .then(res => setAccessLogs(res.data))
     } else if (startDate && endDate) {
       // Solo rango
-      getChangeHistoryByDateRange(
+      getAccessLogsByDateRange(
         startDate.toISOString(),
         endDate.toISOString()
-      ).then(res => setHistory(res.data))
+      ).then(res => setAccessLogs(res.data))
     } else {
       // Sin filtro: podrías recuperar todo… o limpiar
-      getChangeHistory()
-        .then(res => setHistory(res.data))
+      getAccessLogs()
+        .then(res => setAccessLogs(res.data))
     }
   }
 
   return (
     <div className={styles.container}>
-      <h2>Bitácora de cambios</h2>
+      <h2>Bitácora de accesos</h2>
 
       <div className={styles.filters}>
         <div className={styles.filterItem}>
@@ -100,25 +102,33 @@ export default function ChangeHistory() {
         <thead>
           <tr>
             <th>Usuario</th>
-            <th>Fecha</th>
-            <th>Hora</th>
-            {/* <th>Acción realizada</th> */}
-            <th>Módulo</th>
-            {/* <th>Empresa</th> */}
+            <th>Fecha de inicio</th>
+            <th>Hora de inicio</th>
+            <th>Fecha de fin</th>
+            <th>Hora de fin</th>
           </tr>
         </thead>
         <tbody>
-          {history.map((item) => (
-            <tr key={item.id}>
-              <td>{item.userFullName || '-'}</td>
-              <td>{new Date(item.date).toLocaleDateString()}</td>
-              <td>{new Date(item.date).toLocaleTimeString()}</td>
-              {/* <td>{item.actionPerformed}</td> */}
-              <td>{item.moduleName}</td>
-              {/* <td>{item.companyName}</td> */}
-            </tr>
-          ))}
-          {history.length === 0 && (
+          {access.map((item) => {
+            const startDateTime = item.dateStartDate && item.dateStartTime
+              ? new Date(`${item.dateStartDate}T${item.dateStartTime}`)
+              : null;
+
+            const endDateTime = item.dateEndDate && item.dateEndTime
+              ? new Date(`${item.dateEndDate}T${item.dateEndTime}`)
+              : null;
+
+            return (
+              <tr key={item.id}>
+                <td>{item.user?.firstName} {item.user?.lastName}</td>
+                <td>{startDateTime ? startDateTime.toLocaleDateString() : '-'}</td>
+                <td>{startDateTime ? startDateTime.toLocaleTimeString() : '-'}</td>
+                <td>{endDateTime ? endDateTime.toLocaleDateString() : '-'}</td>
+                <td>{endDateTime ? endDateTime.toLocaleTimeString() : '-'}</td>
+              </tr>
+            );
+          })}
+          {access.length === 0 && (
             <tr>
               <td colSpan="6" style={{ textAlign: 'center' }}>
                 Sin resultados
@@ -126,6 +136,7 @@ export default function ChangeHistory() {
             </tr>
           )}
         </tbody>
+
       </table>
     </div>
   )

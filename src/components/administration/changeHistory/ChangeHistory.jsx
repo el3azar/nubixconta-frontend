@@ -107,7 +107,7 @@ export default function ChangeHistory() {
         </thead>
         <tbody>
           {history.map((item) => (
-            <tr key={item.id}>
+            <tr key={item.id }>
               <td>{item.userFullName || '-'}</td>
               <td>{new Date(item.date).toLocaleDateString()}</td>
               <td>{new Date(item.date).toLocaleTimeString()}</td>
