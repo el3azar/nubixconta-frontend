@@ -17,16 +17,12 @@ const RegisterCompanyView = () => {
     nit: '',
     dui: '',
     nrc: ''
-  });
-
-  // Estado para errores de validación
-  
+  });  
   // Estado para saber si es persona jurídica o natural
   const [personType, setPersonType] = useState('juridica');
   const [errors, setErrors] = useState({});
 
-
-  // 🔄 Maneja los cambios en los inputs del formulario
+  //  Maneja los cambios en los inputs del formulario
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
@@ -42,7 +38,7 @@ const RegisterCompanyView = () => {
 
   };
 
-  // ✅ Validación + Registro
+  // Validación + Registro
   const handleRegister = async() => {
     const newErrors = {};
     if (form.nombre.trim() === '') newErrors.nombre = 'Este campo es obligatorio.';
@@ -61,7 +57,6 @@ const RegisterCompanyView = () => {
       else if (form.dui.length !== 10) newErrors.dui = 'Debe tener 10 caracteres.';
     }
 
-    // ⚠️ Si hay errores, mostramos alerta
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       Swal.fire({
@@ -74,7 +69,7 @@ const RegisterCompanyView = () => {
     }
 
     try {
-      // 💾 Agregamos empresa al contexto
+      // Se agrega empresa al contexto
 
        const companyData = {
       companyName: form.nombre,
@@ -113,7 +108,7 @@ const RegisterCompanyView = () => {
         navigate('/admin/empresas');
       }
     });
-      // 🔁 Limpia el formulario después del registro
+      // Limpia el formulario después del registro
       setForm({ nombre: '',giro:'',direccion:'', nit: '', dui: '', nrc: '' });
       setPersonType('juridica');
       setErrors({});
@@ -127,7 +122,7 @@ const RegisterCompanyView = () => {
     }
   };
 
-  // 🔙 Redirección al presionar "Cancelar"
+  // Redirección al presionar "Cancelar"
   const handleCancel = () => {
     navigate('/admin/empresas');
   };

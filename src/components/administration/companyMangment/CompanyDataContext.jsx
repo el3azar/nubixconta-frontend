@@ -39,7 +39,7 @@ export const CompanyDataProvider = ({ children }) => {
     return rawCompanies.map((c) => {
       const assignedAssistantName = c.userId ? (assistants[c.userId] || '') : '';
       return {
-      id: c.id, // O usa c.id si el backend lo provee
+      id: c.id, 
       nombre: c.companyName,
       nit: c.companyNit || '',
       dui: c.companyDui || '',
@@ -90,10 +90,8 @@ export const CompanyDataProvider = ({ children }) => {
     setCompanies(prev => [...prev, { ...newCompany, id }]);
   };
 
-  //  Actualiza los datos de una empresa existente
 const updateCompany = async (company) => {
   try {
-    // Enviar al backend
     await updateCompanyService(company.id, {
       companyName: company.companyName,
       turnCompany: company.turnCompany,
@@ -105,11 +103,10 @@ const updateCompany = async (company) => {
       userId: company.userId || null,
     });
 
-    // 🔁 Actualizar localmente en el estado del contexto
+    // Actualiza localmente en el estado del contexto
    setCompanies(prev =>
         prev.map(c => {
           if (c.id === company.id) {
-            // Recalcular assignedAssistantName si el userId ha cambiado
             const newAssignedAssistantName = company.userId ? (assistants[company.userId] || '') : '';
             return { ...c, ...company, assignedAssistantName: newAssignedAssistantName };
           }
@@ -124,7 +121,7 @@ const updateCompany = async (company) => {
   }
 };
 
-  // ✅ Cambia el estado "activa" de una empresa
+  //  Cambia el estado "activa" de una empresa
   const toggleCompanyStatus = async (id, newActiveStatus) => {
     try {
       await updateCompanyService(id, { activeStatus: newActiveStatus });
@@ -141,7 +138,7 @@ const updateCompany = async (company) => {
       return false;
     }
   };
-  // ✅ Obtiene una empresa por ID (útil para vista de detalles o edición)
+  // Obtiene una empresa por ID (útil para vista de detalles o edición)
 
 const getCompanyById = async (id) => {
   try {
@@ -166,7 +163,7 @@ const getCompanyById = async (id) => {
     return null;
   }
 };
-// NUEVA FUNCIÓN: Obtener opciones para el select de asistentes
+// Obtener opciones para el select de asistentes
   const getAssistantOptions = useCallback(() => {
     if (loadingAssistants) {
       return []; // Devuelve un array vacío mientras cargan
@@ -175,7 +172,7 @@ const getCompanyById = async (id) => {
       value: id, // El ID del usuario como valor
       label: name, // El nombre completo como etiqueta
     }));
-    return [{ value: '', label: 'Todos' }, ...options]; // Añade la opción "Todos"
+    return [{ value: '', label: 'Todos' }, ...options];
   }, [assistants, loadingAssistants]);
 
   return (

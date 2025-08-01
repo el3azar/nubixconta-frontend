@@ -1,17 +1,15 @@
-// src/components/administration/companyManagment/ViewCompanyDetails.jsx
-
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { useCompany } from './CompanyDataContext'; // Contexto global
+import { useCompany } from './CompanyDataContext';
 import styles from "../../../styles/sales/ViewCustomers.module.css";
 const ViewCompanyDetails = () => {
-  const { id } = useParams(); // ID desde la URL
+  const { id } = useParams(); 
   const navigate = useNavigate();
-  const { getCompanyById, loadingAssistants } = useCompany(); // Función del contexto y estado de carga
+  const { getCompanyById, loadingAssistants } = useCompany(); 
 
   const [empresa, setEmpresa] = useState(null);
-  const [loadingCompany, setLoadingCompany] = useState(true); // Nuevo estado de carga para la empresa
+  const [loadingCompany, setLoadingCompany] = useState(true); 
 
   useEffect(() => {
     const fetchCompanyDetails = async () => {
@@ -61,8 +59,6 @@ const ViewCompanyDetails = () => {
   }
 
   if (!empresa) {
-    // Esto debería ser manejado por el Swal.fire anterior,
-    // pero como fallback si por alguna razón 'empresa' es null aquí.
     return null;
   }
 
