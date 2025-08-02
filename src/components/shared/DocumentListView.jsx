@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import { FaArrowRight } from 'react-icons/fa';
 import { DocumentTable } from './DocumentTable';
 import styles from '../../styles/shared/DocumentView.module.css';
+import { useCompany } from '../../context/CompanyContext';
 
 export const DocumentListView = ({
   pageTitle,      
@@ -32,9 +33,11 @@ export const DocumentListView = ({
   // Ahora el estado de los filtros es más genérico, se adapta a lo que envíe el formulario.
   const [filters, setFilters] = useState({});
 
+  const { company } = useCompany();
+
   // --- 2. LÓGICA DE DATOS (QUERIES Y MUTATIONS) ---
   const { data: documents = [], isLoading, isError, error } = useQuery({
-    queryKey: [queryKey, filters, sortBy],
+    queryKey: [queryKey, filters, sortBy, company],
    queryFn: () => {
       // Lógica final que arregla el error "getAll is not a function".
       if (documentService.getAll && Object.keys(filters).length === 0) {
@@ -42,8 +45,10 @@ export const DocumentListView = ({
       }
       return documentService.search(filters);
     },
-    // La query solo se activa si la carga inicial está habilitada O si hay filtros.
-    enabled: initialFetchEnabled || Object.keys(filters).length > 0,
+    // La consulta solo se ejecutará si:
+    // 1. Ya hay una empresa cargada en el contexto (`!!company`).
+    // 2. Y además, se cumple la lógica original (carga inicial o filtros activos).
+    enabled: !!company && (initialFetchEnabled || Object.keys(filters).length > 0),
     staleTime: 1000 * 60 * 3,
   });
 
