@@ -1,11 +1,11 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
-import { loginService } from '../services/loginServices'; 
 import { useNavigate } from 'react-router-dom';
 import styles from '../styles/Login.module.css';
 import { FaArrowRightToBracket } from 'react-icons/fa6';
 import { FaInfoCircle } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext'; 
+import { authService } from '../services/authServices';
 
 export default function Login() {
     const { register, handleSubmit, formState: { errors } } = useForm();
@@ -19,11 +19,15 @@ export default function Login() {
             password: data.password
         };
 
-        const response = await loginService(payload);
+        const response = await authService.login(payload);
         if (response?.token) {
-            login(response.token, response.role); 
-            localStorage.setItem("token", response.token); // ✅ GUARDAR EL TOKEN AQUÍ
-            login(response.token, response.role); // <- Actualiza context y sessionStorage
+             // Le pasamos toda la información necesaria al AuthContext.
+                // El AuthContext se encargará de:
+                //   - Actualizar el estado de React.
+                //   - Guardar el token en sessionStorage (según su propia lógica).
+                //   - Guardar el rol en sessionStorage.
+                //   - Guardar el accessLogId en sessionStorage.
+                login(response.token, response.role, response.accessLogId);
             if (response.role === true || response.role === "true") {
                 navigate("/admin");
             } else {

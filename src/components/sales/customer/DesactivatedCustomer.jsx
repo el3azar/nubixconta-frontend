@@ -7,17 +7,21 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCustomerService } from '../../../services/sales/customerService';
 import { useNavigate } from 'react-router-dom';
 import SubMenu from "../SubMenu"; 
+import { useCompany } from '../../../context/CompanyContext';
 
 const DesactivatedCustomer = () => {
   // --- LÓGICA NUEVA ---
   const { getInactiveCustomers, reactivateCustomer } = useCustomerService();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { company } = useCompany();
 
   // useQuery para obtener los clientes inactivos
   const { data: customers = [], isLoading, isError, error } = useQuery({
-    queryKey: ['customers', 'inactive'], // Clave única para esta lista
+    queryKey: ['customers', 'inactive',company], // Clave única para esta lista
     queryFn: getInactiveCustomers,
+     // Desactivamos la consulta si aún no se ha cargado una empresa en el contexto.
+    enabled: !!company, 
   });
 
   // useMutation para la acción de reactivar
