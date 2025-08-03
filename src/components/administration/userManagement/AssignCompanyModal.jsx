@@ -71,23 +71,20 @@ const AssignCompanyModal = ({ isOpen, onClose, user, showSuccess, showError, onC
     });
 
      if (confirm.isConfirmed) {
-try {
- // Se realiza la llamada al servicio y se guarda la respuesta
-     const response = await assignUserToCompany(company.id, user.id);
-     // Verifica que la respuesta sea la esperada antes de mostrar el éxito
-     if (response && response.status >= 200 && response.status < 300) {
-     showSuccess(`${companyActionText} de empresa realizada correctamente`);
-         } else {
-             // Si la respuesta no es de éxito pero no generó una excepción
-         showError(response.data?.message || `Error en la ${companyActionText.toLowerCase()} de la empresa`);
+    try {
+      await assignUserToCompany(company.id, user.id);
+
+       showSuccess(`${companyActionText} de empresa realizada correctamente`);
+       // Actualizamos la lista de empresas y cerramos el modal.
+        await fetchCompanies();
+          onCompanyAssigned();
+          onClose();
+      // Manejo según el contenido del response
+
+    } catch (error) {
+      
      }
 
-     await fetchCompanies();
-     onCompanyAssigned();
-        } catch (err) {
-             // Este bloque se ejecuta si la promesa se rechaza (e.g., error de red o HTTP 4xx/5xx)
-         showError(err.response?.data?.message || `Error en la ${companyActionText.toLowerCase()} de la empresa`);
-        }
     }
   };
 
@@ -124,6 +121,7 @@ try {
               </select>
             </div>
           </div>
+            <div className={styles.tableContainer}>
           <table className={styles.companyTable}>
             <thead>
               <tr>
@@ -162,6 +160,7 @@ try {
               )}
             </tbody>
           </table>
+          </div>
         </div>
         <div className={styles.modalFooter}>
           <button className={formStyles.cancelar} onClick={onClose}>

@@ -3,7 +3,7 @@ import {
   getAllUsers,
   createUser,
   updateUser,
-} from "../../../services/administration/userService";
+} from "../../../services/administration/change/userService";
 import styles from "../../../styles/administration/UserManagementDashboard.module.css";
 import { FaUser, FaEdit,FaEye, FaEyeSlash } from "react-icons/fa";
 import {  FiUserPlus } from 'react-icons/fi';
@@ -11,6 +11,7 @@ import Swal from "sweetalert2";
 import UserForm from "./UserForm";
 import { Building,Search } from "lucide-react"
 import AssignCompanyModal from "./AssignCompanyModal"
+import { useNavigate } from "react-router-dom";
 
 
 const UserManagementDashboard = () => {
@@ -19,6 +20,7 @@ const UserManagementDashboard = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userToAssignCompany, setUserToAssignCompany] = useState(null);
+  const navigate = useNavigate();
 
   /* -------- helpers SweetAlert -------- */
 const showSuccess = (msg) =>
@@ -58,6 +60,11 @@ const showSuccess = (msg) =>
 
   /* -------------- CRUD helpers -------------- */
   const handleEdit = (user) => setSelectedUser(user);
+
+   /* -------------- navegación -------------- */
+  const handleViewAssignedCompanies = (user) => {
+    navigate(`/administration/users/${user.id}/companies`); 
+  };
 
   const handleSubmit = (formData) => {
  const promise = formData.id
@@ -125,13 +132,13 @@ const showSuccess = (msg) =>
       // Llama a la función updateUser del servicio para enviar los cambios al backend
       updateUser(user.id, updatedUser)
         .then(() => {
-          toastSuccess(
+          showSuccess(
             `Usuario ${!user.status ? "activado" : "desactivado"} correctamente`
           );
           fetchUsers(); // Vuelve a cargar la lista de usuarios para reflejar el cambio
         })
         .catch((err) =>
-          toastError(err.response?.data?.message || err.message)
+          showError(err.response?.data?.message || err.message)
         );
     });
   };
@@ -245,7 +252,7 @@ const showSuccess = (msg) =>
         onClose={handleCloseModal}
         onAssignCompany={handleAssign}
         user={userToAssignCompany}
-        showSuccess={showSuccess} // <-- ¡Propiedad añadida!
+        showSuccess={showSuccess} 
         showError={showError} 
       />
       </div>
