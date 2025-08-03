@@ -35,21 +35,34 @@ export const DocumentListView = ({
 
   const { company } = useCompany();
 
+
   // --- 2. LÓGICA DE DATOS (QUERIES Y MUTATIONS) ---
-  const { data: documents = [], isLoading, isError, error } = useQuery({
-    queryKey: [queryKey, filters, sortBy, company],
-   queryFn: () => {
-      // Lógica final que arregla el error "getAll is not a function".
+ const { data: documents = [], isLoading, isError, error } = useQuery({
+    // La queryKey sigue dependiendo de `company`. Esto es CRUCIAL.
+    // Cuando `company` cambia de null al objeto real, la key cambia y react-query actúa.
+    queryKey: [queryKey, company?.id, filters, sortBy], 
+    
+    // La función de la consulta no cambia fundamentalmente.
+    queryFn: () => {
+      // Importante: No ejecutar si no hay compañía (aunque 'enabled' ya lo previene).
+      // Esto se lee como: "si 'company' existe, dame su 'id', si no, evalúa como undefined".
+      if (!company?.id) {
+          return Promise.resolve([]); // No hacer nada si no hay ID de empresa.
+      }
+
       if (documentService.getAll && Object.keys(filters).length === 0) {
         return documentService.getAll(sortBy);
       }
       return documentService.search(filters);
     },
-    // La consulta solo se ejecutará si:
-    // 1. Ya hay una empresa cargada en el contexto (`!!company`).
-    // 2. Y además, se cumple la lógica original (carga inicial o filtros activos).
-    enabled: !!company && (initialFetchEnabled || Object.keys(filters).length > 0),
+    
+    // LA CLAVE ESTÁ AQUÍ: La consulta solo se habilita si 'company' es un objeto con datos.
+    // No necesitamos 'initialFetchEnabled' ni complicar la lógica.
+    // Si hay empresa, la consulta se activa. Si no, se desactiva. Punto.
+    enabled: !!company?.id, // Esta línea ya es correcta.
+    
     staleTime: 1000 * 60 * 3,
+    refetchOnWindowFocus: false, // Buena práctica para evitar refetch innecesarios.
   });
 
   // Mutaciones no cambian
@@ -130,6 +143,22 @@ const handleDelete = (id) => {
       showCancelButton: true, confirmButtonText: 'Sí, anular', cancelButtonText: 'Cancelar'
     }).then(result => result.isConfirmed && cancelDoc(id));
   };
+
+  // PASO 2: GUARDIA DE RENDERIZADO CONDICIONAL (AHORA ESTÁ AQUÍ)
+  // Después de que TODOS los hooks han sido llamados, ahora sí podemos
+  // decidir qué JSX mostrar.
+  // ==================================================================
+  if (!company) {
+    return (
+      <main>
+        <h2 className="mb-4">{pageTitle}</h2>
+        <div className="text-center mt-5">
+          {/* <Spinner /> Si tienes un componente de Spinner */}
+          <p className="mt-2">Esperando selección de empresa...</p>
+        </div>
+      </main>
+    );
+  }
 
   // --- 4. RENDERIZADO DEL ESQUELETO ---
   return (

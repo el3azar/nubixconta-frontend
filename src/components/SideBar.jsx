@@ -82,7 +82,7 @@ const SideBar = ({ sidebarOpen, toggleSidebar }) => {
             <div className="mt-auto w-100">
                 <Link
                     to="/empresas"
-                    className="btn btn-outline-info w-100 d-flex align-items-center justify-content-center"
+                    className="btn btn-outline-light w-100 d-flex align-items-center justify-content-center"
                     style={{ marginBottom: '0.5rem', minHeight: 48 }}
                     title="Cambiar de Empresa"
                 >
