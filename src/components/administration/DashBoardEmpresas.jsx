@@ -12,7 +12,7 @@ import { toast } from "react-hot-toast"; // Para notificaciones
 
 const DashBoardEmpresas = () => {
   const { token,login,role } = useAuth();
-  const { setCompany } = useCompany();
+  const { selectCompany } = useCompany();
   const [empresas, setEmpresas] = useState([]);
    const navigate = useNavigate();
 
@@ -69,11 +69,7 @@ const DashBoardEmpresas = () => {
       //    Llamamos a la función 'login' de nuestro AuthContext. Ella se encarga de
       //    actualizar el estado de React y el sessionStorage.
       login(newScopedToken, role); // No pasamos accessLogId aquí porque no se genera uno nuevo.
-
-      // 4. ACTUALIZAR EL ESTADO DE LA EMPRESA PARA LA UI
-      //    Esto permite que otros componentes (como el SideBar) muestren el nombre de la empresa activa.
-      setCompany(empresaSeleccionada);
-      sessionStorage.setItem("empresaActiva", JSON.stringify(empresaSeleccionada));
+      selectCompany(empresaSeleccionada);
       
       toast.dismiss('loading-company');
       toast.success(`Bienvenido a ${empresaSeleccionada.companyName}`);
