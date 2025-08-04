@@ -1,12 +1,12 @@
 // src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { logoutService } from "../services/LogoutService";
+import { authService } from "../services/authServices"; 
 
 // Claves para sessionStorage (puedes cambiarlas si quieres)
 const TOKEN_KEY = "nubix_token";
 const ROLE_KEY = "nubix_role";
+// Es una buena práctica tener la clave del accessLogId como constante también
 const ACCESS_LOG_ID_KEY = "nubix_access_log_id";
-
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
@@ -19,48 +19,46 @@ export function AuthProvider({ children }) {
     return null;
   });
 
-  const [accessLogId, setAccessLogId] = useState(() => {
-        const storedLogId = sessionStorage.getItem(ACCESS_LOG_ID_KEY);
-        return storedLogId && storedLogId !== "undefined" ? Number(storedLogId) : null;
-    });
   // Método para guardar token y rol al hacer login
-  const login = (jwt, roleValue,logId) => {
+  const login = (jwt, roleValue, accessLogId) => {
     setToken(jwt);
     setRole(roleValue);
-
-    // Convertir logId a número y solo guardar si es válido
-    const numericLogId = (logId !== null && logId !== undefined && logId !== "undefined") ? Number(logId) : null;
-    setAccessLogId(numericLogId);
     sessionStorage.setItem(TOKEN_KEY, jwt);
-    sessionStorage.setItem(ROLE_KEY, roleValue);
-     if (numericLogId !== null) {
-        sessionStorage.setItem(ACCESS_LOG_ID_KEY, numericLogId.toString()); 
-    } else {
-        sessionStorage.removeItem(ACCESS_LOG_ID_KEY); 
-    }// <-- Guarda el accessLogId
+    sessionStorage.setItem(ROLE_KEY, roleValue); // Guarda boolean como string
+    // Guardamos el ID del log para usarlo al cerrar sesión
+    if (accessLogId) {
+      sessionStorage.setItem(ACCESS_LOG_ID_KEY, accessLogId);
+    }
   };
 
+  /**
+   * Logout global: Notifica al backend y luego limpia el estado del frontend.
+   * Ahora es una función asíncrona.
+   */
+  const logout = async () => {
+    const currentToken = sessionStorage.getItem(TOKEN_KEY);
+    const accessLogId = sessionStorage.getItem(ACCESS_LOG_ID_KEY);
 
-const logout = async () => { 
-
-    if (accessLogId && token) { 
-        try {
-            await logoutService(token, accessLogId);
-            console.log("Sesión registrada como cerrada en el backend.");
-        } catch (error) {
-            console.error('Error al intentar registrar cierre de sesión en backend:', error);
-        }
+    // Usamos un bloque try/finally para asegurar que el frontend siempre se limpie,
+    // incluso si la llamada a la API falla.
+    try {
+      if (currentToken && accessLogId) {
+        // 1. Notificar al backend que estamos cerrando sesión.
+        await authService.logout({ accessLogId: parseInt(accessLogId, 10) }, currentToken);
+      }
+    } catch (error) {
+      // Generalmente, no necesitamos hacer nada aquí. El error ya se muestra en la consola
+      // desde el servicio. Lo más importante es que el usuario SÍ pueda cerrar sesión del frontend.
+    } finally {
+      // 2. Limpiar todo en el frontend, sin importar el resultado de la API.
+      setToken(null);
+      setRole(null);
+      sessionStorage.removeItem(TOKEN_KEY);
+      sessionStorage.removeItem(ROLE_KEY);
+      sessionStorage.removeItem("empresaActiva");
+      sessionStorage.removeItem(ACCESS_LOG_ID_KEY); // Limpiamos también el log ID
     }
-
-    
-    setToken(null);
-    setRole(null);
-    setAccessLogId(null); 
-    sessionStorage.removeItem(TOKEN_KEY);
-    sessionStorage.removeItem(ROLE_KEY);
-    sessionStorage.removeItem("empresaActiva");
-    sessionStorage.removeItem(ACCESS_LOG_ID_KEY);
- };
+  };
 
   // Sincroniza el contexto si el storage cambia en otras pestañas/ventanas
   useEffect(() => {

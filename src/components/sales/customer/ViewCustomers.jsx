@@ -15,7 +15,11 @@ const ViewCustomers = () => {
   const [filters, setFilters] = useState({});
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { register, handleSubmit, control } = useForm();
+  const { register, handleSubmit, control,reset } = useForm();
+
+    // Variable computada para saber si hay filtros activos. No necesita ser un estado.
+  const areFiltersActive = Object.keys(filters).length > 0;
+
 
   // useQuery reemplaza tu useEffect y useState para la lista de clientes
   const { data: customers = [], isLoading, isError, error } = useQuery({
@@ -42,7 +46,15 @@ const ViewCustomers = () => {
     const activeFilters = Object.fromEntries(Object.entries(data).filter(([_, v]) => v && String(v).trim() !== ''));
     setFilters(activeFilters);
   };
+  // --- CAMBIO: Función única para limpiar y mostrar todos ---
+  // Tanto "Mostrar Todos" como "Limpiar Filtros" harán lo mismo.
+  const handleClearAndShowAll = () => {
+    reset({ name: '', lastName: '', dui: '', nit: '' }); // Limpia los campos del formulario.
+    setFilters({}); // Resetea el estado de los filtros, recargando la tabla.
+  };
+  // --- CAMBIO TERMINA ---
 
+  // --- CAMBIO TERMINA ---
 const handleDeactivate = (id, name) => {
     Swal.fire({
       title: `¿Desactivar a ${name}?`,
@@ -107,15 +119,48 @@ const handleDeactivate = (id, name) => {
                   )}
                 />
               </div>
-            <div className="col-md-6 col-lg-6 mb-4"><label className="form-label fw-bold text-black">NIT:</label><input type="text" className="form-control" {...register("nit")} /></div>
+            {/* --- CAMBIO INICIA: CAMPO DE BÚSQUEDA NIT CON MÁSCARA --- */}
+            {/* Se ha aplicado la misma máscara que en el formulario de creación/edición */}
+            {/* para mantener la consistencia en la experiencia del usuario. */}
+            <div className="col-md-6 col-lg-6 mb-4">
+              <label htmlFor="searchNit" className="form-label fw-bold text-black">NIT:</label>
+              <Controller name="nit" control={control} render={({ field: { onChange, onBlur, value } }) => (
+                  <IMaskInput id="searchNit" mask="0000-000000-000-0" className="form-control" placeholder="####-######-###-#" value={value || ''} onBlur={onBlur} onAccept={(acceptedValue) => onChange(acceptedValue)} />
+              )}/>
+            </div>
+            {/* --- CAMBIO TERMINA --- */}
           </div>
+          {/* --- CAMBIO INICIA: LÓGICA DE TRES BOTONES --- */}
           <div className="row">
-            <div className="col-12 col-md-4 mx-auto d-flex justify-content-center">
-              <button type="submit" className={`btn ${styles.searchBtn} w-75 w-md-auto px-4 py-2 d-flex align-items-center justify-content-center gap-2`}>
+            <div className="col-12 d-flex justify-content-center gap-3">
+              
+              {/* 1. Botón "Buscar", siempre visible */}
+              <button type="submit" className={`btn ${styles.searchBtn} px-4 py-2 d-flex align-items-center justify-content-center gap-2`}>
                 <i className="bi bi-search" />Buscar
               </button>
+              
+              {/* 2. Botón "Mostrar Todos", siempre visible y sin icono */}
+              <button 
+                type="button" 
+                className={`btn ${styles.searchBtn} px-4 py-2`} // Se quita d-flex y gap para alinear el texto
+                onClick={handleClearAndShowAll}
+              >
+                Mostrar Todos
+              </button>
+
+              {/* 3. Botón "Limpiar Filtros", solo visible si areFiltersActive es true */}
+              {areFiltersActive && (
+                <button 
+                  type="button" 
+                  className={`btn ${styles.searchBtn} px-4 py-2 d-flex align-items-center justify-content-center gap-2`}
+                  onClick={handleClearAndShowAll}
+                >
+                 Limpiar Filtros
+                </button>
+              )}
             </div>
           </div>
+          {/* --- CAMBIO TERMINA --- */}
         </form>
       </section>
 
