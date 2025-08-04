@@ -45,6 +45,7 @@
   border-radius: 0.5rem;
   padding-top: 0.35rem;
   padding-bottom: 0.35rem;
+  resize: none; 
 }
 
 /* Estilo unificado para la tabla de detalles */

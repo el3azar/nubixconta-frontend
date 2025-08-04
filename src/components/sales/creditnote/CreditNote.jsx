@@ -6,19 +6,20 @@ import SubMenu from "../SubMenu";
 import { CreditNoteService } from '../../../services/sales/CreditNoteService';
 import { DefaultFilterComponent, DefaultActionsComponent } from '../../shared/DocumentViewDefaults';
 import { formatDate } from '../../../utils/dateFormatter';
+import viewStyles from '../../../styles/shared/DocumentView.module.css';
 
 // Configuración de columnas específica para Notas de Crédito
 const creditNoteColumns = [
-  { header: 'Correlativo', accessor: 'idNotaCredit' },
-  { header: 'N° Doc.', accessor: 'documentNumber' },
-  { header: 'Fecha', cell: (doc) => formatDate(doc.creditNoteDate || doc.issueDate) },
-  { header: 'Estado', accessor: 'creditNoteStatus' },
-  { header: 'Cliente', cell: (doc) => doc.sale?.customer?.customerName || 'N/A' },
-  { header: 'Días Crédito', cell: (doc) => doc.sale?.customer?.creditDay || '-' },
+  { header: 'Correlativo', accessor: 'idNotaCredit', style: { minWidth: '100px' } },
+  { header: 'N° Doc.', accessor: 'documentNumber', style: { minWidth: '130px' } },
+  { header: 'Fecha', cell: (doc) => formatDate(doc.creditNoteDate || doc.issueDate), style: { minWidth: '140px' } },
+  { header: 'Estado', accessor: 'creditNoteStatus', style: { minWidth: '110px' } },
+  { header: 'Cliente', cell: (doc) => doc.sale?.customer?.customerName || 'N/A', style: { minWidth: '250px' },className: viewStyles.textAlignLeft },
+  { header: 'Días Crédito', cell: (doc) => doc.sale?.customer?.creditDay || '-', style: { minWidth: '120px' } },
   // Columna condicional que existía antes
-  { header: 'Venta Afectada', cell: (doc) => doc.sale?.documentNumber || 'N/A' },
-  { header: 'Descripción', accessor: 'description' },
-  { header: 'Total', cell: (doc) => `$${doc.totalAmount?.toFixed(2)}` },
+  { header: 'Venta Afectada', cell: (doc) => doc.sale?.documentNumber || 'N/A', style: { minWidth: '150px' } },
+  { header: 'Descripción', accessor: 'description',style: { minWidth: '350px' },className: viewStyles.textAlignLeft },
+  { header: 'Total', cell: (doc) => `$${doc.totalAmount?.toFixed(2)}`, style: { minWidth: '150px' } },
 ];
 
 export default function CreditNote() {

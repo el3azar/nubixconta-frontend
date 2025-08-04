@@ -18,7 +18,7 @@ const DocumentTableRow = ({ doc, columns, actionsProps, styles, showRowActions }
     <tr className={rowClass}>
       {/* 1. Renderiza dinámicamente cada celda según la configuración */}
       {columns.map((col) => (
-        <td key={col.header}>
+        <td key={col.header} style={col.style || {}} className={col.className || styles.textAlignCenter}>
           {/* 
             2. Usa una función de renderizado `cell` si se proporciona (para formato o datos anidados).
                Si no, accede directamente a la propiedad del objeto usando `accessor`.

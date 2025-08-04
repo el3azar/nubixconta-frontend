@@ -8,6 +8,7 @@ import { DocumentTotals } from '../../shared/form/DocumentTotals';
 // --- IMPORTAMOS LA NUEVA TABLA GENÉRICA ---
 import { DetailsTable } from '../../shared/form/DetailsTable';
 import styles from '../../../styles/shared/DocumentForm.module.css'; // Usa el CSS compartido
+import TextareaAutosize from 'react-textarea-autosize';
 
 export default function CreditNoteForm(props) {
    const {
@@ -80,7 +81,7 @@ export default function CreditNoteForm(props) {
           <div className="row g-3 align-items-end">
             <div className="col-md-4"><label className="form-label">N° de Documento</label><input className="form-control" {...register('documentNumber')} />{errors.documentNumber && <small className='text-danger'>{errors.documentNumber.message}</small>}</div>
             <div className="col-md-4"><label className="form-label">Fecha de Emisión</label><input className="form-control" type="date" {...register('issueDate')} readOnly />{errors.issueDate && <small className='text-danger'>{errors.issueDate.message}</small>}</div>
-            <div className="col-md-4"><label className="form-label">Descripción</label><input className="form-control" {...register('description')} />{errors.description && <small className='text-danger'>{errors.description.message}</small>}</div>
+            <div className="col-md-4"><label className="form-label">Descripción</label><TextareaAutosize  minRows={1} maxRows={3} {...register('description')} />{errors.description && <small className='text-danger'>{errors.description.message}</small>}</div>
           </div>
         </section>
 
