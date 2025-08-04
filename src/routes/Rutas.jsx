@@ -49,6 +49,8 @@ import NewCreditNote from '../components/sales/creditnote/NewCreditNote';
 import EditCreditNote from '../components/sales/creditnote/EditCreditNote';
 import SalesReport from '../components/sales/reports/SalesReport';
 import AccountingEntry from '../components/sales/sales/AccountingEntry';
+import UserCompaniesDashboard from '../components/administration/userManagement/UserCompaniesDashboard';
+import AccessLogs from '../components/administration/changeHistory/AccessLogs';
 
 
 
@@ -101,13 +103,11 @@ export default function Rutas() {
 
                   {/* ======== SECCIÓN: ADMINISTRACIÓN ======== */}
                   {/* Cada opción principal del panel de administración debe agregarse aquí */}
-                  <Route path="/admin" element={<DashBoardGeneralAdmin />} />
-                  {/* 
-                    Reemplaza <div> por tu componente principal de cada módulo:
-                    Ejemplo:
-                      <Route path="/admin/usuarios" element={<UsuariosAdmin />} />
-                  */}
-                  <Route path="/admin/usuarios" element={<UserManagementDashboard />} />
+                    {/* Rutas para el usuario*/}
+             <Route path="/admin" element={<DashBoardGeneralAdmin />} />
+             <Route path="/admin/usuarios" element={<UserManagementDashboard />} />
+             <Route path="/administration/users/:userId/companies" element={<UserCompaniesDashboard/>} />
+
                   {/* Rutas extras que necesites en gestion de usuarios */}
                   <Route path="/admin/empresas" element={
                     <CompanyDataProvider>
@@ -142,7 +142,7 @@ export default function Rutas() {
 
                   <Route path="/admin/bitacora-cambios" element={<ChangeHistory />} />
                   {/* Rutas extras que necesites en Bitácora de cambios*/}
-                  <Route path="/admin/bitacora-accesos" element={<div>Bitácora de accesos</div>} />
+                  <Route path="/admin/bitacora-accesos" element={<AccessLogs />} />
                   {/* Rutas extras que necesites en Bitácora de accesos*/}
 
                   {/* ======== SECCIÓN: MÓDULOS OPERATIVOS ======== */}
