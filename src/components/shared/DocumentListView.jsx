@@ -56,10 +56,11 @@ export const DocumentListView = ({
       return documentService.search(filters);
     },
     
-    // LA CLAVE ESTÁ AQUÍ: La consulta solo se habilita si 'company' es un objeto con datos.
-    // No necesitamos 'initialFetchEnabled' ni complicar la lógica.
-    // Si hay empresa, la consulta se activa. Si no, se desactiva. Punto.
-    enabled: !!company?.id, // Esta línea ya es correcta.
+     // La consulta solo se habilita si se cumplen las siguientes reglas:
+    // 1. Siempre debe haber una empresa (`!!company?.id`).
+    // 2. Y ADEMÁS, o bien (a) la carga inicial está permitida (para Ventas/NC)
+    //    O (b) el usuario ya ha aplicado algún filtro (para Reportes).
+    enabled: !!company?.id && (initialFetchEnabled || Object.keys(filters).length > 0),
     
     staleTime: 1000 * 60 * 3,
     refetchOnWindowFocus: false, // Buena práctica para evitar refetch innecesarios.
@@ -194,13 +195,13 @@ const handleDelete = (id) => {
         )}
       </div>
 
-      <div className={styles.tableContainer + ' table-responsive'}>
+      <div className={styles.tableWrapper}>
         <table className="table table-hover align-middle">
           <thead>
             <tr>
               {/* Cabeceras dinámicas basadas en la configuración */}
-              {columns.map((col) => <th key={col.header}>{col.header}</th>)}
-              {showRowActions && <th className="text-center">Acciones</th>}
+              {columns.map((col) => <th key={col.header} style={col.style || {}} className={col.className || styles.textAlignCenter}>{col.header}</th>)}
+              {showRowActions && <th className="text-center"  style={{ minWidth: '150px' }}>Acciones</th>}
             </tr>
           </thead>
           <tbody>
