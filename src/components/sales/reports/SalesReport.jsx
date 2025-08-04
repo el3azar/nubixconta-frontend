@@ -252,14 +252,14 @@ const ReportActionsAndTitleComponent = ({ listTitle, documents }) => {
 
 // --- AC02: Columnas de la tabla en pantalla ---
 const reportColumns = [
-    { header: 'Fecha', cell: (doc) => formatDate(doc.issueDate) },
-    { header: 'N° de Documento', accessor: 'documentNumber' },
-    { header: 'Cliente', cell: (doc) => `${doc.customer?.customerName || ''} ${doc.customer?.customerLastName || ''}`.trim() },
-    { header: 'Subtotal', cell: (doc) => `$${doc.subtotalAmount?.toFixed(2)}` },
-    { header: 'IVA', cell: (doc) => `$${doc.vatAmount?.toFixed(2)}` },
-    { header: 'Total', cell: (doc) => `$${doc.totalAmount?.toFixed(2)}` },
-    { header: 'Descripcion', accessor: 'saleDescription' },
-    { header: 'Días de Crédito', cell: (doc) => doc.customer?.creditDay || '-' },
+    { header: 'Fecha', cell: (doc) => formatDate(doc.issueDate), style: { minWidth: '150px' }  },
+    { header: 'N° de Documento', accessor: 'documentNumber', style: { minWidth: '130px' } },
+    { header: 'Cliente', cell: (doc) => `${doc.customer?.customerName || ''} ${doc.customer?.customerLastName || ''}`.trim(), style: { minWidth: '250px' }, className: styles.textAlignLeft },
+    { header: 'Subtotal', cell: (doc) => `$${doc.subtotalAmount?.toFixed(2)}`, style: { minWidth: '150px' }, className: styles.textAlignRight },
+    { header: 'IVA', cell: (doc) => `$${doc.vatAmount?.toFixed(2)}`, style: { minWidth: '150px' }, className: styles.textAlignRight },
+    { header: 'Total', cell: (doc) => `$${doc.totalAmount?.toFixed(2)}`, style: { minWidth: '150px' }, className: styles.textAlignRight },
+    { header: 'Descripcion', accessor: 'saleDescription', style: { minWidth: '350px' }, className: styles.textAlignLeft },
+    { header: 'Días de Crédito', cell: (doc) => doc.customer?.creditDay || '-' ,style: { minWidth: '150px' } },
 ];
 
 export default function SalesReport() {

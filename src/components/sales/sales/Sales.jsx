@@ -6,17 +6,17 @@ import { SaleService } from '../../../services/sales/SaleService';
 import SubMenu from "../SubMenu";
 import { DefaultFilterComponent, DefaultActionsComponent } from '../../shared/DocumentViewDefaults';
 import { formatDate } from '../../../utils/dateFormatter';
-
+import viewStyles from '../../../styles/shared/DocumentView.module.css';
 // Definimos la configuración de las columnas aquí, fuera del componente.
 const salesColumns = [
-  { header: 'Correlativo', accessor: 'saleId' },
-  { header: 'N° Doc.', accessor: 'documentNumber' },
-  { header: 'Fecha', cell: (doc) => formatDate(doc.issueDate) },
-  { header: 'Estado', accessor: 'saleStatus' },
-  { header: 'Cliente', cell: (doc) => doc.customer?.customerName || 'N/A' },
-  { header: 'Días Crédito', cell: (doc) => doc.customer?.creditDay || '-' },
-  { header: 'Descripción', accessor: 'saleDescription' },
-  { header: 'Total', cell: (doc) => `$${doc.totalAmount?.toFixed(2)}` },
+  { header: 'Correlativo', accessor: 'saleId', style: { minWidth: '100px' }  },
+  { header: 'N° Doc.', accessor: 'documentNumber', style: { minWidth: '130px' }  },
+  { header: 'Fecha', cell: (doc) => formatDate(doc.issueDate),style: { minWidth: '140px' } },
+  { header: 'Estado', accessor: 'saleStatus' ,style: { minWidth: '110px' }},
+  { header: 'Cliente', cell: (doc) => doc.customer?.customerName || 'N/A', style: { minWidth: '250px'},className: viewStyles.textAlignLeft   },
+  { header: 'Días Crédito', cell: (doc) => doc.customer?.creditDay || '-', style: { minWidth: '120px' } },
+  { header: 'Descripción', accessor: 'saleDescription',style: { minWidth: '400px'}, className: viewStyles.textAlignLeft  },
+  { header: 'Total', cell: (doc) => `$${doc.totalAmount?.toFixed(2)}`, style: { minWidth: '150px' }},
 ];
 
 export default function Sales() {
