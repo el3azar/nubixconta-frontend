@@ -1,0 +1,210 @@
+:root {
+  /* Tu paleta de colores se mantiene intacta */
+  --bg-dark: #10031C;
+  --bg-mid: #1B043B;
+  --bg-purple: #49207B;
+  --accent: #7D49CC;
+  --muted: #8581B0;
+  --gray: #ABAABC;
+}
+
+/* Contenedor principal de la vista (la tarjeta blanca) */
+.mainWrapper {
+  background-color: rgba(255, 255, 255, 0.738);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 1200px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin: 0 auto; /* Centra el contenedor en pantallas grandes */
+}
+
+/* Navegación superior del módulo (Clientes, Ventas...) */
+.subnav {
+  background-color: var(--bg-dark);
+  width: 100%;
+  padding: 0.75rem 0;
+  border-radius: 0.6rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  overflow-x: auto;
+}
+
+.subnavBtn {
+  background: none;
+  color: #fff;
+  padding: 0.5rem 1.2rem;
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: 0.4rem;
+  white-space: nowrap;
+  transition: background-color 0.3s ease;
+}
+
+.subnavBtn:hover,
+.subnavBtn.active {
+  background-color: var(--accent);
+  color: #fff;
+}
+
+/* Caja de búsqueda */
+.searchBox {
+  background-color: rgba(133, 129, 176, 0.5);
+  padding: 2rem;
+  border-radius: 0.75rem;
+}
+
+/* Botón de búsqueda y botones de acción principales */
+.searchBtn {
+  background-color: var(--bg-dark);
+  color: #fff;
+  font-weight: 500;
+  border-radius: 2rem;
+  padding: 0.5rem 1.5rem;
+  transition: background-color 0.3s ease;
+}
+
+.searchBtn:hover {
+ background: transparent;
+  color: #10031C;
+  border: 2px solid #10031C;
+}
+
+
+.actionButton {
+  /* --- Estilo Base --- */
+  background-color: #10031C; /* Color principal oscuro de tu paleta */
+  color: #fff;
+  font-weight: 500;
+  text-decoration: none; /* Asegura que nunca haya subrayado */
+  
+  /* --- Forma y Tamaño --- */
+  padding: 0.45rem 1.5rem; /* Menos padding vertical = menos alto */
+  border-radius: 50px;     /* Valor alto para una forma de píldora perfecta */
+  min-width: 160px;        /* CLAVE: Ancho mínimo para que ambos botones sean iguales */
+  
+  /* --- Alineación y Transición --- */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 1px solid transparent; /* Evita saltos en el hover */
+  transition: background-color 0.3s ease;
+}
+
+/* --- Estado Hover --- */
+.actionButton:hover {
+  background: transparent;
+  color: #10031C;
+  border: 2px solid #10031C;
+  text-decoration: none; /* Reafirma que no haya subrayado */
+}
+
+/* Sección de la tabla */
+.tableSection {
+  padding-top: 1.5rem;
+}
+
+/* Wrapper DIRECTO de la tabla para un scroll limpio y contenido */
+.tableResponsiveWrapper {
+  overflow-x: auto;
+  width: 100%;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+}
+
+.table {
+  width: 100%;
+  min-width: 1000px; /* o incluso 950px según columnas */
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* Cabecera de la tabla */
+.customHeader {
+  background-color: var(--muted);
+  color: #fff;
+  position: sticky; /* Fija la cabecera al hacer scroll vertical */
+  top: 0;
+  z-index: 1;
+}
+
+/* Estilo general para celdas de cabecera y cuerpo */
+.table th, .table td {
+  padding: 0.85rem 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.table td {
+  /* Por defecto, permitimos que el texto se ajuste */
+  white-space: normal;
+  word-break: break-word; /* Asegura que palabras largas no rompan el layout */
+}
+
+/* --- CLASES PARA EL ANCHO ESPECÍFICO DE CADA COLUMNA --- */
+
+.colDireccion {
+  min-width: 220px;
+  max-width: 320px;
+  white-space: normal; /* Permite salto de línea solo si es demasiado larga */
+  word-break: break-word;
+}
+.colNombre {
+  min-width: 180px;
+  max-width: 250px;
+  white-space: normal;
+  word-break: break-word;
+}
+.colApellido {
+  min-width: 110px;
+  max-width: 250px;
+  white-space: normal;
+  word-break: break-word;
+}
+.colCorreo {
+  min-width: 170px;
+  max-width: 250px;
+  white-space: normal;
+  word-break: break-word;
+}
+.colTelefono, .colDui, .colNit{
+  min-width: 110px;
+  max-width: 160px;
+  white-space: nowrap;
+}
+.colLimite{
+  min-width: 100px;
+  max-width: 140px;
+}
+.colDias {
+  min-width: 80px;
+  max-width: 100px;
+}
+.colAcciones {
+  min-width: 130px;
+  max-width: 160px;
+  white-space: nowrap;
+  text-align: center;
+}
+
+
+.table tbody {
+  background-color: white;
+}
+
+/* Botones de íconos en la tabla */
+.iconBtn {
+  background-color: transparent;
+  color: var(--bg-dark);
+  border: 1px solid var(--bg-dark);
+  border-radius: 0.4rem;
+  padding: 0.35rem 0.5rem;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.iconBtn:hover {
+  background-color: var(--muted);
+  color: #fff;
+  border-color: var(--bg-purple);
+}

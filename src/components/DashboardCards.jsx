@@ -2,7 +2,7 @@
 //que pueden reutilizarse en diferentes modulos del sistema
 // src/components/DashboardCards.jsx
 import { Link } from "react-router-dom";
-import styles from '../styles/DashBoardCards.module.css';
+import styles from '../styles/dashBoardCards.module.css';
 
 // Recibe: title (string), items (array), onCardClick (opcional)
 const DashboardCards = ({ title, items, onCardClick }) => (

@@ -1,7 +1,6 @@
 import axios from 'axios';
 //Este enpoint trae todos los registros asociados a accounts-receivable
 const BASE_URL = 'http://localhost:8080/api/v1/accounts-receivable';
-
 export const fetchAccountsReceivable = async () => {
   try {
     const token = sessionStorage.getItem('nubix_token'); 

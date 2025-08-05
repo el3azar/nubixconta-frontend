@@ -17,7 +17,7 @@ const ProductRow = ({ product, onEdit, onStatusUpdated }) => {
       }
       showSuccess("Estado del producto cambiado con éxito");
     } catch (error) {
-      console.error("Error al cambiar estado del producto:", error);
+      
       showError("Ocurrió un error: " + error.message);
     }
   };
@@ -28,6 +28,7 @@ const ProductRow = ({ product, onEdit, onStatusUpdated }) => {
       <td>{product.productName}</td>
       <td>{product.unit}</td>
       <td>{product.stockQuantity}</td>
+      <td>{(product.stockQuantity) *2}</td>
       <td>{new Date(product.productDate).toLocaleDateString()}</td>
       <td className="d-flex gap-3 justify-content-center align-items-center">
         <label className={styles.switch}>

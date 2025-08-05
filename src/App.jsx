@@ -5,6 +5,8 @@ import './App.css'
 import Rutas from './routes/Rutas.jsx'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
 
 
 

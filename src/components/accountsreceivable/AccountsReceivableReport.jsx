@@ -133,7 +133,7 @@ const AccountsReceivableReport = () => {
             {reportData.map((item) => (
               <tr key={item.id}>
                 <td>{item.sale.documentNumber}</td>
-                <td>{item.sale.customer.customerName}</td>
+                <td>{item.sale.customerName}</td>
                 <td>{formatDate(item.sale.saleDate)}</td>
                 <td>{getDueDate(item.sale.saleDate, item.creditDay)}</td>
                 <td>${item.sale.totalAmount.toFixed(2)}</td>
