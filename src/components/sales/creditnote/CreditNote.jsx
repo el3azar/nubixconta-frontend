@@ -40,7 +40,7 @@ export default function CreditNote() {
   const routePaths = {
     new: '/ventas/clientes',
     edit: '/ventas/editar-nota-credito',
-    view: '/notas-credito/ver',
+    view: '/notas-credito/asiento-contable',
   };
 
   return (
