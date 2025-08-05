@@ -1,0 +1,175 @@
+:root {
+  --color-dark: #10031C;
+  --color-primary: #49207B;
+  --color-light-bg: #E6E5EA;
+  --color-content-bg: #ABAABC;
+  --color-filter-bg: #B7B3C4;
+  --color-success: #4E944F;
+  --color-danger: #E2574C;
+}
+
+/* 
+ * CLAVE 1: El contenedor del filtro.
+ * Lo convertimos en un contenedor Flex. 'align-items' lo alinea verticalmente
+ * y 'gap' maneja el espaciado horizontal.
+ */
+.filter {
+  display: flex;
+  align-items: flex-end;
+  gap: 2rem;
+  background-color: var(--color-filter-bg);
+  border-radius: 0.7rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.filterItem {
+  flex: 1 1 0%;
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+}
+
+.filter .form-control[type="date"] {
+  min-width: 180px;
+  max-width: 300px;
+  width: 100%;
+  font-size: 1.1rem;
+  padding: 0.7rem 1.1rem;
+}
+
+
+.filterButtonWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  /* El botón será más ancho aquí */
+  min-width: 200px;
+}
+
+
+/* 
+ * CLAVE 3: Clase unificada para los botones de acción.
+ * Esta clase se usará para "Buscar" y "Nuevo".
+ */
+.actionButton {
+  background-color: #10031C;
+  color: #fff;
+  border: 2px solid #10031C;
+  padding: 0.6rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 500;
+  min-width: 140px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.actionButton:hover {
+  background-color: transparent;
+  color: #10031C;
+}
+
+/* Este estilo se aplicará al botón que NO esté seleccionado. */
+.inactiveSortButton {
+  background-color: transparent; /* Fondo transparente */
+  color: #10031C;             /* Texto oscuro */
+}
+
+/* Opcional: Para que el botón inactivo vuelva a ser sólido al pasar el ratón */
+.inactiveSortButton:hover {
+  background-color: #10031C;
+  color: #fff;
+}
+
+/* Tabla */
+.tableContainer {
+  background: #fff;
+  border-radius: 0.5rem;
+  padding: 1rem;
+ 
+}
+
+.tableContainer table {
+  width: 100%;               /* fuerza que la tabla llene todo el contenedor */
+  table-layout: fixed;       /* fija el ancho de las columnas */
+  border-collapse: collapse; /* elimina el hueco entre celdas */
+  border-spacing: 0;         /* por si acaso queda algo de espacio */
+}
+
+.tableContainer thead th {
+ 
+  background-color: var(--color-filter-bg); /* el mismo fondo que tu cabecera */
+  z-index: 10;
+  border-bottom: 2px solid rgba(0,0,0,0.1);
+}
+
+.tableContainer tr.table-success,
+.tableContainer tr.table-success > td { background-color: var(--color-success) !important; }
+
+.tableContainer tr.table-danger,
+.tableContainer tr.table-danger > td { background-color: var(--color-danger) !important; }
+
+/* ——————————————
+   Alineación vertical uniforme
+   —————————————— */
+.tableContainer td {
+  vertical-align: middle;   /* centra el contenido verticalmente */
+}
+
+.actions {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;            /* espacio igual entre íconos */
+}
+.actions svg {
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+.actions svg:last-child {
+  margin-right: 0;
+}
+
+/* En src/styles/shared/DocumentView.module.css */
+
+/* ... (TODOS TUS ESTILOS EXISTENTES PERMANECEN IGUAL) ... */
+
+
+/* ============================================================= */
+/*          ÚNICA CLASE NUEVA PARA EL SCROLL HORIZONTAL          */
+/* ============================================================= */
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto; /* Activa el scroll horizontal solo cuando es necesario */
+  -webkit-overflow-scrolling: touch; /* Mejora la experiencia en iOS */
+}
+/* ================================================================== */
+/*        NUESTRAS PROPIAS CLASES DE ALINEACIÓN (ANTI-BOOTSTRAP)      */
+/* ================================================================== */
+.textAlignLeft {
+  text-align: left !important; /* Usamos !important para ganar a Bootstrap */
+}
+
+.textAlignCenter {
+  text-align: center !important;
+}
+
+.textAlignRight {
+  text-align: right !important;
+}
+
+@media (max-width: 700px) {
+  .filter {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .filterButtonWrap {
+    align-items: stretch;
+    min-width: unset;
+    margin-top: 1rem;
+  }
+}

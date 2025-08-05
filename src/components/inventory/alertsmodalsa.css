@@ -1,0 +1,7 @@
+/* styles.css o tu archivo de estilos principal */
+
+.mi-input-grande {
+  width: 80% !important; /* Usa un porcentaje o un valor fijo como 300px */
+  font-size: 1.2rem !important; /* También puedes cambiar el tamaño de la fuente */
+  padding: 10px !important;
+}

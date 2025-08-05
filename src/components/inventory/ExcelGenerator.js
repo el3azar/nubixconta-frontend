@@ -4,12 +4,9 @@ import { saveAs } from 'file-saver';
 export const generateProductMovementsExcel = (fileName, movements) => {
   // Mapeamos los datos a un formato plano
   const data = movements.map((m) => ({
-    Correlativo: m.correlativo,
     Código: m.codigoProducto,
-    Nombre: m.nombreProducto,
-    Unidad: m.unidad,
     Fecha: m.fecha,
-    Tipo: m.tipoMovimiento,
+    Tipo: m.tipo,
     Observación: m.observacion,
     Módulo: m.modulo
   }));

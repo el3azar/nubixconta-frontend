@@ -1,0 +1,140 @@
+.container {
+ padding: 20px;
+}
+
+.searchContainer {
+ background-color: #A6A0BD;
+ border-radius: 1rem;
+ padding: 20px;
+ margin-bottom: 20px;
+}
+
+.filters {
+ display: flex;
+ flex-wrap: wrap;
+ gap: 16px;
+ align-items: center; /* Alinea los elementos verticalmente al centro */
+}
+
+/* Estilos para el input de fecha nativo */
+.nativeInput {
+  height: 38px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 200px;
+  box-sizing: border-box;
+  background-color: white; 
+}
+
+/* Estilos para el select nativo de HTML */
+.nativeSelect {
+ width: 200px;
+ height: 38px;
+ padding: 8px 12px;
+ border: 1px solid #ccc;
+ border-radius: 4px;
+ font-size: 14px;
+ background-color: white;
+ box-sizing: border-box;
+}
+
+.label {
+ font-weight: bold;
+ color: #000;
+ margin-bottom: 5px;
+}
+
+.searchBtn {
+ background: #2d0143;
+ color: white;
+ padding: 8px 16px;
+ border: none;
+ border-radius: 24px;
+ cursor: pointer;
+ transition: background-color 0.3s ease;
+ height: 38px;
+ box-sizing: border-box;
+}
+
+.searchBtn:hover {
+ background: #4a0166;
+}
+
+/* --- ESTILOS DE LA TABLA --- */
+
+.tableContainer {
+ max-height: 500px;
+ overflow: auto;
+ border: 1px solid #ccc;
+ border-radius: 1rem;
+ background-color: white;
+}
+
+.table {
+ width: 100%;
+ border-collapse: separate;
+ border-spacing: 0;
+ min-width: 900px;
+}
+
+.table th, .table td {
+ padding: 12px;
+ background: #fff;
+ text-align: left;
+ border-bottom: 1px solid #ddd;
+ border-right: 1px solid #ddd;
+ white-space: normal;
+}
+
+.table th {
+ background-color: #f7f7f7;
+ font-weight: bold;
+ position: sticky;
+ top: 0;
+ z-index: 10;
+ padding: 16px 12px;
+ border-top: none;
+}
+
+.table thead th:first-child {
+ border-top-left-radius: 1rem;
+ border-left: none;
+}
+
+.table thead th:last-child {
+ border-top-right-radius: 1rem;
+ border-right: none;
+}
+
+.table tbody tr td:first-child {
+ border-left: none;
+}
+
+.table tbody tr td:last-child {
+ border-right: none;
+}
+
+.table tbody tr:last-child td:first-child {
+ border-bottom-left-radius: 1rem;
+}
+
+.table tbody tr:last-child td:last-child {
+ border-bottom-right-radius: 1rem;
+}
+
+.table tbody tr:last-child td {
+ border-bottom: none;
+}
+
+.actionCell {
+ white-space: normal;
+}
+
+.noResults {
+ text-align: center;
+ font-style: italic;
+ color: #888;
+ padding: 20px;
+}
