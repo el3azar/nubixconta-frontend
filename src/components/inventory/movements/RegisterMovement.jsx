@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import SelectBase from '../elementos/SelectBase';
-import Boton from '../elementos/Boton';
+import SelectBase from '../inventoryelements/SelectBase';
+import Boton from '../inventoryelements/Boton';
 import Swal from 'sweetalert2';
-import { showSuccess, showError } from '../../alerts';
+import { showSuccess, showError } from '../alerts';
 // import { createMovement, getProductsForSelect } from '../../../../services/inventory/movementService'; 
 
 // AÑADIMOS LAS PROPS: show, onClose, onSave
@@ -108,7 +108,7 @@ const RegisterMovement = ({ show, onClose, onSave }) => {
                 </div>
                 <div className="col-md-3">
                   <label className="form-label">Fecha</label>
-                  <input type="date" className="form-control" value={fecha} onChange={e => setFecha(e.target.value)}/>
+                  <input type="date" className="form-control rounded-pill me-2" value={fecha} onChange={e => setFecha(e.target.value)}/>
                 </div>
               </div>
               <div className="row mb-4">

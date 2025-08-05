@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import Boton from '../elementos/Boton';
-import TableComponent from '../elementos/TableComponent';
+import Boton from '../inventoryelements/Boton';
+import TableComponent from '../inventoryelements/TableComponent';
 // 1. Importa TUS funciones de alerta y toast
 import { showSuccess } from '../alertstoast';
 import { showConfirmationDialog } from '../alertsmodalsa';
