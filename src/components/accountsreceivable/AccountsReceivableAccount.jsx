@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styles from "../../styles/accountsreceivable/AccountReceivableAccount.module.css";
 import { FaSearch, FaFilePdf, FaFileExcel, FaEye } from "react-icons/fa";
 import { getAccountStatementsByCustomer } from "../../services/accountsreceivable/accountReceivableCustumerService";
-import { getBankAcount } from "../../services/bankService";
+import { getBankAcount } from "../../services/accountsreceivable/bankService";
 import BankAccountModal from "./BankAccountModal";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";

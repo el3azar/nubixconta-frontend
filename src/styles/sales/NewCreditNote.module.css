@@ -1,0 +1,62 @@
+:root {
+  --bg-primary: #e0dbf3;
+  --bg-section: #f4f1fa;
+  --color-primary: #2e1a4d;
+  --color-accent: #49207b;
+  --border-light: #c0b7db;
+  --row-even: #dfdbeb;
+  --row-selected: #e5dde8;
+}
+
+.title {
+  text-align: center;
+  font-size: 1.75rem;
+  margin-bottom: 24px;
+  color: var(--color-primary);
+}
+
+.ventasSection {
+  background-color: var(--bg-section);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+}
+
+.table th,
+.table td {
+  padding: 12px 8px;
+  text-align: left;
+  background-color: #ffffff; /* fondo por defecto de celdas */
+}
+
+.table thead th {
+  background-color: #c0b7db;
+  color: var(--color-primary);
+  border-bottom: 2px solid #d3cce6;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: var(--row-even);
+}
+
+.selectedRow {
+  background-color: var(--row-selected) !important;
+}
+
+/* Asegura que las celdas de la fila seleccionada también cambien de color */
+.table tbody tr.selectedRow td {
+  background-color: var(--row-selected) !important;
+}
+
+/* Hover de fila aplicado a las celdas */
+.table tbody tr:hover td {
+  background-color: var(--row-selected);
+  cursor: pointer;
+}
+

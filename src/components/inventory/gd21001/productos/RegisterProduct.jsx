@@ -75,7 +75,7 @@ const RegisterProduct = ({ show, onClose }) => {
         cantidad: ''
       });
 
-      onClose(); // ✅ Cierra el modal desde ProductList
+      onClose(); 
 
     } catch (error) {
       showError('Ocurrió un error al registrar el producto');

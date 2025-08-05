@@ -1,67 +1,70 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { useCompany } from './CompanyDataContext'; // Ajusta la ruta si es necesario
+import { useCompany } from './CompanyDataContext'; 
+import { IMaskInput } from 'react-imask';
+import formStyles from '../../../styles/sales/CustomerForm.module.css';
 
-const EditCompanyView = () => {
+  const EditCompanyView = () => {
   const navigate = useNavigate();
-  const { id } = useParams(); // 👈 ID de la empresa a editar desde la URL
-
-  const { getCompanyById, updateCompany } = useCompany(); // 📡 Traemos funciones del contexto
+  const { id } = useParams(); 
+  const location = useLocation();
+  const empresaFromState = location.state?.company;
+  const { getCompanyById, updateCompany } = useCompany(); 
 
   // Estado del formulario
-  const [form, setForm] = useState({
+const [form, setForm] = useState({
     nombre: '',
+    giro: '',
     nit: '',
     dui: '',
+    direccion: '',
     nrc: '',
-    tipo: 'juridica'
+    tipo: 'juridica',
   });
 
   const [errors, setErrors] = useState({});
 
-  // 🔄 Carga inicial: busca la empresa por ID y llena el formulario
-  useEffect(() => {
-    const empresa = getCompanyById(id);
-    if (empresa) {
-      setForm({
-        nombre: empresa.nombre,
-        nit: empresa.nit || '',
-        dui: empresa.dui || '',
-        nrc: empresa.nrc,
-        tipo: empresa.tipo || 'juridica'
-      });
-    } else {
-      Swal.fire({
-        title: 'Empresa no encontrada',
-        icon: 'error',
-        confirmButtonColor: '#d33'
-      }).then(() => navigate('/admin/empresas'));
+useEffect(() => {
+  const fetchCompany = async () => {
+    try {
+      const company = await getCompanyById(id);
+      if (!company) {
+  console.error('Empresa no encontrada');
+   navigate('/admin/empresas');
+  return;
+}
+     setForm({
+  nombre: company.nombre || '',
+  giro: company.giro || '',
+  nit: company.nit || '',
+  dui: company.dui || '',
+  direccion: company.direccion || '',
+  nrc: company.nrc || '',
+  tipo: company.tipo || 'juridica',
+});
+    } catch (error) {
+      console.error('Error al cargar la empresa:', error);
     }
-  }, [id, getCompanyById, navigate]);
+  };
 
-  // 🔁 Manejador de inputs
+  fetchCompany();
+}, [id,getCompanyById]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
   };
-
-  // 🔁 Cambio de tipo de persona
-  const handleTipoChange = (e) => {
-    const tipo = e.target.value;
-    setForm(prev => ({
-      ...prev,
-      tipo,
-      nit: '',
-      dui: ''
-    }));
-    setErrors({});
+ const handleMaskedChange = (name, value) => {
+    setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  // ✅ Validar y actualizar empresa
-  const handleUpdate = () => {
+
+const handleUpdate = async () => {
     const newErrors = {};
     if (form.nombre.trim() === '') newErrors.nombre = 'Campo requerido';
+    if (form.giro.trim() === '') newErrors.giro = 'Campo requerido';
+    if (form.direccion.trim() === '') newErrors.direccion = 'Campo requerido';
     if (form.nrc.trim() === '') newErrors.nrc = 'Campo requerido';
     else if (form.nrc.length !== 8) newErrors.nrc = 'Debe tener 8 caracteres';
 
@@ -75,36 +78,44 @@ const EditCompanyView = () => {
       else if (form.dui.length !== 10) newErrors.dui = 'Debe tener 10 caracteres';
     }
 
-    // ❌ Mostrar errores si existen
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       Swal.fire({
         title: 'Advertencia',
         text: 'Revise que los datos estén correctos',
         icon: 'error',
-        confirmButtonColor: '#d33'
+        confirmButtonColor: '#d33',
       });
       return;
     }
 
-    // ✅ Actualizamos usando el contexto
-    updateCompany({
-      id: parseInt(id),
-      nombre: form.nombre,
-      nit: form.tipo === 'juridica' ? form.nit : '',
-      dui: form.tipo === 'natural' ? form.dui : '',
-      nrc: form.nrc,
-      tipo: form.tipo
-    });
+    try {
+      const success = await updateCompany({
+        id: parseInt(id),
+        companyName: form.nombre,
+        turnCompany: form.giro,
+        companyNit: form.tipo === 'juridica' ? form.nit : null, // Si es jurídica, usa nit; si no, null
+        companyDui: form.tipo === 'natural' ? form.dui : null,// Si es natural, usa dui; si no, null
+        address: form.direccion,
+        companyNrc: form.nrc,
+      });
 
-    Swal.fire({
-      title: 'Empresa actualizada correctamente',
-      icon: 'success',
-      confirmButtonColor: '#28a745'
-    }).then(() => {
-      setErrors({});
-      navigate('/admin/empresas');
-    });
+      if (success) {
+        Swal.fire({
+          title: 'Empresa actualizada correctamente',
+          icon: 'success',
+          confirmButtonColor: '#28a745',
+        }).then(() => {
+          setErrors({});
+          navigate('/admin/empresas');
+        });
+      } else {
+        Swal.fire('Error', 'Hubo un problema al actualizar la empresa.', 'error');
+      }
+    } catch (error) {
+      console.error('Error al actualizar la empresa:', error);
+      Swal.fire('Error', 'Ocurrió un error inesperado al actualizar la empresa.', 'error');
+    }
   };
 
   const handleCancel = () => {
@@ -116,40 +127,7 @@ const EditCompanyView = () => {
       <h4 className="text-center fw-bold mb-4">EDITAR EMPRESA</h4>
 
       <form className="d-flex flex-column gap-3">
-        {/* Tipo de persona */}
-        <div>
-          <label className="form-label text-dark fw-semibold">Tipo de persona:</label>
-          <div className="d-flex gap-4">
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="radio"
-                name="tipo"
-                value="juridica"
-                checked={form.tipo === 'juridica'}
-                onChange={handleTipoChange}
-                id="edit-juridica"
-              />
-              <label className="form-check-label text-dark" htmlFor="edit-juridica">
-                Jurídica
-              </label>
-            </div>
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="radio"
-                name="tipo"
-                value="natural"
-                checked={form.tipo === 'natural'}
-                onChange={handleTipoChange}
-                id="edit-natural"
-              />
-              <label className="form-check-label text-dark" htmlFor="edit-natural">
-                Natural
-              </label>
-            </div>
-          </div>
-        </div>
+     
 
         {/* Nombre */}
         <div>
@@ -165,36 +143,70 @@ const EditCompanyView = () => {
           {errors.nombre && <div className="form-text text-danger">{errors.nombre}</div>}
         </div>
 
-        {/* NIT o DUI */}
+       {/* Giro del negocio */}
+        <div>
+          <label className="form-label text-dark fw-semibold">Giro de la empresa:</label>
+          <input
+            type="text"
+            name="giro"
+            maxLength={100}
+            className={`form-control ${errors.giro ? 'is-invalid' : ''}`}
+            value={form.giro}
+            onChange={handleChange}
+          />
+          {errors.giro && <div className="form-text text-danger">{errors.giro}</div>}
+        </div>
+
+
+        {/* NIT (solo si es jurídica) */}
         {form.tipo === 'juridica' && (
-          <div>
-            <label className="form-label text-dark fw-semibold">NIT:</label>
-            <input
-              type="text"
-              name="nit"
-              maxLength={17}
-              className={`form-control ${errors.nit ? 'is-invalid' : ''}`}
-              value={form.nit}
-              onChange={handleChange}
-            />
-            {errors.nit && <div className="form-text text-danger">{errors.nit}</div>}
-          </div>
+         <div>
+                     <label className="form-label text-dark fw-semibold">NIT:</label>
+                     <IMaskInput
+                       mask="0000-000000-000-0" // Máscara para NIT: ####-######-###-#
+                       placeholder="####-######-###-#"
+                       name="nit"
+                       className={`form-control shadow-sm rounded-3 border-2 ${errors.nit ? 'is-invalid' : ''}`}
+                       value={form.nit}
+                       onAccept={(value) => handleMaskedChange('nit', value)} // Usa handleMaskedChange
+                       // onBlur es útil para activar validaciones al salir del campo
+                       onBlur={() => setErrors(prev => ({ ...prev, nit: form.nit.length === 17 ? '' : 'Debe tener 17 caracteres (formato ####-######-###-#).' }))}
+                     />
+                     {errors.nit && <div className="form-text text-danger">{errors.nit}</div>}
+                   </div>
+        )}
+ {/* DUI (solo si es natural) */}
+        {form.tipo === 'natural' && (
+           <div>
+                      <label className="form-label text-dark fw-semibold">DUI:</label>
+                      <IMaskInput
+                        mask="00000000-0" // Máscara para DUI: ########-#
+                        placeholder="########-#"
+                        name="dui"
+                        className={`form-control shadow-sm rounded-3 border-2 ${errors.dui ? 'is-invalid' : ''}`}
+                        value={form.dui}
+                        onAccept={(value) => handleMaskedChange('dui', value)} // Usa handleMaskedChange
+                        // onBlur es útil para activar validaciones al salir del campo
+                        onBlur={() => setErrors(prev => ({ ...prev, dui: form.dui.length === 10 ? '' : 'Debe tener 10 caracteres (formato ########-#).' }))}
+                      />
+                      {errors.dui && <div className="form-text text-danger">{errors.dui}</div>}
+                    </div>
         )}
 
-        {form.tipo === 'natural' && (
-          <div>
-            <label className="form-label text-dark fw-semibold">DUI:</label>
-            <input
-              type="text"
-              name="dui"
-              maxLength={10}
-              className={`form-control ${errors.dui ? 'is-invalid' : ''}`}
-              value={form.dui}
-              onChange={handleChange}
-            />
-            {errors.dui && <div className="form-text text-danger">{errors.dui}</div>}
-          </div>
-        )}
+         {/* direccion */}
+        <div>
+          <label className="form-label text-dark fw-semibold">Dirección:</label>
+          <input
+            type="text"
+            name="direccion"
+            maxLength={100}
+            className={`form-control ${errors.direccion ? 'is-invalid' : ''}`}
+            value={form.direccion}
+            onChange={handleChange}
+          />
+          {errors.direccion && <div className="form-text text-danger">{errors.direccion}</div>}
+        </div>
+
 
         {/* NRC */}
         <div>
@@ -212,10 +224,10 @@ const EditCompanyView = () => {
 
         {/* Botones */}
         <div className="d-flex justify-content-between mt-3">
-          <button type="button" className="btn btn-dark px-4" onClick={handleUpdate}>
+          <button type="button" className={formStyles.registrar}  onClick={handleUpdate}>
             Actualizar
           </button>
-          <button type="button" className="btn btn-outline-dark px-4" onClick={handleCancel}>
+          <button type="button"  className={formStyles.cancelar}  onClick={handleCancel}>
             Cancelar
           </button>
         </div>

@@ -1,45 +1,70 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { useCompany } from './CompanyDataContext'; // Ruta según tu estructura
-
+import { registerCompany } from '../../../services/administration/company/registerCompanyService';
+import { useNavigate } from 'react-router-dom';
+import { useCompany } from '../companyMangment/CompanyDataContext'; 
+import { IMaskInput } from 'react-imask';
+import formStyles from '../../../styles/sales/CustomerForm.module.css';
+import { uploadImageToCloudinary } from '../../../services/administration/company/uploadImageService';
 const RegisterCompanyView = () => {
   const navigate = useNavigate();
-  const { addCompany } = useCompany(); // 🚀 Trae la función para agregar empresas
-
-  // Estado para saber si es persona jurídica o natural
-  const [personType, setPersonType] = useState('juridica');
+  const { addCompany } = useCompany();
 
   // Datos del formulario
   const [form, setForm] = useState({
     nombre: '',
+    giro:'',
+    direccion:'',
     nit: '',
     dui: '',
     nrc: ''
-  });
+  });  
 
-  // Estado para errores de validación
+ // estado para la imagen
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+
+  // Estado para saber si es persona jurídica o natural
+  const [personType, setPersonType] = useState('juridica');
   const [errors, setErrors] = useState({});
 
-  // 🔄 Maneja los cambios en los inputs del formulario
+  //  Maneja los cambios en los inputs del formulario
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  // 🧠 Cambia el tipo de persona y limpia campos correspondientes
+   const handleMaskedChange = (name, value) => {
+    setForm(prev => ({ ...prev, [name]: value }));
+  };
+ 
   const handlePersonTypeChange = (e) => {
-    const value = e.target.value;
-    setPersonType(value);
-    setForm(prev => ({ ...prev, nit: '', dui: '' }));
-    setErrors(prev => ({ ...prev, nit: undefined, dui: undefined }));
+    const selectedType = e.target.value;
+    setPersonType(selectedType);
+
   };
 
-  // ✅ Validación + Registro
-  const handleRegister = () => {
-    const newErrors = {};
+  // Nueva función para manejar el cambio del archivo de imagen
+  const handleImageChange = (e) => {
+  const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      // Crea una URL temporal para mostrar una vista previa de la imagen
+      setImagePreviewUrl(URL.createObjectURL(file));
+     } else {
+        setImageFile(null);
+        setImagePreviewUrl(null);
+     }
+   };
 
+
+  // Validación + Registro
+  const handleRegister = async() => {
+    let imageUrl = null;
+    const newErrors = {};
     if (form.nombre.trim() === '') newErrors.nombre = 'Este campo es obligatorio.';
+    if (form.giro.trim() === '') newErrors.giro = 'Este campo es obligatorio.';
+    if (form.direccion.trim() === '') newErrors.direccion = 'Este campo es obligatorio.';
     if (form.nrc.trim() === '') newErrors.nrc = 'Este campo es obligatorio.';
     else if (form.nrc.length !== 8) newErrors.nrc = 'Debe tener 8 caracteres.';
 
@@ -53,7 +78,6 @@ const RegisterCompanyView = () => {
       else if (form.dui.length !== 10) newErrors.dui = 'Debe tener 10 caracteres.';
     }
 
-    // ⚠️ Si hay errores, mostramos alerta
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       Swal.fire({
@@ -66,27 +90,66 @@ const RegisterCompanyView = () => {
     }
 
     try {
-      // 💾 Agregamos empresa al contexto
-      addCompany({
-        nombre: form.nombre,
-        nit: personType === 'juridica' ? form.nit : '',
-        dui: personType === 'natural' ? form.dui : '',
-        nrc: form.nrc,
-        tipo: personType,
-        asignada: false,
-        activa: true
-      });
+      // Se agrega empresa al contexto
 
+        if (imageFile) {
+            Swal.fire({
+                title: 'Subiendo imagen...',
+                text: 'Por favor, espere.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            imageUrl = await uploadImageToCloudinary(imageFile);
+            Swal.close(); // Cerramos el modal de carga al terminar la subida
+        }
+
+       const companyData = {
+      companyName: form.nombre,
+      turnCompany: form.giro,
+      address: form.direccion,
+      companyNrc: form.nrc,
+      tipo: personType,
+      creationDate: new Date().toISOString(),
+      imageUrl: imageUrl, 
+      ...(personType === 'juridica' && { companyNit: form.nit }),
+      ...(personType === 'natural' && { companyDui: form.dui })
+    };
+
+
+
+      const newCompany =   await registerCompany(companyData);
+
+    const adaptedCompany = {
+      id: newCompany.id,
+      nombre: newCompany.companyName,
+      giro: newCompany.turnCompany || '',
+      nit: newCompany.companyNit || '',
+      dui: newCompany.companyDui || '',
+      direccion: newCompany.address || '',
+      nrc: newCompany.companyNrc,
+      tipo: newCompany.companyDui ? 'natural' : 'juridica',
+      asignada: newCompany.companyStatus,
+      imageUrl: newCompany.imageUrl || null,
+};
+
+      addCompany(adaptedCompany);
       Swal.fire({
-        title: 'Empresa registrada exitosamente',
-        icon: 'success',
-        confirmButtonColor: '#28a745'
-      });
-
-      // 🔁 Limpia el formulario después del registro
-      setForm({ nombre: '', nit: '', dui: '', nrc: '' });
+      title: 'Empresa registrada exitosamente',
+      icon: 'success',
+      confirmButtonColor: '#28a745'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate('/admin/empresas');
+      }
+    });
+      // Limpia el formulario después del registro
+      setForm({ nombre: '',giro:'',direccion:'', nit: '', dui: '', nrc: '' });
       setPersonType('juridica');
       setErrors({});
+      setImageFile(null);
+      setImagePreviewUrl(null);
     } catch (error) {
       Swal.fire({
         title: 'Error',
@@ -97,7 +160,7 @@ const RegisterCompanyView = () => {
     }
   };
 
-  // 🔙 Redirección al presionar "Cancelar"
+  // Redirección al presionar "Cancelar"
   const handleCancel = () => {
     navigate('/admin/empresas');
   };
@@ -151,37 +214,69 @@ const RegisterCompanyView = () => {
           />
           {errors.nombre && <div className="form-text text-danger">{errors.nombre}</div>}
         </div>
+                {/* Giro de la empresa */}
+        <div>
+          <label className="form-label text-dark fw-semibold">Giro de la empresa:</label>
+          <input
+            type="text"
+            name="giro"
+            maxLength={100}
+            className={`form-control shadow-sm rounded-3 border-2 ${errors.nombre ? 'is-invalid' : ''}`}
+            value={form.giro}
+            onChange={handleChange}
+          />
+          {errors.giro && <div className="form-text text-danger">{errors.giro}</div>}
+        </div>
+
 
         {/* NIT o DUI */}
         {personType === 'juridica' && (
           <div>
             <label className="form-label text-dark fw-semibold">NIT:</label>
-            <input
-              type="text"
+            <IMaskInput
+              mask="0000-000000-000-0" // Máscara para NIT: ####-######-###-#
+              placeholder="####-######-###-#"
               name="nit"
-              maxLength={17}
               className={`form-control shadow-sm rounded-3 border-2 ${errors.nit ? 'is-invalid' : ''}`}
               value={form.nit}
-              onChange={handleChange}
+              onAccept={(value) => handleMaskedChange('nit', value)} // Usa handleMaskedChange
+              // onBlur es útil para activar validaciones al salir del campo
+              onBlur={() => setErrors(prev => ({ ...prev, nit: form.nit.length === 17 ? '' : 'Debe tener 17 caracteres (formato ####-######-###-#).' }))}
             />
             {errors.nit && <div className="form-text text-danger">{errors.nit}</div>}
           </div>
         )}
 
-        {personType === 'natural' && (
+      {personType === 'natural' && (
           <div>
             <label className="form-label text-dark fw-semibold">DUI:</label>
-            <input
-              type="text"
+            <IMaskInput
+              mask="00000000-0" // Máscara para DUI: ########-#
+              placeholder="########-#"
               name="dui"
-              maxLength={10}
               className={`form-control shadow-sm rounded-3 border-2 ${errors.dui ? 'is-invalid' : ''}`}
               value={form.dui}
-              onChange={handleChange}
+              onAccept={(value) => handleMaskedChange('dui', value)} // Usa handleMaskedChange
+              // onBlur es útil para activar validaciones al salir del campo
+              onBlur={() => setErrors(prev => ({ ...prev, dui: form.dui.length === 10 ? '' : 'Debe tener 10 caracteres (formato ########-#).' }))}
             />
             {errors.dui && <div className="form-text text-danger">{errors.dui}</div>}
           </div>
         )}
+
+           {/* direccion */}
+        <div>
+          <label className="form-label text-dark fw-semibold">Dirección:</label>
+          <input
+            type="text"
+            name="direccion"
+            maxLength={100}
+            className={`form-control shadow-sm rounded-3 border-2 ${errors.nombre ? 'is-invalid' : ''}`}
+            value={form.direccion}
+            onChange={handleChange}
+          />
+          {errors.direccion && <div className="form-text text-danger">{errors.direccion}</div>}
+        </div>
 
         {/* NRC */}
         <div>
@@ -196,13 +291,35 @@ const RegisterCompanyView = () => {
           />
           {errors.nrc && <div className="form-text text-danger">{errors.nrc}</div>}
         </div>
+         
+        {/* Campo para subir la imagen */}
+        <div>
+          <label className="form-label text-dark fw-semibold">Logo de la Empresa:</label>
+          <input
+            type="file"
+            name="logo"
+            className="form-control shadow-sm rounded-3 border-2"
+            accept="image/*"
+            onChange={handleImageChange}
+          />
+        </div>
 
+      {/* Vista previa de la imagen */}
+        {imagePreviewUrl && (
+          <div className="text-center mt-2">
+            <img 
+              src={imagePreviewUrl} 
+              alt="Vista previa del logo" 
+              style={{ maxWidth: '150px', maxHeight: '150px', objectFit: 'cover', border: '1px solid #ccc' }}
+            />
+          </div>
+        )}
         {/* Botones */}
         <div className="d-flex justify-content-between mt-3">
-          <button type="button" className="btn btn-dark px-4" onClick={handleRegister}>
+          <button type="button" className={formStyles.registrar} onClick={handleRegister} >
             Registrar
           </button>
-          <button type="button" className="btn btn-outline-dark px-4" onClick={handleCancel}>
+          <button type="button" className={formStyles.cancelar}  onClick={handleCancel} >
             Cancelar
           </button>
         </div>

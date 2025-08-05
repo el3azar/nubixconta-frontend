@@ -1,106 +1,186 @@
+
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
 
-const API_URL = "https://nubixconta-backend-production.up.railway.app/api/v1/sales";
+// URL base para ventas
+const API_URL = "http://localhost:8080/api/v1/sales";
 
+// Función para incluir el JWT en las peticiones
 const getAuthHeader = (token) => ({
   headers: {
     Authorization: `Bearer ${token}`,
   },
 });
 
-const SaleService = () => {
+/**
+ * Hook personalizado que expone las funciones del módulo de ventas.
+ *  - Puedes usarlo como: const saleService = useSaleService();
+ *  - Todas las funciones devuelven Promesas (async/await).
+ */
+export const SaleService = () => {
   const { token } = useAuth();
 
-  // === Ventas ===
+  // ============================
+  //      MÉTODOS PRINCIPALES
+  // ============================
 
-  const getAllSales = async () => {
-    const res = await axios.get(API_URL, getAuthHeader(token));
-    return res.data;
+/**
+ * Obtiene todas las ventas con un ordenamiento específico.
+ * @param {string} sortBy - Criterio de ordenamiento ('status' o 'date').
+ * @returns {Promise<Array>} Lista de ventas ordenadas.
+ */
+const getAllSales = async (sortBy = 'status') => { // Acepta el parámetro, con 'status' por defecto.
+  const response = await axios.get(`${API_URL}?sortBy=${sortBy}`, getAuthHeader(token));
+  return response.data;
+};
+
+  /**
+   * Busca ventas dentro de un rango de fechas (por filtro)
+   * @param {Object} param0 {startDate, endDate} en formato YYYY-MM-DD
+   * @returns {Promise<Array>} Lista filtrada
+   */
+  const searchSalesByDate = async ({ startDate, endDate }) => {
+    // ¡OJO! Los parámetros del backend son start y end, NO startDate/endDate.
+    const response = await axios.get(
+      `${API_URL}/search?start=${startDate}&end=${endDate}`,
+      getAuthHeader(token)
+    );
+    return response.data;
   };
 
-  const getSaleById = async (id) => {
-    const res = await axios.get(`${API_URL}/${id}`, getAuthHeader(token));
-    return res.data;
+   // --- INICIO DEL NUEVO MÉTODO ---
+  /**
+   * Busca ventas para el reporte combinando múltiples criterios opcionales.
+   * Llama al endpoint GET /sales/report.
+   * @param {Object} filters - Objeto con los filtros { startDate, endDate, customerName, customerLastName }.
+   * @returns {Promise<Array>} Lista de ventas para el reporte.
+   */
+  const searchSalesByCriteria = async (filters = {}) => {
+    // URLSearchParams es la forma más segura y limpia de construir query strings.
+    // Automáticamente maneja la codificación y solo añade los parámetros que tienen valor.
+    const params = new URLSearchParams();
+    
+    // Añadimos cada filtro a los parámetros solo si existe
+    if (filters.startDate) params.append('startDate', filters.startDate);
+    if (filters.endDate) params.append('endDate', filters.endDate);
+    if (filters.customerName) params.append('customerName', filters.customerName);
+    if (filters.customerLastName) params.append('customerLastName', filters.customerLastName);
+
+    // Hacemos la petición al nuevo endpoint de reportes.
+    const response = await axios.get(
+      `${API_URL}/report?${params.toString()}`,
+      getAuthHeader(token)
+    );
+    return response.data;
+  };
+  // --- FIN DEL NUEVO MÉTODO ---
+
+  /**
+   * Elimina una venta (solo si está en estado PENDIENTE)
+   * @param {number} saleId
+   */
+  const deleteSale = async (saleId) => {
+    await axios.delete(`${API_URL}/${saleId}`, getAuthHeader(token));
   };
 
+  /**
+   * Aprueba una venta (la pasa a estado APLICADA, reglas de crédito, inventario, etc.)
+   * @param {number} saleId
+   * @returns {Promise<Object>} Venta actualizada
+   */
+  const approveSale = async (saleId) => {
+    // Usa el endpoint /apply (POST), no PATCH
+    const response = await axios.post(`${API_URL}/${saleId}/apply`, null, getAuthHeader(token));
+    return response.data;
+  };
+
+  /**
+   * Anula una venta (la pasa a estado ANULADA, revierte inventario, saldo, etc.)
+   * @param {number} saleId
+   * @returns {Promise<Object>} Venta actualizada
+   */
+  const cancelSale = async (saleId) => {
+    // Usa el endpoint /cancel (POST), no PATCH
+    const response = await axios.post(`${API_URL}/${saleId}/cancel`, null, getAuthHeader(token));
+    return response.data;
+  };
+
+  // ============================
+  //      OTROS MÉTODOS ÚTILES
+  // ============================
+
+  /**
+   * Obtiene una venta específica por ID
+   * @param {number} saleId
+   * @returns {Promise<Object>} Venta detallada
+   */
+  const getSaleById = async (saleId) => {
+    const response = await axios.get(`${API_URL}/${saleId}`, getAuthHeader(token));
+    return response.data;
+  };
+  /**
+   * Busca y devuelve todas las ventas en estado 'APLICADA' para un cliente específico.
+   * y que no tenga una nota de crédito asociada en estado PENDIENTE o APLICADA.
+   * @param {number} clientId - El ID del cliente.
+   * @returns {Promise<Array>} Una lista de ventas aplicadas del cliente.
+   */
+  const getAppliedSalesByCustomer = async (clientId) => {
+    const response = await axios.get(`${API_URL}/customer/${clientId}/available-for-credit-note`, getAuthHeader(token));
+    return response.data;
+  };
+  /**
+   * Crea una nueva venta
+   * @param {Object} saleData (SaleCreateDTO)
+   * @returns {Promise<Object>} Venta creada
+   */
   const createSale = async (saleData) => {
-    const res = await axios.post(API_URL, saleData, getAuthHeader(token));
-    return res.data;
+    const response = await axios.post(API_URL, saleData, getAuthHeader(token));
+    return response.data;
   };
 
-  const updateSale = async (id, updates) => {
-    const res = await axios.patch(`${API_URL}/${id}`, updates, getAuthHeader(token));
-    return res.data;
+  /**
+   * Edita parcialmente una venta
+   * @param {number} saleId
+   * @param {Object} updates (SaleUpdateDTO)
+   * @returns {Promise<Object>} Venta actualizada
+   */
+  const updateSale = async (saleId, updates) => {
+    const response = await axios.patch(`${API_URL}/${saleId}`, updates, getAuthHeader(token));
+    return response.data;
   };
 
-  const deleteSale = async (id) => {
-    const res = await axios.delete(`${API_URL}/${id}`, getAuthHeader(token));
-    return res.data;
-  };
-
-  const searchSalesByDate = async (start, end) => {
-    const res = await axios.get(`${API_URL}/search?start=${start}&end=${end}`, getAuthHeader(token));
-    return res.data;
-  };
-
+  //Búsqueda por cliente, por si implementas esa vista
   const searchSalesByCustomer = async (filters) => {
     const params = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
       if (value) params.append(key, value);
     });
-    const res = await axios.get(`${API_URL}/client-search?${params}`, getAuthHeader(token));
-    return res.data;
+    const response = await axios.get(`${API_URL}/client-search?${params}`, getAuthHeader(token));
+    return response.data;
   };
 
-  // === Detalles de venta ===
-
-  const getAllSaleDetails = async () => {
-    const res = await axios.get(`${API_URL}/details`, getAuthHeader(token));
-    return res.data;
-  };
-
+  // (Opcional) Obtener detalles de venta si lo usas en otra vista
   const getSaleDetailsBySaleId = async (saleId) => {
-    const res = await axios.get(`${API_URL}/${saleId}/details`, getAuthHeader(token));
-    return res.data;
+    const response = await axios.get(`${API_URL}/${saleId}/details`, getAuthHeader(token));
+    return response.data;
   };
 
-  const getSaleDetailById = async (detailId) => {
-    const res = await axios.get(`${API_URL}/details/${detailId}`, getAuthHeader(token));
-    return res.data;
-  };
-
-  const createSaleDetail = async (saleId, detailData) => {
-    const res = await axios.post(`${API_URL}/${saleId}/details`, detailData, getAuthHeader(token));
-    return res.data;
-  };
-
-  const updateSaleDetail = async (detailId, updates) => {
-    const res = await axios.patch(`${API_URL}/details/${detailId}`, updates, getAuthHeader(token));
-    return res.data;
-  };
-
-  const deleteSaleDetail = async (detailId) => {
-    const res = await axios.delete(`${API_URL}/details/${detailId}`, getAuthHeader(token));
-    return res.data;
-  };
-
+  // Devuelve todos los métodos que necesita el módulo de ventas
   return {
     getAllSales,
+    searchSalesByDate,
+    searchSalesByCriteria,
+    deleteSale,
+    approveSale,
+    cancelSale,
     getSaleById,
     createSale,
+    getAppliedSalesByCustomer,
     updateSale,
-    deleteSale,
-    searchSalesByDate,
-    searchSalesByCustomer,
-
-    getAllSaleDetails,
-    getSaleDetailsBySaleId,
-    getSaleDetailById,
-    createSaleDetail,
-    updateSaleDetail,
-    deleteSaleDetail,
+    searchSalesByCustomer,    // Solo si implementas búsqueda avanzada
+    getSaleDetailsBySaleId,   // Solo si necesitas mostrar detalles por separado
   };
 };
 
-export { SaleService };
+export default SaleService;
+
