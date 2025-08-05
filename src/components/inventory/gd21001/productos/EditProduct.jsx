@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import CancelRegister from './CancelRegister';
-import { showSuccess, showError } from './alerts';
-import './alerts.css';
+// 1. Ya no se necesita el import de CancelRegister
+// import CancelRegister from './CancelRegister';
+import Swal from 'sweetalert2'; // Se importa SweetAlert2
+import { showSuccess, showError } from '../../alerts';
+import '../../alerts.css';
+import styles from '../elementos/Boton.module.css'
 
 const EditProduct = ({ show, product, onSave, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -11,7 +14,8 @@ const EditProduct = ({ show, product, onSave, onCancel }) => {
     cantidad: ''
   });
 
-  const [showCancelModal, setShowCancelModal] = useState(false);
+  // 2. Se elimina el estado para el modal de cancelación
+  // const [showCancelModal, setShowCancelModal] = useState(false);
 
   useEffect(() => {
     if (product) {
@@ -66,10 +70,26 @@ const EditProduct = ({ show, product, onSave, onCancel }) => {
     showSuccess('El Registro se actualizó con éxito');
   };
 
+  // 3. Se modifica la función para usar SweetAlert
   const handleCancelClick = () => {
-    setShowCancelModal(true);
+    Swal.fire({
+      title: '¿Desea cancelar la edición?',
+      text: "Los cambios no se guardarán.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1B043B',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sí, cancelar',
+      cancelButtonText: 'No, continuar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        onCancel(); // Llama a la función onCancel del padre si se confirma
+      }
+    });
   };
 
+  // 4. Se eliminan las funciones auxiliares para el modal viejo
+  /*
   const confirmCancel = () => {
     setShowCancelModal(false);
     onCancel();
@@ -78,6 +98,7 @@ const EditProduct = ({ show, product, onSave, onCancel }) => {
   const cancelCancel = () => {
     setShowCancelModal(false);
   };
+  */
 
   return (
     <>
@@ -88,70 +109,72 @@ const EditProduct = ({ show, product, onSave, onCancel }) => {
 
             <form onSubmit={handleSubmit}>
               <div className="row mb-3">
-                <div className="col-md-6">
+                <div className="col-md-3">
                   <label>Código de producto</label>
                   <input
                     type="text"
                     name="codigo"
-                    className="form-control"
+                    className="form-control rounded-pill me-2"
+                    placeholder='Ejemplo: 1, 2, 303 etc.'
                     value={formData.codigo}
                     onChange={handleChange}
                     maxLength={10}
                     required
                   />
                 </div>
-              </div>
-
-              <div className="row mb-3">
-                <div className="col-md-8">
+                <div className="col-md-7">
                   <label>Nombre de producto</label>
                   <input
                     type="text"
                     name="nombre"
-                    className="form-control"
+                    className="form-control rounded-pill me-2"
+                    placeholder='Ejemplo: Laptop Dell, Procesador Lentium4, etc.'
                     value={formData.nombre}
                     onChange={handleChange}
                     maxLength={50}
                     required
                   />
                 </div>
-                <div className="col-md-4">
+              </div>
+
+              <div className="row mb-3">                
+                <div className="col-md-5">
                   <label>Unidad de representación</label>
                   <input
                     type="text"
                     name="unidad"
-                    className="form-control"
+                    className="form-control rounded-pill me-2"
+                    placeholder="Ejemplo: M, Cm, etc."
                     value={formData.unidad}
                     onChange={handleChange}
                     maxLength={20}
                     required
                   />
                 </div>
-              </div>
-
-              <div className="mb-4">
-                <label>Cantidad</label>
-                <input
-                  type="number"
-                  name="cantidad"
-                  className="form-control"
-                  value={formData.cantidad}
-                  onChange={handleChange}
-                  min={0}
-                  required
-                />
+                <div className="col-md-4">
+                    <label>Cantidad</label>
+                    <input
+                    type="number"
+                    name="cantidad"
+                    className="form-control rounded-pill me-2"
+                    placeholder='Ejemplo: 10, 20, 100, etc.'
+                    value={formData.cantidad}
+                    onChange={handleChange}
+                    min={0}
+                    required
+                    />
+                </div>
               </div>
 
               <div className="d-flex justify-content-center gap-3">
-                <button type="submit" className="btn" style={{ backgroundColor: '#1B043B', color: '#fff', padding: '6px 20px', borderRadius: '8px', border: 'none', fontWeight: 'bold' }}>
+                <button type="submit" className={`${styles.btnCustomMorado} btn rounded-pill me-2`}>
                   Guardar Cambios
                 </button>
 
                 <button
                   type="button"
-                  className="btn"
-                  onClick={handleCancelClick}
-                  style={{ backgroundColor: '#fff', color: '#1B043B', padding: '6px 20px', borderRadius: '8px', border: '1px solid #1B043B', fontWeight: 'bold' }}
+                  className={`${styles.btnCustomBlanco} btn rounded-pill me-2`}
+                  onClick={handleCancelClick} // La función ahora abre SweetAlert
                 >
                   Cancelar Registro
                 </button>
@@ -161,11 +184,13 @@ const EditProduct = ({ show, product, onSave, onCancel }) => {
         </div>
       </div>
 
+      {/*
       <CancelRegister
         show={showCancelModal}
         onConfirm={confirmCancel}
         onCancel={cancelCancel}
       />
+      */}
     </>
   );
 };

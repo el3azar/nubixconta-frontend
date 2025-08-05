@@ -10,16 +10,12 @@ export const generateProductMovementsPDF = (fileName, movements) => {
   autoTable(doc, {
     startY: 30,
     head: [[
-      'Correlativo', 'Código', 'Nombre', 'Unidad',
-      'Fecha', 'Tipo', 'Observación', 'Módulo'
+      'Código', 'Fecha', 'Tipo', 'Observación', 'Módulo'
     ]],
     body: movements.map(m => [
-      m.correlativo,
       m.codigoProducto,
-      m.nombreProducto,
-      m.unidad,
       m.fecha,
-      m.tipoMovimiento,
+      m.tipo,
       m.observacion,
       m.modulo
     ]),

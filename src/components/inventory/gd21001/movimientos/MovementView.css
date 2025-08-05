@@ -1,0 +1,16 @@
+.contenedor-movimientos {
+  /* 1. Asigna el color de fondo que especificaste. */
+  background-color: #AEA9E2;
+
+  /* 2. Aplica esquinas redondeadas. Puedes ajustar el valor a tu gusto. */
+  border-radius: 15px;
+
+  /* 3. Define el ancho y lo centra. */
+  max-width: 1500px; /* Un ancho estándar para contenedores grandes. */
+  margin-left: auto;  /* Centra el contenedor horizontalmente. */
+  margin-right: auto; /* Centra el contenedor horizontalmente. */
+  
+  /* (Opcional pero recomendado) Añade espacio interior y exterior. */
+  padding: 2rem;      /* Espacio para que el contenido no toque los bordes. */
+  margin-top: 2rem;   /* Margen para separarlo de elementos superiores. */
+}
