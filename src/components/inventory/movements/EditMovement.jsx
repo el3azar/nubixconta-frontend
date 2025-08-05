@@ -1,7 +1,7 @@
 // componentes/EditMovement.jsx
 import React, { useState, useEffect } from 'react';
-import SelectBase from '../elementos/SelectBase';
-import Boton from '../elementos/Boton';
+import SelectBase from '../inventoryelements/SelectBase';
+import Boton from '../inventoryelements/Boton';
 import Swal from 'sweetalert2';
 import { showSuccess, showError } from '../alertstoast';
 // import { updateMovement, getProductsForSelect } from '../../../../services/inventory/movementService';

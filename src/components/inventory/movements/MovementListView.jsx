@@ -1,11 +1,11 @@
 import { useState, useMemo, useCallback } from 'react';
-import Boton from '../elementos/Boton';
+import Boton from '../inventoryelements/Boton';
 import { Link } from 'react-router-dom';
 import { BsFileEarmarkExcel, BsFileEarmarkPdf } from 'react-icons/bs';
-import TableComponent from '../elementos/TableComponent';
+import TableComponent from '../inventoryelements/TableComponent';
 import { showInputDialog } from '../alertsmodalsa';
-import { generateProductMovementsPDF } from '../../PdfGenerator';
-import { generateProductMovementsExcel } from '../../ExcelGenerator';
+import { generateProductMovementsPDF } from '../PdfGenerator';
+import { generateProductMovementsExcel } from '../ExcelGenerator';
 
 // 2. Define los datos de ejemplo para la tabla de movimientos
 const datosDeMovimientos = [

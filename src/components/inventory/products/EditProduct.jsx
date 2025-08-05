@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 // 1. Ya no se necesita el import de CancelRegister
 // import CancelRegister from './CancelRegister';
 import Swal from 'sweetalert2'; // Se importa SweetAlert2
-import { showSuccess, showError } from '../../alerts';
-import '../../alerts.css';
-import styles from '../elementos/Boton.module.css'
+import { showSuccess, showError } from '../alerts';
+import '../alerts.css';
+import styles from '../inventoryelements/Boton.module.css';
 
 const EditProduct = ({ show, product, onSave, onCancel }) => {
   const [formData, setFormData] = useState({

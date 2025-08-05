@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import Boton from '../elementos/Boton';
+import Boton from '../inventoryelements/Boton';
 import { Link } from 'react-router-dom';
-import TableComponent from '../elementos/TableComponent';
+import TableComponent from '../inventoryelements/TableComponent';
 import { showSuccess } from '../alertstoast';
 import { showConfirmationDialog } from '../alertsmodalsa';
 

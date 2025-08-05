@@ -1,5 +1,5 @@
 import React from 'react';
-import Boton from '../elementos/Boton';
+import Boton from '../inventoryelements/Boton';
 
 // AÑADIMOS LAS PROPS: show, onClose y movement
 const ViewDetailsMovement = ({ show, onClose, movement }) => {

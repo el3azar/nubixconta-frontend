@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import Boton from '../elementos/Boton';
-import SearchCardMovement from '../elementos/SearchCardMovement';
-import TableComponent from '../elementos/TableComponent';
-import SwitchAction from '../elementos/SwitchActionMovement';
+import Boton from '../inventoryelements/Boton';
+import SearchCardMovement from '../inventoryelements/SearchCardMovement';
+import TableComponent from '../inventoryelements/TableComponent';
+import SwitchAction from '../inventoryelements/SwitchActionMovement';
 import { Link } from 'react-router-dom';
 // 1. IMPORTAMOS LAS FUNCIONES DE ALERTA NECESARIAS
 import { showSuccess, showError } from '../alertstoast';
@@ -260,7 +260,7 @@ const MovementView = () => {
     <div>
       <h2>Gestión de Movimientos de Inventario</h2>
       <div>
-          <Link to="/inventario/movimientolista">
+          <Link to="/inventario/movimientosproductos">
               <Boton color="morado" forma="pastilla" className="mb-4" >
                   <i className="bi bi-arrow-left-circle-fill me-2"></i>
                   Regresar
