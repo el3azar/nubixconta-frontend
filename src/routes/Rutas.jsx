@@ -28,8 +28,6 @@ import Sales from '../components/sales/sales/Sales';
 import NewSale from '../components/sales/sales/NewSale';
 import EditSale from '../components/sales/sales/EditSale';
 import DashboardInventory from '../components/inventory/DashBoardInventory';
-import ProductList from '../components/inventory/ProductList';
-import ProductMovementList from '../components/inventory/ProductMovementList';
 import CompanyManagementView from '../components/administration/companyMangment/CompanyManagementView';
 import UserManagementDashboard from '../components/administration/userManagement/UserManagementDashboard';
 import ChangeHistory from '../components/administration/changeHistory/ChangeHistory'
@@ -52,7 +50,13 @@ import AccountingEntry from '../components/sales/sales/AccountingEntry';
 import UserCompaniesDashboard from '../components/administration/userManagement/UserCompaniesDashboard';
 import AccessLogs from '../components/administration/changeHistory/AccessLogs';
 
-
+import MovementView from '../components/inventory/gd21001/movimientos/MovementView';
+import ProductView from '../components/inventory/gd21001/productos/ProductView';
+import DesableProductView from '../components/inventory/gd21001/productos/DesableProductView';
+import MovementListView from '../components/inventory/gd21001/movimientos/MovementListView';
+import PendingInventoryMovements from '../components/inventory/gd21001/movimientos/PendingInventoryMovements';
+import AppliedMovementList from '../components/inventory/gd21001/movimientos/AppliedMovementList';
+import AnullMovementList from '../components/inventory/gd21001/movimientos/AnullMovementList';
 
 export default function Rutas() {
   return (
@@ -195,16 +199,21 @@ export default function Rutas() {
                   {/* Rutas extras que necesites en CXC*/}
                   <Route path="/inventario" element={<DashboardInventory/>} />
                   {/* Rutas extras que necesites en Inventario*/}
-                  <Route path="/inventario/productos" element={<ProductList />} />
-                  <Route path="/inventario/movimientosproductos" element={<ProductMovementList />} />
+                  <Route path="/inventario/productos" element={<ProductView />} />
+                  <Route path="/inventario/movimientosproductos" element={<MovementListView />} />
+                  <Route path="/inventario/moves" element={<MovementView />} />
+                  <Route path="/inventario/desactiveprod" element={<DesableProductView />} />
+                  <Route path="/inventario/moves/pending" element={<PendingInventoryMovements />} />
+                  <Route path="/inventario/moves/applied" element={<AppliedMovementList />} />
+                  <Route path="/inventario/moves/anull" element={<AnullMovementList />} />
                   
                   {/* Rutas extras que necesites en ventas*/}
                   <Route path="/cuentas" element={<div>Cuentas por Cobrar</div>} />
                   {/* Rutas extras que necesites en CXC*/}
                   <Route path="/inventario" element={<DashboardInventory />} />
                   {/* Rutas extras que necesites en Inventario*/}
-                  <Route path="/inventario/productos" element={<ProductList />} />
-                  <Route path="/inventario/movimientosproductos" element={<ProductMovementList />} />
+                  <Route path="/inventario/productos" element={<ProductView />} />
+                  <Route path="/inventario/movimientosproductos" element={<MovementListView />} />
                   {/* Ruta comodín: muestra Dashboard general (puedes personalizar para un 404) */}
                   <Route path="*" element={<Login />} />
                 </Route>
@@ -212,8 +221,6 @@ export default function Rutas() {
             </Routes>
           </CompanyProvider>
       </AuthProvider>
-
-
     </BrowserRouter>
   );
 }
