@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 //import CancelRegister from './CancelRegister';
 import Swal from 'sweetalert2'; // 2. Importamos SweetAlert2
-import { showSuccess, showError } from '../../alerts';
-import { createProduct } from '../../../../services/inventory/productService'; // Asegúrate de que esta ruta es correcta
-import '../../alerts.css';
-import styles from '../elementos/Boton.module.css'
+import { showSuccess, showError } from '../alerts';
+import { createProduct } from '../../../services/inventory/productService'; // Asegúrate de que esta ruta es correcta
+import '../alerts.css';
+import styles from '../inventoryelements/Boton.module.css';
 
 const RegisterProduct = ({ show, onClose }) => {
   const [formData, setFormData] = useState({

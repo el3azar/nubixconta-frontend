@@ -49,13 +49,13 @@ import SalesReport from '../components/sales/reports/SalesReport';
 import UserCompaniesDashboard from '../components/administration/userManagement/UserCompaniesDashboard';
 import AccessLogs from '../components/administration/changeHistory/AccessLogs';
 
-import MovementView from '../components/inventory/gd21001/movimientos/MovementView';
-import ProductView from '../components/inventory/gd21001/productos/ProductView';
-import DesableProductView from '../components/inventory/gd21001/productos/DesableProductView';
-import MovementListView from '../components/inventory/gd21001/movimientos/MovementListView';
-import PendingInventoryMovements from '../components/inventory/gd21001/movimientos/PendingInventoryMovements';
-import AppliedMovementList from '../components/inventory/gd21001/movimientos/AppliedMovementList';
-import AnullMovementList from '../components/inventory/gd21001/movimientos/AnullMovementList';
+import MovementView from '../components/inventory/movements/MovementView';
+import ProductView from '../components/inventory/products/ProductView';
+import DesableProductView from '../components/inventory/products/DesableProductView';
+import MovementListView from '../components/inventory/movements/MovementListView';
+import PendingInventoryMovements from '../components/inventory/movements/PendingInventoryMovements';
+import AppliedMovementList from '../components/inventory/movements/AppliedMovementList';
+import AnullMovementList from '../components/inventory/movements/AnullMovementList';
 
 export default function Rutas() {
   return (

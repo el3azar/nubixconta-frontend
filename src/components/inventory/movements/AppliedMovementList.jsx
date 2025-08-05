@@ -2,8 +2,8 @@ import { Link } from 'react-router-dom';
 import { showSuccess, showError, showInfo } from '../alertstoast';
 import { showConfirmationDialog } from '../alertsmodalsa';
 import { useState, useMemo, useCallback } from 'react';
-import Boton from '../elementos/Boton';
-import TableComponent from '../elementos/TableComponent';
+import Boton from '../inventoryelements/Boton';
+import TableComponent from '../inventoryelements/TableComponent';
 
     // 1. Datos de ejemplo. El 'estado' inicial es 'pendiente'.
 const datosAplicados = [

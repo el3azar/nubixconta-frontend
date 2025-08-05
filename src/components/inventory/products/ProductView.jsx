@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import Boton from '../elementos/Boton';
-import SearchCardBase from '../elementos/SearchCardBase';
-import TableComponent from '../elementos/TableComponent';
-import SwitchAction from '../elementos/SwitchActionProduct';
+import Boton from '../inventoryelements/Boton';
+import SearchCardBase from '../inventoryelements/SearchCardBase';
+import TableComponent from '../inventoryelements/TableComponent';
+import SwitchAction from '../inventoryelements/SwitchActionProduct';
 import RegisterProduct from './RegisterProduct';
 import EditProduct from './EditProduct';
 import { Link } from 'react-router-dom';
