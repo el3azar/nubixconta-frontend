@@ -1,0 +1,9 @@
+/*
+  Aplica estilos personalizados al título dentro del toast.
+  La clase 'swal2-title-custom' la definimos en el objeto 'baseToast' de nuestro JavaScript.
+*/
+.swal2-title-custom {
+  font-size: 1rem;      /* Tamaño de la fuente del título. */
+  text-align: center;   /* Centra el texto del título. */
+  font-weight: 600;     /* Grosor de la fuente (semi-negrita). */
+}

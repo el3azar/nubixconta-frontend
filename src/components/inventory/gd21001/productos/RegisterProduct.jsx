@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import CancelRegister from './CancelRegister';
-import { showSuccess, showError } from './alerts';
-import { createProduct } from '../../services/inventory/productService'; // Asegúrate de que esta ruta es correcta
-import './alerts.css';
+//import CancelRegister from './CancelRegister';
+import Swal from 'sweetalert2'; // 2. Importamos SweetAlert2
+import { showSuccess, showError } from '../../alerts';
+import { createProduct } from '../../../../services/inventory/productService'; // Asegúrate de que esta ruta es correcta
+import '../../alerts.css';
+import styles from '../elementos/Boton.module.css'
 
 const RegisterProduct = ({ show, onClose }) => {
   const [formData, setFormData] = useState({
@@ -14,7 +16,7 @@ const RegisterProduct = ({ show, onClose }) => {
     cantidad: ''
   });
 
-  const [showCancelModal, setShowCancelModal] = useState(false);
+//  const [showCancelModal, setShowCancelModal] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -80,19 +82,26 @@ const RegisterProduct = ({ show, onClose }) => {
     }
   };
 
+  // 4. Se modifica esta función para usar SweetAlert
   const handleCancelClick = () => {
-    setShowCancelModal(true);
+    Swal.fire({
+      title: '¿Desea cancelar el registro?',
+      text: "No se guardarán los datos ingresados.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1B043B',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sí, cancelar',
+      cancelButtonText: 'No, continuar'
+    }).then((result) => {
+      // Si el usuario confirma, se cierra el modal principal
+      if (result.isConfirmed) {
+        onClose();
+      }
+    });
   };
 
-  const handleConfirmCancel = () => {
-    setShowCancelModal(false);
-    onClose(); // Cierra el modal al cancelar
-  };
-
-  const handleCancelConfirmModal = () => {
-    setShowCancelModal(false); // Cierra solo el modal de confirmación
-  };
-
+  
   if (!show) return null;
 
   return (
@@ -104,6 +113,7 @@ const RegisterProduct = ({ show, onClose }) => {
 
             <form onSubmit={handleSubmit}>
               <div className="row mb-3">
+                {/*
                 <div className="col-md-6">
                   <label>Correlativo</label>
                   <input
@@ -117,11 +127,13 @@ const RegisterProduct = ({ show, onClose }) => {
                     required
                   />
                 </div>
-                <div className="col-md-6">
+                */}
+                <div className="col-md-3">
                   <label>Código de producto</label>
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-control rounded-pill me-2"
+                    placeholder='Ejemplo: 1, 2, 303 etc.'
                     name="codigo"
                     value={formData.codigo}
                     onChange={handleChange}
@@ -129,14 +141,12 @@ const RegisterProduct = ({ show, onClose }) => {
                     required
                   />
                 </div>
-              </div>
-
-              <div className="row mb-3">
-                <div className="col-md-8">
+                <div className="col-md-7">
                   <label>Nombre de producto</label>
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-control rounded-pill me-2"
+                    placeholder='Ejemplo: Laptop Dell, Procesador Lentium4, etc.'
                     name="nombre"
                     value={formData.nombre}
                     onChange={handleChange}
@@ -144,11 +154,15 @@ const RegisterProduct = ({ show, onClose }) => {
                     required
                   />
                 </div>
-                <div className="col-md-4">
+              </div>
+
+              <div className="row mb-3 ">                
+                <div className="col-md-5">
                   <label>Unidad de representación</label>
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-control rounded-pill me-2"
+                    placeholder="Ejemplo: M, Cm, etc."
                     name="unidad"
                     value={formData.unidad}
                     onChange={handleChange}
@@ -156,30 +170,30 @@ const RegisterProduct = ({ show, onClose }) => {
                     required
                   />
                 </div>
-              </div>
-
-              <div className="mb-4">
-                <label>Cantidad</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  name="cantidad"
-                  value={formData.cantidad}
-                  onChange={handleChange}
-                  min={0}
-                  required
-                />
+                <div className="col-md-4">
+                    <label>Cantidad</label>
+                    <input
+                    type="number"
+                    className="form-control rounded-pill me-2"
+                    placeholder='Ejemplo: 10, 20, 100, etc.'
+                    name="cantidad"
+                    value={formData.cantidad}
+                    onChange={handleChange}
+                    min={0}
+                    required
+                    />
+                </div>
               </div>
 
               <div className="d-flex justify-content-center gap-3">
-                <button type="submit" className="btn" style={{ backgroundColor: '#1B043B', color: '#FFFFFF' }}>
+                <button type="submit" className={`${styles.btnCustomMorado} btn rounded-pill me-2`}>
                   Guardar Nuevo Producto
                 </button>
                 <button
                   type="button"
-                  className="btn"
-                  onClick={handleCancelClick}
-                  style={{ backgroundColor: '#FFFFFF', color: '#1B043B', border: '1px solid #1B043B' }}
+                  className={`${styles.btnCustomBlanco} btn rounded-pill me-2`}
+                  onClick={handleCancelClick} // Esta función ahora abre SweetAlert
+                  
                 >
                   Cancelar Registro
                 </button>
@@ -188,12 +202,6 @@ const RegisterProduct = ({ show, onClose }) => {
           </div>
         </div>
       </div>
-
-      <CancelRegister
-        show={showCancelModal}
-        onConfirm={handleConfirmCancel}
-        onCancel={handleCancelConfirmModal}
-      />
     </>
   );
 };
