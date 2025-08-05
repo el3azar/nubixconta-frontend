@@ -87,7 +87,7 @@ const DesableProductView = () => {
         <div>
             <h2>Lista de Productos Desactivados</h2>
             <div>
-                <Link to="/inventario/prodcts">
+                <Link to="/inventario/productos">
                     <Boton color="morado" forma="pastilla" className="mb-4" >
                         <i class="bi bi-arrow-left-circle-fill me-2"></i>
                         Regresar
