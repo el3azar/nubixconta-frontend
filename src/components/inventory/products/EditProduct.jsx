@@ -10,8 +10,7 @@ const EditProduct = ({ show, product, onSave, onCancel }) => {
   const [formData, setFormData] = useState({
     codigo: '',
     nombre: '',
-    unidad: '',
-    cantidad: ''
+    unidad: ''
   });
 
   // 2. Se elimina el estado para el modal de cancelación
@@ -23,7 +22,6 @@ const EditProduct = ({ show, product, onSave, onCancel }) => {
         codigo: product.productCode || '',
         nombre: product.productName || '',
         unidad: product.unit || '',
-        cantidad: product.stockQuantity?.toString() || ''
       });
     }
   }, [product]);
@@ -44,30 +42,31 @@ const EditProduct = ({ show, product, onSave, onCancel }) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+   // CAMBIO 1: handleSubmit se simplifica y asegura que el payload es correcto.
   const handleSubmit = (e) => {
     e.preventDefault();
+    const { codigo, nombre, unidad } = formData;
 
-    const { codigo, nombre, unidad, cantidad } = formData;
-
-    if (!codigo || !nombre || !unidad || !cantidad) {
+    // SIN CAMBIOS: Las validaciones locales se mantienen.
+    if (!codigo || !nombre || !unidad) {
       showError('NOTA: Hacen falta uno o varios datos del registro');
       return;
     }
+    
+    // CAMBIO 2: Creamos el payload que coincide con el ProductUpdateDTO del backend.
+    // El stock no se incluye porque se gestiona a través de movimientos.
+    const updatePayload = {
+      productCode: codigo,
+      productName: nombre,
+      unit: unidad,
+      // `productStatus` podría añadirse aquí si se quisiera editar desde este modal.
+    };
 
-    if (!/^\d+$/.test(cantidad)) {
-      showError('NOTA: Se está ingresando información incorrecta en uno o más campos');
-      return;
-    }
+    // CAMBIO 3: Se delega el guardado al padre, sin asumir el éxito.
+    onSave(updatePayload);
 
-   onSave({
-  productCode: codigo,
-  productName: nombre,
-  unit: unidad,
-  stockQuantity: parseInt(cantidad)
-});
-
-
-    showSuccess('El Registro se actualizó con éxito');
+    // Se elimina `showSuccess`. El padre (`ProductView`) se encargará de
+    // cerrar el modal y mostrar el feedback SÓLO cuando la API confirme el éxito.
   };
 
   // 3. Se modifica la función para usar SweetAlert
@@ -158,7 +157,8 @@ const EditProduct = ({ show, product, onSave, onCancel }) => {
                     name="cantidad"
                     className="form-control rounded-pill me-2"
                     placeholder='Ejemplo: 10, 20, 100, etc.'
-                    value={formData.cantidad}
+                    value={product.stockQuantity}
+                    disabled
                     onChange={handleChange}
                     min={0}
                     required

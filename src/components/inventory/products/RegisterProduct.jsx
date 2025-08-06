@@ -3,11 +3,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 //import CancelRegister from './CancelRegister';
 import Swal from 'sweetalert2'; // 2. Importamos SweetAlert2
 import { showSuccess, showError } from '../alerts';
-import { createProduct } from '../../../services/inventory/productService'; // Asegúrate de que esta ruta es correcta
 import '../alerts.css';
 import styles from '../inventoryelements/Boton.module.css';
 
-const RegisterProduct = ({ show, onClose }) => {
+const RegisterProduct = ({ show, onClose,onSave }) => {
   const [formData, setFormData] = useState({
     correlativo: '',
     codigo: '',
@@ -32,54 +31,35 @@ const RegisterProduct = ({ show, onClose }) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  // CAMBIO 2: 'handleSubmit' ahora es más simple y delega el guardado.
+  const handleSubmit = (e) => {
     e.preventDefault();
-    const { correlativo, codigo, nombre, unidad, cantidad } = formData;
+    const { codigo, nombre, unidad, cantidad } = formData;
 
-    // Validaciones
-    if (!correlativo || !codigo || !nombre || !unidad || !cantidad) {
+    // SIN CAMBIOS: Todas tus validaciones se mantienen intactas.
+    if (!codigo || !nombre || !unidad || !cantidad) {
       showError('NOTA: Hacen falta uno o varios datos del registro');
       return;
     }
-
-    if (!/^\d+$/.test(correlativo)) {
-      showError('El campo "Correlativo" debe contener solo números');
-      return;
-    }
-
+    // El campo correlativo ya no existe, eliminamos esa validación.
     if (!/^\d+$/.test(cantidad)) {
       showError('El campo "Cantidad" debe contener solo números');
       return;
     }
 
-    try {
-      const producto = {
-        productCode: codigo,
-        productName: nombre,
-        unit: unidad,
-        stockQuantity: parseInt(cantidad),
-        productDate: new Date().toISOString(),
-        productStatus: true
-      };
-
-      await createProduct(producto);
-
-      showSuccess('El producto fue registrado con éxito');
-
-      // Limpiar formulario
-      setFormData({
-        correlativo: '',
-        codigo: '',
-        nombre: '',
-        unidad: '',
-        cantidad: ''
-      });
-
-      onClose(); 
-
-    } catch (error) {
-      showError('Ocurrió un error al registrar el producto');
-    }
+    // Se construye el objeto DTO que espera el backend.
+    const productDTO = {
+      productCode: codigo,
+      productName: nombre,
+      unit: unidad,
+      stockQuantity: parseInt(cantidad, 10)
+    };
+    
+    // CAMBIO 3: En lugar de llamar a la API aquí, llamamos a la función 'onSave' del padre.
+    onSave(productDTO);
+    
+    // La lógica de éxito (alertas, limpieza, cierre) ahora es manejada por el componente padre,
+    // por lo que se elimina de aquí para evitar duplicidad.
   };
 
   // 4. Se modifica esta función para usar SweetAlert
