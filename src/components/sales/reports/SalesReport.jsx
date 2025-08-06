@@ -7,7 +7,7 @@ import { SaleService } from '../../../services/sales/SaleService';
 import { formatDate } from '../../../utils/dateFormatter';
 import SubMenu from "../SubMenu";
 import styles from '../../../styles/shared/DocumentView.module.css';
-
+import { useAuth } from '../../../context/AuthContext';
 // --- PASO 1: IMPORTAR LAS LIBRERÍAS DE EXPORTACIÓN ---
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable'; // Importamos el plugin como una función
@@ -72,9 +72,13 @@ const ReportFilterComponent = ({ register, handleSubmit, onSearch, watch, handle
 
 const ReportActionsAndTitleComponent = ({ listTitle, documents }) => {
   // --- CORRECCIÓN: Usamos un nombre de usuario de prueba ---
-  // Cuando integres la lógica en AuthContext, solo cambiarás esta línea por:
-  // const { userName } = useAuth();
-  const userName = "Usuario de Prueba";
+  // 1. Obtenemos el objeto 'user' completo desde nuestro AuthContext.
+  const { user } = useAuth();
+
+   // 2. Extraemos el nombre de usuario del claim 'sub' (subject) del token.
+  //    Usamos optional chaining (user?) por si el contexto aún no está listo al renderizar.
+  //    Ofrecemos un valor por defecto para evitar errores.
+  const userName = user?.sub || "Usuario...";
 
   const handleExportPDF = () => {
     if (!documents || documents.length === 0) return;

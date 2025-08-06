@@ -46,7 +46,6 @@ import CreditNote from '../components/sales/creditnote/CreditNote';
 import NewCreditNote from '../components/sales/creditnote/NewCreditNote';
 import EditCreditNote from '../components/sales/creditnote/EditCreditNote';
 import SalesReport from '../components/sales/reports/SalesReport';
-import AccountingEntry from '../components/sales/sales/AccountingEntry';
 import UserCompaniesDashboard from '../components/administration/userManagement/UserCompaniesDashboard';
 import AccessLogs from '../components/administration/changeHistory/AccessLogs';
 
@@ -169,6 +168,8 @@ export default function Rutas() {
                 <Route path="/ventas/notas-credito" element={<CreditNote />} />
                 <Route path="/ventas/nueva-nota-credito/:clientId" element={<NewCreditNote />} />
                 <Route path="/ventas/editar-nota-credito/:creditNoteId" element={<EditCreditNote />} />
+                
+
 
                   <Route path="/ventas/reportes" element={<SalesReport />} />
 

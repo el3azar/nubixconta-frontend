@@ -34,7 +34,7 @@ export default function Sales() {
   const routePaths = {
     new: '/ventas/clientes',
     edit: '/ventas/editar',
-    view: '/ventas/ver',
+    view: '/ventas/asiento-contable',
   };
 
   return (
