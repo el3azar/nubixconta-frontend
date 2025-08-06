@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import TableComponent from '../inventoryelements/TableComponent';
 import { showSuccess } from '../alertstoast';
 import { showConfirmationDialog } from '../alertsmodalsa';
-
+import { formatDate } from '../../../utils/dateFormatter';
 import { useQueryClient } from '@tanstack/react-query';
 
 // --- NUESTROS HOOKS DE DATOS ---
@@ -60,7 +60,7 @@ const DesableProductView = () => {
     { header: 'Nombre', accessorKey: 'productName' },
     { header: 'Unidad', accessorKey: 'unit' },
     { header: 'Existencias', accessorKey: 'stockQuantity' },
-    { header: 'Fecha Creación', accessorKey: 'creationDate' },
+    { header: 'Fecha Creación', accessorKey: 'creationDate', cell: ({ row }) => formatDate(row.original.creationDate) },
     {
       header: 'Acciones',
       id: 'acciones',
