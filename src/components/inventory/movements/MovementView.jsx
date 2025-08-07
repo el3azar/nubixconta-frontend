@@ -183,8 +183,10 @@ const MovementView = () => {
             <Boton color="morado" forma="pastilla" title="Ver Detalles" onClick={() => handleOpenDetailsModal(row.original)}>
                 <i className="bi bi-eye"></i>
             </Boton>
-            {/* Botón Activar/Desactivar */}
-            
+            {/* Botón Eliminar */}
+            <Boton color="blanco" forma="pastilla" title="Eliminar Movimiento" onClick={() => alert('Funcionalidad de eliminar aún no implementada')}>
+              <i className="bi bi-trash"></i> 
+            </Boton>
               
             
             {/* 3. Usa el componente SwitchAction con las nuevas props */}

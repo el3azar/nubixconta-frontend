@@ -7,6 +7,10 @@ import { showInputDialog } from '../alertsmodalsa';
 import { generateProductMovementsPDF } from '../PdfGenerator';
 import { generateProductMovementsExcel } from '../ExcelGenerator';
 
+// 1. Importa el componente de la tarjeta de búsqueda
+import SearchCardMovementList from '../inventoryelements/SearchCardMovementList';
+import { format } from 'date-fns';
+
 // 2. Define los datos de ejemplo para la tabla de movimientos
 const datosDeMovimientos = [
   { codigoProducto: 'SKU-000', fecha: '2025-08-01', tipo: 'Entrada', observacion: 'Compra a proveedor A', modulo: 'Inventario' },
@@ -35,11 +39,53 @@ const datosDeMovimientos = [
   { codigoProducto: 'SKU-023', fecha: '2025-07-30', tipo: 'Entrada', observacion: 'Devolución de cliente C', modulo: 'Ventas' },
 ];
 
+// Define datos de ejemplo para los Selects (simulando datos de una API)
+const apiDataCodigo = [
+  { value: 'SKU-000', label: 'SKU-000' },
+  { value: 'SKU-001', label: 'SKU-001' },
+  { value: 'SKU-002', label: 'SKU-002' },
+];
+const apiDataTipoMovimiento = [
+  { value: 'Entrada', label: 'Entrada' },
+  { value: 'Salida', label: 'Salida' },
+  { value: 'Ajuste', label: 'Ajuste' },
+];
+
 const MovementListView = () => {
 
     // Estado para los datos y el filtro
   const [movimientos, setMovimientos] = useState(datosDeMovimientos);
-  const [filtro, setFiltro] = useState('');
+  const [filtro, setFiltro] = useState(''); // Filtro global de la tabla
+
+  // Estados para los filtros de la tarjeta de búsqueda
+  const [codigoValue, setCodigoValue] = useState(null);
+  const [tipoMovimientoValue, setTipoMovimientoValue] = useState(null);
+  const [dateRange, setDateRange] = useState(undefined);
+
+  // Lógica para manejar el filtrado del card de búsqueda
+    const handleBuscar = useCallback(() => {
+        const { from, to } = dateRange || {};
+
+        const filteredData = datosDeMovimientos.filter(mov => {
+            const matchCodigo = codigoValue ? mov.codigoProducto === codigoValue.value : true;
+            const matchTipoMovimiento = tipoMovimientoValue ? mov.tipo === tipoMovimientoValue.value : true;
+
+            // Lógica de filtrado por fecha
+            const matchFecha = from && to ? new Date(mov.fecha) >= from && new Date(mov.fecha) <= to : true;
+
+            return matchCodigo && matchTipoMovimiento && matchFecha;
+        });
+
+        setMovimientos(filteredData);
+    }, [codigoValue, tipoMovimientoValue, dateRange]);
+
+    // Lógica para limpiar los filtros del card de busqueda
+    const handleLimpiar = () => {
+        setCodigoValue(null);
+        setTipoMovimientoValue(null);
+        setDateRange(undefined);
+        setMovimientos(datosDeMovimientos); // Restaura los datos originales
+    };
 
   // Dentro de tu componente MovementListView
 
@@ -96,16 +142,23 @@ const MovementListView = () => {
     return (
         <div>
             <h2>Lista de Movimientos</h2>
-            <div className='row align-items-center justify-content-between'>
-                <div className="col-auto">
-                    <Link to="/inventario/moves">
-                        <Boton color="morado" forma="pastilla" className="mb-4" >
-                            <i class="bi bi-arrow-right-circle-fill me-2"></i>
-                            Gestionar Movimientos de Inventario
-                        </Boton>
-                    </Link>
-                </div>
+            {/* Inserta el componente SearchCardMovementList aquí */}
+            <SearchCardMovementList
+                apiDataCodigo={apiDataCodigo}
+                codigoValue={codigoValue}
+                onCodigoChange={setCodigoValue}
                 
+                apiDataTipoMovimiento={apiDataTipoMovimiento}
+                tipoMovimientoValue={tipoMovimientoValue}
+                onTipoMovimientoChange={setTipoMovimientoValue}
+                
+                dateRange={dateRange}
+                onDateRangeChange={setDateRange}
+
+                onBuscar={handleBuscar}
+                onLimpiar={handleLimpiar}
+            />
+            <div className='row align-items-center justify-content-end'>
                 <div className="col-auto">
                     <div className="d-flex gap-2">
                         <Boton 
