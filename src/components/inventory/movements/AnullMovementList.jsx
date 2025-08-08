@@ -78,7 +78,7 @@ const AnullMovementList = () => {
                 </span>
             )
         },
-        {
+        /* {
             header: 'Acciones',
             id: 'acciones',
             cell: ({ row }) => (
@@ -92,7 +92,7 @@ const AnullMovementList = () => {
                     </Boton>
                 </div>
             ),
-        },
+        },*/
     ], [handleToggleAnulacion]);
 
     const hayCambiosPendientes = listaMovimientos.some(mov => mov.isDirty);
