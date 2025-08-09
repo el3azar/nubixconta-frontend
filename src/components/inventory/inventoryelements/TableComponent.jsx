@@ -14,7 +14,8 @@ const BaseTable = ({
   globalFilter,         // Filtro global aplicado
   onGlobalFilterChange, // Handler para cambios en filtro global
   withPagination = true, // Flag para mostrar/ocultar paginación
-  pageSize = 5 // <-- Nueva prop con valor por defecto
+  pageSize = 10,// <-- Nueva prop con valor por defecto
+  rowProps = () => ({}),
 }) => {
   /**
    * Configuración principal de la tabla
@@ -71,21 +72,31 @@ const BaseTable = ({
         </thead>
         
         <tbody>
-          {/* Mapeo de filas - ahora usa getRowModel() */}
-          {table.getRowModel().rows.map(row => (
-            <tr key={row.id} className='text-center'>
-              {/* Mapeo de celdas por fila */}
+
+          
+          {table.getRowModel().rows.map(row => {
+          // --- ESTA ES LA CORRECCIÓN CLAVE ---
+          
+          // 1. Obtenemos las props dinámicas para la fila
+          const FilaProps = rowProps(row);
+          
+          // 2. Combinamos la clase base con la clase dinámica
+          const classNames = `text-center ${FilaProps.className || ''}`.trim();
+
+          return (
+            // 3. Aplicamos las props y la clase combinada
+            <tr key={row.id} {...FilaProps} className={classNames}>
               {row.getVisibleCells().map(cell => (
                 <td key={cell.id}>
-                  {/* flexRender para contenido de celdas */}
                   {flexRender(
-                    cell.column.columnDef.cell, // Definición de la celda
-                    cell.getContext()           // Contexto de la celda
+                    cell.column.columnDef.cell,
+                    cell.getContext()
                   )}
                 </td>
               ))}
             </tr>
-          ))}
+          );
+        })}
         </tbody>
       </table>
 

@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
+import SubMenu from "../SubMenu";
 
 // HOOKS DE DATOS (Sin cambios)
 import {
@@ -70,7 +71,7 @@ const ProductView = () => {
       id: 'acciones',
       cell: ({ row }) => (
         <div className="d-flex gap-2 justify-content-center">
-          <Boton color="morado" forma="pastilla" className='me-2' title='Editar' onClick={() => handleAbrirModalEditar(row.original)}>
+          <Boton color="morado" forma="pastilla" className='me-2' title='Editar' size="icon" onClick={() => handleAbrirModalEditar(row.original)}>
             <i className="bi bi-pencil-square"></i>
           </Boton>
           <div className="d-flex align-items-center" title='Activar/Desactivar'>
@@ -160,11 +161,13 @@ const ProductView = () => {
 
   // --- ¡REFACTORIZACIÓN DEL RENDERIZADO! ---
   return (
-    <div>
-      <h2>Lista de Productos</h2>
-      <SearchCardBase
-        tamano='tamano-grande'
-        apiDataCodigo={datosParaBusquedaPorCodigo}
+    <>
+      <SubMenu />
+      <div>
+        <h2>Lista de Productos</h2>
+        <SearchCardBase
+          tamano='tamano-grande'
+          apiDataCodigo={datosParaBusquedaPorCodigo}
         codigoValue={codigoFilter}
         onCodigoChange={setCodigoFilter}
         apiDataNombre={datosParaBusquedaPorNombre}
@@ -206,6 +209,8 @@ const ProductView = () => {
         isLoading={isSearching}
       />
     </div>
+  </>
+
   );
 };
 

@@ -53,9 +53,6 @@ import MovementView from '../components/inventory/movements/MovementView';
 import ProductView from '../components/inventory/products/ProductView';
 import DesableProductView from '../components/inventory/products/DesableProductView';
 import MovementListView from '../components/inventory/movements/MovementListView';
-import PendingInventoryMovements from '../components/inventory/movements/PendingInventoryMovements';
-import AppliedMovementList from '../components/inventory/movements/AppliedMovementList';
-import AnullMovementList from '../components/inventory/movements/AnullMovementList';
 
 export default function Rutas() {
   return (
@@ -204,9 +201,6 @@ export default function Rutas() {
                   <Route path="/inventario/movimientosproductos" element={<MovementListView />} />
                   <Route path="/inventario/moves" element={<MovementView />} />
                   <Route path="/inventario/desactiveprod" element={<DesableProductView />} />
-                  <Route path="/inventario/moves/pending" element={<PendingInventoryMovements />} />
-                  <Route path="/inventario/moves/applied" element={<AppliedMovementList />} />
-                  <Route path="/inventario/moves/anull" element={<AnullMovementList />} />
                   
                   {/* Rutas extras que necesites en ventas*/}
                   <Route path="/cuentas" element={<div>Cuentas por Cobrar</div>} />

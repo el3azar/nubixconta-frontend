@@ -66,11 +66,7 @@ const DesableProductView = () => {
       id: 'acciones',
       cell: ({ row }) => (
         <div className="d-flex justify-content-center">
-          <Boton 
-            color="morado" 
-            forma="pastilla"
-            onClick={() => handleReactivate(row.original.idProduct)}
-          >
+          <Boton color="morado" forma="pastilla"  onClick={() => handleReactivate(row.original.idProduct)}>
             Activar
           </Boton>
         </div>
