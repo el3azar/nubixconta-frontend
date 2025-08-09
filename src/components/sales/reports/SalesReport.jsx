@@ -8,6 +8,7 @@ import { formatDate } from '../../../utils/dateFormatter';
 import SubMenu from "../SubMenu";
 import styles from '../../../styles/shared/DocumentView.module.css';
 import { useAuth } from '../../../context/AuthContext';
+import { useCompany } from '../../../context/CompanyContext'; 
 // --- PASO 1: IMPORTAR LAS LIBRERÍAS DE EXPORTACIÓN ---
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable'; // Importamos el plugin como una función
@@ -74,11 +75,13 @@ const ReportActionsAndTitleComponent = ({ listTitle, documents }) => {
   // --- CORRECCIÓN: Usamos un nombre de usuario de prueba ---
   // 1. Obtenemos el objeto 'user' completo desde nuestro AuthContext.
   const { user } = useAuth();
+  const { company } = useCompany();
 
    // 2. Extraemos el nombre de usuario del claim 'sub' (subject) del token.
   //    Usamos optional chaining (user?) por si el contexto aún no está listo al renderizar.
   //    Ofrecemos un valor por defecto para evitar errores.
   const userName = user?.sub || "Usuario...";
+  const companyName = company?.companyName || "Mi Empresa S.A. de C.V.";
 
   const handleExportPDF = () => {
     if (!documents || documents.length === 0) return;
@@ -95,7 +98,7 @@ const ReportActionsAndTitleComponent = ({ listTitle, documents }) => {
     // Lado izquierdo del encabezado
     doc.setFontSize(20);
     doc.setFont("helvetica", "bold");
-    doc.text("NubixConta S.A. de C.V.", margin, 22);
+    doc.text(companyName, margin, 22);
 
     doc.setFontSize(14);
     doc.setFont("helvetica", "normal");
@@ -153,7 +156,7 @@ const ReportActionsAndTitleComponent = ({ listTitle, documents }) => {
     const worksheet = workbook.addWorksheet("Ventas");
 
     // 2. Añadir el encabezado fuera de la tabla
-    worksheet.addRow(["NubixConta S.A. de C.V."]);
+    worksheet.addRow([companyName || "Mi Empresa S.A. de C.V."]);
     worksheet.addRow(["Reporte de Ventas "]);
     worksheet.addRow([`Generado por: ${userName} | Fecha: ${new Date().toLocaleDateString()}`]);
     worksheet.addRow([]); // Fila vacía

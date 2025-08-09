@@ -1,31 +1,104 @@
 /* Le quitamos el !important porque con CSS Modules ya no es necesario forzar la especificidad */
 
-/* Botón morado (estado normal) */
 .btnCustomMorado {
-    background-color: #1B043B;
-    border-color: #1B043B;
-    color: white;
-    transition: all 0.7s ease;
+    background-color: #10031C;
+    color: #fff;
+    border: 2px solid #10031C;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 500;
+    min-width: 140px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
 }
 
 /* Efecto hover (invertir colores) */
 .btnCustomMorado:hover {
-    background-color: white;
+    background-color: transparent;
     border-color: #1B043B;
     color: #1B043B;
 }
 
 /* Estilo BASE (normal) - Blanco con texto negro */
 .btnCustomBlanco {
-    background-color: white;
-    border-color: #1B043B; /* Le ponemos borde morado para que sea visible */
+    background-color: transparent;
+    border: 2px solid #10031C;
     color: black;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 500;
+    min-width: 140px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
     transition: all 0.3s ease;
 }
 
-/* Estilo HOVER - Morado (#1B043B) con texto blanco */
 .btnCustomBlanco:hover {
     background-color: #1B043B;
     border-color: #1B043B;
     color: white;
+}
+
+.btnCustomVerde {
+    background-color: #198754; /* Verde de Bootstrap Success */
+    color: #fff;
+    border: 2px solid #198754;
+    /* ... (copia el resto de propiedades de .btnCustomMorado si quieres) ... */
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 500;
+    min-width: 140px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+.btnCustomVerde:hover {
+    background-color: transparent;
+    color: #198754;
+    border-color: #198754;
+}
+
+.btnCustomRojo {
+    background-color: #dc3545; /* Rojo de Bootstrap Danger */
+    color: #fff;
+    border: 2px solid #dc3545;
+    /* ... (copia el resto de propiedades de .btnCustomMorado) ... */
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 500;
+    min-width: 140px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+.btnCustomRojo:hover {
+    background-color: transparent;
+    color: #dc3545;
+    border-color: #dc3545;
+}
+
+
+/* --- Clase para Botones de Ícono en Tablas --- */
+
+.btnIconOnly {
+    /* Reseteamos el tamaño y padding para hacerlo cuadrado */
+    min-width: 0;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+
+    /* Aseguramos que el ícono quede centrado */
+    justify-content: center;
+    
+    /* Hacemos el ícono un poco más grande */
+    font-size: 1.1rem;
+
+    border-radius: 0.375rem !important;
 }
