@@ -3,19 +3,18 @@ import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCustomerService } from '../../../services/sales/customerService';
-import { useProductService } from '../../../services/inventory/useProductService';
 import { SaleService } from '../../../services/sales/SaleService';
 import { useSaleForm } from '../../../hooks/useSaleForm';
 import SaleForm from './SaleForm';
 import Swal from 'sweetalert2';
-
+import { useActiveProducts } from '../../../hooks/useProductQueries'; 
 export default function NewSale() {
   const { clientId } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   
   const { createSale } = SaleService();
-  const { getActiveProducts } = useProductService();
+  const { data: activeProducts, isLoading: isLoadingProducts } = useActiveProducts();
   const { getCustomerById } = useCustomerService();
   
   const { data: client, isLoading: isLoadingClient } = useQuery({
@@ -24,14 +23,15 @@ export default function NewSale() {
     enabled: !!clientId,
   });
 
-  const { data: productOptions, isLoading: isLoadingProducts } = useQuery({
-    queryKey: ['activeProducts'],
-    queryFn: async () => {
-      const products = await getActiveProducts();
-      return products.map(p => ({ value: p.idProduct, label: p.productName, codigo: p.productCode, idProduct: p.idProduct }));
-    },
-    initialData: [],
-  });
+ const productOptions = React.useMemo(() => {
+    if (!activeProducts) return [];
+    return activeProducts.map(p => ({ 
+        value: p.idProduct, 
+        label: p.productName, 
+        codigo: p.productCode, 
+        idProduct: p.idProduct 
+    }));
+  }, [activeProducts]);
 
   const formLogic = useSaleForm();
 

@@ -28,8 +28,6 @@ import Sales from '../components/sales/sales/Sales';
 import NewSale from '../components/sales/sales/NewSale';
 import EditSale from '../components/sales/sales/EditSale';
 import DashboardInventory from '../components/inventory/DashBoardInventory';
-import ProductList from '../components/inventory/ProductList';
-import ProductMovementList from '../components/inventory/ProductMovementList';
 import CompanyManagementView from '../components/administration/companyMangment/CompanyManagementView';
 import UserManagementDashboard from '../components/administration/userManagement/UserManagementDashboard';
 import ChangeHistory from '../components/administration/changeHistory/ChangeHistory'
@@ -48,11 +46,13 @@ import CreditNote from '../components/sales/creditnote/CreditNote';
 import NewCreditNote from '../components/sales/creditnote/NewCreditNote';
 import EditCreditNote from '../components/sales/creditnote/EditCreditNote';
 import SalesReport from '../components/sales/reports/SalesReport';
-import AccountingEntry from '../components/sales/sales/AccountingEntry';
 import UserCompaniesDashboard from '../components/administration/userManagement/UserCompaniesDashboard';
 import AccessLogs from '../components/administration/changeHistory/AccessLogs';
 
-
+import MovementView from '../components/inventory/movements/MovementView';
+import ProductView from '../components/inventory/products/ProductView';
+import DesableProductView from '../components/inventory/products/DesableProductView';
+import MovementListView from '../components/inventory/movements/MovementListView';
 
 export default function Rutas() {
   return (
@@ -166,6 +166,8 @@ export default function Rutas() {
                 <Route path="/ventas/notas-credito" element={<CreditNote />} />
                 <Route path="/ventas/nueva-nota-credito/:clientId" element={<NewCreditNote />} />
                 <Route path="/ventas/editar-nota-credito/:creditNoteId" element={<EditCreditNote />} />
+                
+
 
                   <Route path="/ventas/reportes" element={<SalesReport />} />
 
@@ -196,16 +198,18 @@ export default function Rutas() {
                   {/* Rutas extras que necesites en CXC*/}
                   <Route path="/inventario" element={<DashboardInventory/>} />
                   {/* Rutas extras que necesites en Inventario*/}
-                  <Route path="/inventario/productos" element={<ProductList />} />
-                  <Route path="/inventario/movimientosproductos" element={<ProductMovementList />} />
+                  <Route path="/inventario/productos" element={<ProductView />} />
+                  <Route path="/inventario/movimientosproductos" element={<MovementListView />} />
+                  <Route path="/inventario/moves" element={<MovementView />} />
+                  <Route path="/inventario/desactiveprod" element={<DesableProductView />} />
                   
                   {/* Rutas extras que necesites en ventas*/}
                   <Route path="/cuentas" element={<div>Cuentas por Cobrar</div>} />
                   {/* Rutas extras que necesites en CXC*/}
                   <Route path="/inventario" element={<DashboardInventory />} />
                   {/* Rutas extras que necesites en Inventario*/}
-                  <Route path="/inventario/productos" element={<ProductList />} />
-                  <Route path="/inventario/movimientosproductos" element={<ProductMovementList />} />
+                  <Route path="/inventario/productos" element={<ProductView />} />
+                  <Route path="/inventario/movimientosproductos" element={<MovementListView />} />
                   {/* Ruta comodín: muestra Dashboard general (puedes personalizar para un 404) */}
                   <Route path="*" element={<Login />} />
                 </Route>
@@ -213,8 +217,6 @@ export default function Rutas() {
             </Routes>
           </CompanyProvider>
       </AuthProvider>
-
-
     </BrowserRouter>
   );
 }

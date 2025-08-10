@@ -1,0 +1,27 @@
+.contenedor-movimientos {
+  /* 1. Asigna el color de fondo que especificaste. */
+  background-color: #AEA9E2;
+
+  /* 2. Aplica esquinas redondeadas. Puedes ajustar el valor a tu gusto. */
+  border-radius: 15px;
+
+  /* 3. Define el ancho y lo centra. */
+  max-width: 1500px; /* Un ancho estándar para contenedores grandes. */
+  margin-left: auto;  /* Centra el contenedor horizontalmente. */
+  margin-right: auto; /* Centra el contenedor horizontalmente. */
+  
+  /* (Opcional pero recomendado) Añade espacio interior y exterior. */
+  padding: 2rem;      /* Espacio para que el contenido no toque los bordes. */
+  margin-top: 2rem;   /* Margen para separarlo de elementos superiores. */
+}
+
+/* Reglas de alta especificidad para los colores de fila */
+.table-container tbody tr.table-success td {
+    background-color: #d1e7dd !important; /* Un verde Bootstrap estándar */
+    color: #0f5132 !important;
+}
+
+.table-container tbody tr.table-danger td {
+    background-color: #f8d7da !important; /* Un rojo Bootstrap estándar */
+    color: #842029 !important;
+}
