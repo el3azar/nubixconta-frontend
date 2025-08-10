@@ -1,7 +1,19 @@
+/* src/styles/dashBoardCards.module.css */
+
+.companyLogo {
+  max-width: 80%;       /* Limita el ancho de la imagen al 80% del contenedor */
+  max-height: 80px;      /* Establece una altura máxima para evitar logos muy grandes */
+  object-fit: contain;  /* ¡Esta es la propiedad clave! Redimensiona la imagen para que encaje sin estirarse */
+  margin-bottom: 0.5rem;  /* Añade un espacio debajo del logo */
+  width: auto;
+  height: auto;
+}
+
 .dashboardCard {
   background: #CAC9CE;
   border-radius: 16px;
-  height: 130px;
+  /* Eliminamos el height fijo de 130px para que se adapte al contenido */
+  min-height: 130px; /* Usamos min-height para mantener un tamaño mínimo */
   width: 100%;
   max-width: 360px;
   box-shadow: 0 2px 8px rgba(30,16,62,0.04);
@@ -11,6 +23,7 @@
   justify-content: center;
   color: #10031C;
   transition: box-shadow 0.2s;
+  padding: 1rem; /* Añade un padding para evitar que el contenido toque los bordes */
 }
 .dashboardCard:hover {
   box-shadow: 0 6px 20px rgba(30,16,62,0.13);

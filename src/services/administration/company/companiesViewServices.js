@@ -1,7 +1,6 @@
 import axios from "axios";
-//Este enpoint trae el listado de todas las cuentas asignadas
+//Este enpoint trae el listado de todas las cuentas activas
 const API_URL = "http://localhost:8080/api/v1/companies/active";
-//const API_URL = "https://nubixconta-backend-production.up.railway.app/api/v1/companies";
 export const getCompaniesActive = async () => {
   try {
     const token = sessionStorage.getItem("nubix_token");

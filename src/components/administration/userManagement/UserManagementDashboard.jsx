@@ -12,16 +12,22 @@ import UserForm from "./UserForm";
 import { Building,Search } from "lucide-react"
 import AssignCompanyModal from "./AssignCompanyModal"
 import { useNavigate } from "react-router-dom";
+import ChangePasswordModal from "./ChangePasswordModal"; 
+
 
 
 const UserManagementDashboard = () => {
+
   const [users, setUsers] = useState([]);
   const [query, setQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userToAssignCompany, setUserToAssignCompany] = useState(null);
   const navigate = useNavigate();
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [userToChangePassword, setUserToChangePassword] = useState(null);
 
+ 
   /* -------- helpers SweetAlert -------- */
 const showSuccess = (msg) =>
     Swal.fire({
@@ -59,9 +65,26 @@ const showSuccess = (msg) =>
   );
 
   /* -------------- CRUD helpers -------------- */
-  const handleEdit = (user) => setSelectedUser(user);
+ const handleEdit = (user) => {
+     
+      setSelectedUser(user);
+    }
 
-   /* -------------- navegación -------------- */
+
+    
+  /* -------------- Lógica para el modal de contraseña -------------- */
+ const handleOpenPasswordModal = (user) => {
+    setUserToChangePassword(user);
+    setIsPasswordModalOpen(true);
+  };
+
+  const handleClosePasswordModal = () => {
+    setIsPasswordModalOpen(false);
+  };
+
+
+
+     /* -------------- navegación -------------- */
   const handleViewAssignedCompanies = (user) => {
     navigate(`/administration/users/${user.id}/companies`); 
   };
@@ -81,7 +104,6 @@ const showSuccess = (msg) =>
         showError(err.response?.data?.message || err.message)
       );
   };
-
    const handleAssignCompany = (user) => {
     setUserToAssignCompany(user);
     setIsModalOpen(true);
@@ -164,7 +186,11 @@ const showSuccess = (msg) =>
         onChange={handleSearch}
       />
 
-      <UserForm user={selectedUser} onSubmit={handleSubmit} />
+      <UserForm 
+          user={selectedUser} 
+          onSubmit={handleSubmit}
+           onOpenPasswordModal={handleOpenPasswordModal}
+       />
 
       <div className="row">
         {filteredUsers.map((u) => (
@@ -256,6 +282,17 @@ const showSuccess = (msg) =>
         showError={showError} 
       />
       </div>
+      {userToChangePassword && (
+        <ChangePasswordModal
+          isOpen={isPasswordModalOpen}
+          onClose={handleClosePasswordModal}
+          user={userToChangePassword}
+          showSuccess={showSuccess}
+          showError={showError}
+          navigate={navigate}
+    
+        />
+      )}
     </div>
   );
 };
