@@ -64,6 +64,7 @@ const MovementListView = () => {
     { header: 'Cantidad', accessorKey: 'quantity' },
     { header: 'Stock Resultante', accessorKey: 'stockAfterMovement' },
     { header: 'Descripción', accessorKey: 'description' },
+    { header: 'Cliente', accessorKey: 'customerName' },
     { header: 'Módulo Origen', accessorKey: 'originModule' },
   ], []);
 

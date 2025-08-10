@@ -20,18 +20,32 @@ const ProductFormModal = ({ show, onSave, onClose, initialData = null }) => {
     }
   });
 
-  // Usamos useEffect para resetear el formulario cuando cambian los datos iniciales
+   // --- useEffect MEJORADO para manejar el estado del formulario ---
   useEffect(() => {
-    if (show && initialData) {
-      reset({
-        productCode: initialData.productCode,
-        productName: initialData.productName,
-        unit: initialData.unit,
-      });
-    } else {
-      reset(); // Limpia el formulario para el modo de creación
+    // Solo hacemos algo si el modal se va a mostrar
+    if (show) {
+      if (isCreateMode) {
+        // MODO CREACIÓN: Reseteamos explícitamente a los valores por defecto (vacíos).
+        // Esto asegura que los datos de una edición anterior se limpien por completo.
+        reset({
+          productCode: '',
+          productName: '',
+          unit: '',
+          stockQuantity: 0,
+        });
+      } else {
+        // MODO EDICIÓN: Poblamos el formulario con los datos iniciales.
+        reset({
+          productCode: initialData.productCode,
+          productName: initialData.productName,
+          unit: initialData.unit,
+          // La cantidad no se edita, pero es bueno ser explícito
+          stockQuantity: initialData.stockQuantity, 
+        });
+      }
     }
-  }, [initialData, show, reset]);
+  }, [show, isCreateMode, initialData, reset]); // Las dependencias son correctas
+
 
   if (!show) return null;
 
