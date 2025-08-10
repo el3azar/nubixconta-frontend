@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCompany } from '../companyMangment/CompanyDataContext'; 
 import { IMaskInput } from 'react-imask';
 import formStyles from '../../../styles/sales/CustomerForm.module.css';
+import { uploadImageToCloudinary } from '../../../services/administration/company/uploadImageService';
 const RegisterCompanyView = () => {
   const navigate = useNavigate();
   const { addCompany } = useCompany();
@@ -18,6 +19,11 @@ const RegisterCompanyView = () => {
     dui: '',
     nrc: ''
   });  
+
+ // estado para la imagen
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+
   // Estado para saber si es persona jurídica o natural
   const [personType, setPersonType] = useState('juridica');
   const [errors, setErrors] = useState({});
@@ -38,8 +44,23 @@ const RegisterCompanyView = () => {
 
   };
 
+  // Nueva función para manejar el cambio del archivo de imagen
+  const handleImageChange = (e) => {
+  const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      // Crea una URL temporal para mostrar una vista previa de la imagen
+      setImagePreviewUrl(URL.createObjectURL(file));
+     } else {
+        setImageFile(null);
+        setImagePreviewUrl(null);
+     }
+   };
+
+
   // Validación + Registro
   const handleRegister = async() => {
+    let imageUrl = null;
     const newErrors = {};
     if (form.nombre.trim() === '') newErrors.nombre = 'Este campo es obligatorio.';
     if (form.giro.trim() === '') newErrors.giro = 'Este campo es obligatorio.';
@@ -71,6 +92,19 @@ const RegisterCompanyView = () => {
     try {
       // Se agrega empresa al contexto
 
+        if (imageFile) {
+            Swal.fire({
+                title: 'Subiendo imagen...',
+                text: 'Por favor, espere.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            imageUrl = await uploadImageToCloudinary(imageFile);
+            Swal.close(); // Cerramos el modal de carga al terminar la subida
+        }
+
        const companyData = {
       companyName: form.nombre,
       turnCompany: form.giro,
@@ -78,6 +112,7 @@ const RegisterCompanyView = () => {
       companyNrc: form.nrc,
       tipo: personType,
       creationDate: new Date().toISOString(),
+      imageUrl: imageUrl, 
       ...(personType === 'juridica' && { companyNit: form.nit }),
       ...(personType === 'natural' && { companyDui: form.dui })
     };
@@ -95,7 +130,8 @@ const RegisterCompanyView = () => {
       direccion: newCompany.address || '',
       nrc: newCompany.companyNrc,
       tipo: newCompany.companyDui ? 'natural' : 'juridica',
-      asignada: newCompany.companyStatus
+      asignada: newCompany.companyStatus,
+      imageUrl: newCompany.imageUrl || null,
 };
 
       addCompany(adaptedCompany);
@@ -112,6 +148,8 @@ const RegisterCompanyView = () => {
       setForm({ nombre: '',giro:'',direccion:'', nit: '', dui: '', nrc: '' });
       setPersonType('juridica');
       setErrors({});
+      setImageFile(null);
+      setImagePreviewUrl(null);
     } catch (error) {
       Swal.fire({
         title: 'Error',
@@ -253,7 +291,29 @@ const RegisterCompanyView = () => {
           />
           {errors.nrc && <div className="form-text text-danger">{errors.nrc}</div>}
         </div>
+         
+        {/* Campo para subir la imagen */}
+        <div>
+          <label className="form-label text-dark fw-semibold">Logo de la Empresa:</label>
+          <input
+            type="file"
+            name="logo"
+            className="form-control shadow-sm rounded-3 border-2"
+            accept="image/*"
+            onChange={handleImageChange}
+          />
+        </div>
 
+      {/* Vista previa de la imagen */}
+        {imagePreviewUrl && (
+          <div className="text-center mt-2">
+            <img 
+              src={imagePreviewUrl} 
+              alt="Vista previa del logo" 
+              style={{ maxWidth: '150px', maxHeight: '150px', objectFit: 'cover', border: '1px solid #ccc' }}
+            />
+          </div>
+        )}
         {/* Botones */}
         <div className="d-flex justify-content-between mt-3">
           <button type="button" className={formStyles.registrar} onClick={handleRegister} >

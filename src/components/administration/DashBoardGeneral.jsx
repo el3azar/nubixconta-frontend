@@ -7,21 +7,10 @@ import { FaChartLine, FaBoxes, FaHandHoldingUsd } from "react-icons/fa";
 import layoutStyles from "../../styles/mainLayout.module.css"; 
 
 const DashBoardGeneral = () => {
-  const { company, setCompany } = useCompany();
+  const { company } = useCompany();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!company) {
-      // Intenta recuperar del sessionStorage:
-      const stored = sessionStorage.getItem("empresaActiva");
-      if (stored) {
-        setCompany(JSON.parse(stored));
-      } else {
-        // Si no hay nada, redirige a /empresas
-        navigate("/empresas");
-      }
-    }
-  }, [company, setCompany, navigate]);
+ 
 
   // Define los módulos que quieres mostrar en el dashboard general
   const items = [

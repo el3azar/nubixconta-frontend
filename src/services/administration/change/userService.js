@@ -7,19 +7,19 @@ const getAuthHeaders = () => ({
   Authorization: `Bearer ${sessionStorage.getItem("nubix_token")}`,
   "Content-Type": "application/json",
 })
-//const API_URL = "https://nubixconta-backend-production.up.railway.app/api/v1/users";
+
 export const getAllUsers = () =>
   axios.get(API_URL, {
     headers:getAuthHeaders(),
   });
 
-// CREAR USUARIO (JSON)
+// CREAR USUARIO 
 export const createUser = (user) =>
   axios.post(API_URL, user, {
     headers: getAuthHeaders(),
   });
 
-// ACTUALIZAR USUARIO (JSON)
+// ACTUALIZAR USUARIO 
 export const updateUser = (id, user) =>
   axios.patch(`${API_URL}/${id}`, user, {
     headers: getAuthHeaders(),

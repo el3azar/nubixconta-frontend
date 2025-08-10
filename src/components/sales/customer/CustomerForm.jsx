@@ -18,7 +18,7 @@ export const CustomerForm = ({ onFormSubmit, defaultValues, isSubmitting = false
     watch,
     setValue,
     reset,
-    formState: { errors, dirtyFields },
+    formState: { errors },
   } = useForm({
     resolver: zodResolver(customerSchema),
     defaultValues: defaultValues || { personType: 'NATURAL', exemptFromVat: 'false', appliesWithholding: 'false' },
@@ -61,15 +61,24 @@ export const CustomerForm = ({ onFormSubmit, defaultValues, isSubmitting = false
   };
 
   const onSubmit = (data) => {
+    // La función 'data' contiene todos los campos validados del formulario.
     if (isEditMode) {
-      const payload = {};
-      Object.keys(dirtyFields).forEach(key => { payload[key] = data[key]; });
-      if (Object.keys(payload).length > 0) { onFormSubmit(payload); }
+      // 1. En modo edición, simplemente tomamos todos los datos del formulario.
+      const payload = data;
+
+      // 2. Por seguridad y para cumplir la regla de negocio, eliminamos `personType`
+      //    del objeto que enviaremos al backend. El backend ya no lo espera en el DTO de actualización.
+      delete payload.personType;
+
+      // 3. Llamamos a la función de submit con el payload.
+      //    Esto garantiza que LA PETICIÓN DE RED SIEMPRE SE HAGA.
+      onFormSubmit(payload);
+
     } else {
+      // La lógica de creación se mantiene igual.
       onFormSubmit(data);
     }
   };
-
    return (
     // CAMBIO CLAVE: Usamos formWrapper como el contenedor principal con el fondo gris
     <div className={formStyles.formWrapper}>
@@ -81,11 +90,11 @@ export const CustomerForm = ({ onFormSubmit, defaultValues, isSubmitting = false
         <div className={formStyles.personTypeBox}>
           <strong className="me-3">Tipo de Persona</strong>
           <div className="form-check form-check-inline">
-            <input className="form-check-input" type="radio" value="NATURAL" {...register('personType')} onChange={handlePersonTypeChange} id="typeNatural" />
+            <input className="form-check-input" type="radio" value="NATURAL" {...register('personType')} onChange={handlePersonTypeChange} id="typeNatural" disabled={isEditMode}/>
             <label className="form-check-label" htmlFor="typeNatural">Natural</label>
           </div>
           <div className="form-check form-check-inline">
-            <input className="form-check-input" type="radio" value="JURIDICA" {...register('personType')} onChange={handlePersonTypeChange} id="typeJuridica" />
+            <input className="form-check-input" type="radio" value="JURIDICA" {...register('personType')} onChange={handlePersonTypeChange} id="typeJuridica" disabled={isEditMode} />
             <label className="form-check-label" htmlFor="typeJuridica">Jurídica</label>
           </div>
         </div>
@@ -136,9 +145,11 @@ export const CustomerForm = ({ onFormSubmit, defaultValues, isSubmitting = false
 
           {/* NIT (Condicional) */}
           {personType === 'JURIDICA' && (
-             <div className={formStyles.formGroup}>
+               <div className={formStyles.formGroup}>
                 <label htmlFor="customerNit" className={formStyles.formLabel}>NIT</label>
-                <input id="customerNit" type="text" placeholder="####-######-###-#" className={formStyles.formControl} {...register('customerNit')} />
+                <Controller name="customerNit" control={control} render={({ field: { onChange, onBlur, value } }) => (
+                    <IMaskInput id="customerNit" mask="0000-000000-000-0" placeholder="####-######-###-#" className={formStyles.formControl} value={value || ''} onBlur={onBlur} onAccept={(acceptedValue) => onChange(acceptedValue)} />
+                )}/>
                 {errors.customerNit && <p className={formStyles.errorMessage}>{errors.customerNit.message}</p>}
             </div>
           )}

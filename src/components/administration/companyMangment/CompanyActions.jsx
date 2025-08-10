@@ -42,10 +42,6 @@ const CompanyActions = ({
 
       {/* Editar empresa */}
       <FaEdit title="Editar" className={styles.icono} onClick={onEdit} />
-
-      {/* Ir a contabilidad */}
-      <FaBook title="Contabilidad" className={styles.icono} onClick={onAccounting} />
-
     </div>
   );
 };

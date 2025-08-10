@@ -1,9 +1,10 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styles from '../styles/Sidebar.module.css'; // Importa el CSS Module
 import { useLocation, Link, useNavigate } from "react-router-dom";
-import { House, PersonLinesFill, PeopleFill, BoxSeam, List } from 'react-bootstrap-icons';
+import { House, PersonLinesFill, PeopleFill, BoxSeam, List, ArrowLeftRight, JournalRichtext } from 'react-bootstrap-icons';
 import { BoxArrowRight } from "react-bootstrap-icons";
 import { useAuth } from "../context/AuthContext";
+
 
 
 const adminLinks = [
@@ -12,6 +13,7 @@ const adminLinks = [
   { to: "/admin/empresas", label: "Empresas", icon: PersonLinesFill },
   { to: "/admin/bitacora-cambios", label: "Bitácora de cambios", icon: List },
   { to: "/admin/bitacora-accesos", label: "Bitácora de accesos", icon: BoxSeam },
+  { to: "/admin/empresas-contabilidad", label: "Contabilidad", icon: JournalRichtext },
 ];
 
 const moduleLinks = [
@@ -75,17 +77,35 @@ const SideBar = ({ sidebarOpen, toggleSidebar }) => {
           </ul>
         </nav>
 
+        {/* Este bloque se muestra justo encima del de Cerrar Sesión. */}
+        {/* La condición !isAdminRoute asegura que solo aparezca en las vistas de módulos, */}
+        {/* no en las vistas de administración, lo cual es el comportamiento deseado. */}
+        {!isAdminRoute && (
+            <div className="mt-auto w-100">
+                <Link
+                    to="/empresas"
+                    className="btn btn-outline-light w-100 d-flex align-items-center justify-content-center"
+                    style={{ marginBottom: '0.5rem', minHeight: 48 }}
+                    title="Cambiar de Empresa"
+                >
+                    <ArrowLeftRight size={20} className="me-2" />
+                    {sidebarOpen && "Cambiar Empresa"}
+                </Link>
+            </div>
+        )}
+
         {/* Botón Cerrar sesión pegado abajo */}
-      <div className="mt-auto w-100">
-        <button
-          className="btn btn-outline-light w-100 d-flex align-items-center justify-content-center"
-          style={{ marginBottom: '1rem', minHeight: 48 }}
-          onClick={handleLogout} title="Cerrar sesión">
-            
-          <BoxArrowRight size={20} className="me-2" />
-          {sidebarOpen && "Cerrar sesión"}
-        </button>
-    </div>
+       {/* Ajustamos el estilo condicionalmente para que el botón de logout siga pegado abajo */}
+        <div className="w-100" style={isAdminRoute ? {marginTop: 'auto'} : {}}>
+          <button
+            className="btn btn-outline-light w-100 d-flex align-items-center justify-content-center"
+            style={{ marginBottom: '1rem', minHeight: 48 }}
+            onClick={handleLogout} title="Cerrar sesión">
+              
+            <BoxArrowRight size={20} className="me-2" />
+            {sidebarOpen && "Cerrar sesión"}
+          </button>
+        </div>
 
       </aside>
     </>

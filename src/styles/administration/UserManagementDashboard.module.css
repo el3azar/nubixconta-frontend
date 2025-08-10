@@ -10,3 +10,10 @@
   color: #10031C !important;
   border: 1px solid #10031C !important;
 }
+.centeredButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  /* Puedes ajustar el padding si es necesario */
+}

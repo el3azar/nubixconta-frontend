@@ -134,6 +134,34 @@
   margin-right: 0;
 }
 
+/* En src/styles/shared/DocumentView.module.css */
+
+/* ... (TODOS TUS ESTILOS EXISTENTES PERMANECEN IGUAL) ... */
+
+
+/* ============================================================= */
+/*          ÚNICA CLASE NUEVA PARA EL SCROLL HORIZONTAL          */
+/* ============================================================= */
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto; /* Activa el scroll horizontal solo cuando es necesario */
+  -webkit-overflow-scrolling: touch; /* Mejora la experiencia en iOS */
+}
+/* ================================================================== */
+/*        NUESTRAS PROPIAS CLASES DE ALINEACIÓN (ANTI-BOOTSTRAP)      */
+/* ================================================================== */
+.textAlignLeft {
+  text-align: left !important; /* Usamos !important para ganar a Bootstrap */
+}
+
+.textAlignCenter {
+  text-align: center !important;
+}
+
+.textAlignRight {
+  text-align: right !important;
+}
+
 @media (max-width: 700px) {
   .filter {
     flex-direction: column;

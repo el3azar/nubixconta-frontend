@@ -30,7 +30,7 @@ const naturalPersonSchema = baseCustomerSchema.extend({
 // Esquema para Persona JURIDICA
 const juridicalPersonSchema = baseCustomerSchema.extend({
   personType: z.literal('JURIDICA'),
-  customerNit: z.string().min(1, 'El NIT es requerido').max(17),
+  customerNit: z.string().regex(/^\d{4}-\d{6}-\d{3}-\d{1}$/, 'El formato del NIT es ####-######-###-#'),
   // Hacemos nulos los campos que no aplican
   customerDui: z.null().or(z.literal('')).optional(),
   customerLastName: z.null().or(z.literal('')).optional(),
