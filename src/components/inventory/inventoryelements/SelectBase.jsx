@@ -10,12 +10,9 @@ const buscarEnApi = (terminoDeBusqueda, baseDeDatos) => {
         return resolve([]);
       }
       const resultados = baseDeDatos.filter(item =>
-        item.nombre.toLowerCase().includes(terminoDeBusqueda.toLowerCase())
+        item.label.toLowerCase().includes(terminoDeBusqueda.toLowerCase())
       );
-      resolve(resultados.map(item => ({
-        value: item.id,
-        label: item.nombre,
-      })));
+      resolve(resultados);
     }, 500); // Reducido para mejor UX
   });
 };
@@ -25,6 +22,7 @@ const buscarEnApi = (terminoDeBusqueda, baseDeDatos) => {
 const SelectBase = ({ apiData = [], value, onChange, placeholder = "Escribe para buscar..." }) => {
   
   const loadOptions = (inputValue, callback) => {
+    // La búsqueda ahora usará la propiedad correcta para filtrar
     buscarEnApi(inputValue, apiData).then(options => {
       callback(options);
     });

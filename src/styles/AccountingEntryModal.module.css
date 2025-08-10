@@ -1,0 +1,119 @@
+/*
+ * Estilos para construir un modal personalizado desde cero.
+ */
+
+/* ------------------------------------------------------------------ */
+/* 1. SOLUCIÓN PARA EL COLOR DE FONDO                                 */
+/* ------------------------------------------------------------------ */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  /* CAMBIO: Usamos un color más sutil y profesional para el fondo */
+  background-color: rgba(0, 0, 0, 0.65); /* Gris oscuro (negro) con 65% de opacidad */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+}
+
+.modalContent {
+  position: relative;
+  /* CAMBIO: Usamos el color de fondo exacto que solicitaste */
+  background: #B6B3D0; 
+  border-radius: 10px;
+  max-width: 950px;
+  width: 90%;
+  max-height: 90vh; /* Altura máxima para permitir el scroll */
+  overflow-y: auto; /* Mantiene el scroll si es necesario */
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+/* ------------------------------------------------------------------ */
+/* 2. SOLUCIÓN PARA MEJORAR EL SCROLL VISUALMENTE                     */
+/* ------------------------------------------------------------------ */
+/* Estas reglas estilizan la barra de scroll para que sea más delgada
+   y menos invasiva, mejorando la estética. Funciona en navegadores
+   basados en WebKit (Chrome, Safari, Edge). */
+.modalContent::-webkit-scrollbar {
+  width: 8px;
+}
+.modalContent::-webkit-scrollbar-track {
+  background: #e0e0e0;
+  border-radius: 10px;
+}
+.modalContent::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 10px;
+  border: 2px solid #e0e0e0;
+}
+.modalContent::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+
+/* El botón de cierre (X) */
+.closeButton {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #555;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+}
+.closeButton:hover {
+  color: #000;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  border-top: 1px solid #9f9cb9; /* Borde superior más acorde al nuevo fondo */
+}
+
+/* Estilos de botones (sin cambios) */
+.registrar, .cancelar {
+  padding: 0.38rem 1.25rem;
+  font-size: 0.97rem;
+  border-radius: 8px;
+  font-weight: 500;
+  border: 2px solid #10031C;
+  transition: 0.18s;
+}
+.registrar { background: #10031C; color: #fff; }
+.registrar:hover { background: transparent; color: #10031C; }
+.cancelar { background: transparent; color: #10031C; }
+.cancelar:hover { background: #10031C; color: #fff; }
+
+/* ------------------------------------------------------------------ */
+/* 1. SOLUCIÓN PARA LA TABLA MÁS MARCADA                              */
+/* ------------------------------------------------------------------ */
+/* Esta regla se aplica a la tabla dentro del componente AccountingEntry
+   y asegura que los bordes sean más visibles. */
+.entryTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+.entryTable thead {
+  background-color: #dee2e6;
+}
+.entryTable th, .entryTable td {
+  /* CAMBIO CLAVE: Borde sólido, de 1px y casi negro para máxima claridad */
+  border: 1px solid #343a40 !important; 
+  padding: 0.8rem;
+  vertical-align: middle;
+}
+.entryTable tfoot {
+  font-weight: bold;
+  background-color: #e9ecef;
+}

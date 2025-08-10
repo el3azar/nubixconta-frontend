@@ -3,11 +3,11 @@ import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCustomerService } from '../../../services/sales/customerService';
-import { useProductService } from '../../../services/inventory/useProductService';
 import { SaleService } from '../../../services/sales/SaleService';
 import { useSaleForm } from '../../../hooks/useSaleForm';
 import SaleForm from './SaleForm';
 import Swal from 'sweetalert2';
+import { useActiveProducts } from '../../../hooks/useProductQueries'; 
 
 export default function EditSale() {
   const { saleId } = useParams();
@@ -15,7 +15,7 @@ export default function EditSale() {
   const queryClient = useQueryClient();
   
   const { updateSale, getSaleById } = SaleService();
-  const { getActiveProducts } = useProductService();
+  const { data: activeProducts, isLoading: isLoadingProducts } = useActiveProducts();
   const { getCustomerById } = useCustomerService();
 
   const { data: saleToEdit, isLoading: isLoadingSale, isError } = useQuery({
@@ -30,17 +30,21 @@ export default function EditSale() {
     enabled: !!saleToEdit?.customer?.clientId,
   });
 
-  const { data: productOptions, isLoading: isLoadingProducts } = useQuery({
-    queryKey: ['activeProducts'],
-    queryFn: async () => {
-      const products = await getActiveProducts();
-      return products.map(p => ({ value: p.idProduct, label: p.productName, codigo: p.productCode, idProduct: p.idProduct }));
-    },
-    initialData: [],
-  });
+  const productOptions = React.useMemo(() => {
+    if (!activeProducts) return [];
+    return activeProducts.map(p => ({ 
+        value: p.idProduct, 
+        label: p.productName, 
+        codigo: p.productCode, 
+        idProduct: p.idProduct 
+    }));
+  }, [activeProducts]);
 
+  
+  // Desestructuramos para tener acceso directo a los métodos del formulario
   const formLogic = useSaleForm();
-  const { setValue } = formLogic.formMethods;
+  const { setValue, getValues } = formLogic.formMethods; // <-- AÑADIMOS getValues
+
 
   useEffect(() => {
     if (saleToEdit && !isLoadingProducts) {
@@ -62,10 +66,19 @@ export default function EditSale() {
       const detailsForForm = saleToEdit.saleDetails.map(detail => {
         let productName = '';
         let productCode = '';
+        let isInvalid = false; // Nuestra nueva bandera
         if (detail.product) {
           const productInfo = productOptions.find(p => p.value === detail.product.idProduct);
-          productName = productInfo?.label || 'Producto no encontrado';
-          productCode = productInfo?.codigo || 'N/A';
+           if (productInfo) {
+            // El producto se encontró en la lista de activos, todo bien.
+            productName = productInfo.label;
+            productCode = productInfo.codigo;
+          } else {
+            // ¡AQUÍ ESTÁ LA MAGIA! El producto no se encontró.
+            productName = 'PRODUCTO DESACTIVADO O ELIMINADO';
+            productCode = 'Inválido';
+            isInvalid = true; // Marcamos la línea como inválida.
+          }
         }
         return {
           productId: detail.product ? detail.product.idProduct : null,
@@ -76,6 +89,7 @@ export default function EditSale() {
           impuesto: saleToEdit.vatAmount > 0,
           _productName: productName, 
           _productCode: productCode,
+          _isInvalid: isInvalid, // <-- AÑADIMOS LA BANDERA AL OBJETO DEL DETALLE
         };
       });
       setValue('saleDetails', detailsForForm);
@@ -96,6 +110,19 @@ export default function EditSale() {
   });
 
   const onFormSubmit = (formData) => {
+     // 1. Obtenemos los valores COMPLETOS y SIN LIMPIAR del formulario.
+    const fullFormData = getValues(); 
+
+    // 2. Ahora, ejecutamos la validación sobre ESTOS datos, que SÍ contienen nuestra bandera.
+    const hasInvalidItems = fullFormData.saleDetails.some(detail => detail._isInvalid === true);
+    if (hasInvalidItems) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Venta con Errores',
+        text: 'No puedes guardar una venta que contiene productos desactivados o eliminados. Por favor, elimina las líneas marcadas en rojo.',
+      });
+      return; // Detenemos el envío
+    }
     const dto = formLogic.prepareSubmitData(formData);
     submitUpdate({ saleId, dto });
   };

@@ -1,14 +1,14 @@
 import React from 'react';
 import Boton from '../inventoryelements/Boton';
+import { formatDate } from '../../../utils/dateFormatter'; // ¡IMPORTANTE! Necesitamos formatear la fecha
 
-// AÑADIMOS LAS PROPS: show, onClose y movement
+
 const ViewDetailsMovement = ({ show, onClose, movement }) => {
-    // Si show es falso, no renderizamos nada.
     if (!show) {
         return null;
     }
 
-    // Usamos el operador de encadenamiento opcional (?.) para evitar errores si `movement` es nulo
+    // Usamos el operador de encadenamiento opcional (?.) para máxima seguridad
     return (
         <div className={`modal fade ${show ? 'show d-block' : ''}`} tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
             <div className="modal-dialog modal-lg modal-dialog-centered">
@@ -18,48 +18,59 @@ const ViewDetailsMovement = ({ show, onClose, movement }) => {
                         <button type="button" className="btn-close" aria-label="Close" onClick={onClose}></button>
                     </div>
                     <div className="modal-body">
-                        {/* Sección de detalles generales */}
+                        {/* ================================================================ */}
+                        {/* == ESTA ES LA SECCIÓN CORREGIDA CON LOS NOMBRES DE CAMPO REALES == */}
+                        {/* ================================================================ */}
                         <div className="row mb-4">
                             <div className="col-md-4">
                                 <label className="form-label fw-bold">Fecha</label>
-                                <input type="text" className="form-control" value={movement?.fecha || ''} readOnly />
+                                <input type="text" className="form-control" value={formatDate(movement?.date) || ''} readOnly />
                             </div>
                             <div className="col-md-4">
                                 <label className="form-label fw-bold">Tipo de Movimiento</label>
-                                <input type="text" className="form-control" value={movement?.tipo || ''} readOnly />
+                                <input type="text" className="form-control" value={movement?.movementType || ''} readOnly />
                             </div>
                             <div className="col-md-4">
-                                <label className="form-label fw-bold">Módulo</label>
-                                <input type="text" className="form-control" value={movement?.modulo || ''} readOnly /> {/* Asumimos que `module` existe en tus datos */}
+                                <label className="form-label fw-bold">Módulo Origen</label>
+                                <input type="text" className="form-control" value={movement?.originModule || ''} readOnly />
                             </div>
                         </div>
 
-                        {/* Sección de observación */}
                         <div className="row mb-4">
                             <div className="col-12">
-                                <label className="form-label fw-bold">Observación</label>
-                                <textarea className="form-control" rows="4" value={movement?.observacion || ''} readOnly></textarea>
+                                <label className="form-label fw-bold">Descripción / Observación</label>
+                                <textarea className="form-control" rows="4" value={movement?.description || ''} readOnly></textarea>
                             </div>
                         </div>
 
                         <hr className="my-4" />
 
-                        {/* Título y detalles del producto */}
                         <h3 className="text-center mb-4">Detalles del Producto</h3>
                         <div className="row mb-4">
-                            <div className="col-md-6">
+                             <div className="col-md-4">
                                 <label className="form-label fw-bold">Código de Producto</label>
-                                <input type="text" className="form-control" value={movement?.codigoProducto || ''} readOnly /> {/* Asumimos `productCode` */}
+                                <input type="text" className="form-control" value={movement?.product?.productCode || ''} readOnly />
+                            </div>
+                            <div className="col-md-8">
+                                <label className="form-label fw-bold">Nombre de Producto</label>
+                                <input type="text" className="form-control" value={movement?.product?.productName || ''} readOnly />
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-md-6">
+                                <label className="form-label fw-bold">Cantidad Movida</label>
+                                <input type="text" className="form-control" value={movement?.quantity || ''} readOnly />
                             </div>
                             <div className="col-md-6">
-                                <label className="form-label fw-bold">Nombre de Producto</label>
-                                <input type="text" className="form-control" value={movement?.productName || ''} readOnly /> {/* Asumimos `productName` */}
+                                <label className="form-label fw-bold">Stock Resultante</label>
+                                <input type="text" className="form-control" value={movement?.stockAfterMovement || ''} readOnly />
                             </div>
                         </div>
 
-                        {/* Botón para cerrar el modal */}
+
+                        {/* --- Botón para cerrar (sin cambios) --- */}
                         <div className="d-flex justify-content-center mt-4">
-                            <Boton className="rounded-pill me-2" color="blanco" onClick={onClose}>Cerrar</Boton>
+                            <Boton color="blanco" onClick={onClose}>Cerrar</Boton>
                         </div>
                     </div>
                 </div>

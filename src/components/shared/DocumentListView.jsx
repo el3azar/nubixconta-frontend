@@ -10,6 +10,8 @@ import { FaArrowRight } from 'react-icons/fa';
 import { DocumentTable } from './DocumentTable';
 import styles from '../../styles/shared/DocumentView.module.css';
 import { useCompany } from '../../context/CompanyContext';
+import AccountingEntryModal from './AccountingEntryModal'; // <-- Importar el nuevo modal
+import { useAccountingModal } from '../../hooks/useAccountingModal';
 
 export const DocumentListView = ({
   pageTitle,      
@@ -35,6 +37,16 @@ export const DocumentListView = ({
 
   const { company } = useCompany();
 
+  // --- CAMBIO: TODA LA LÓGICA DEL MODAL SE REEMPLAZA POR ESTA LÍNEA ---
+  const {
+    isModalOpen,
+    openAccountingModal,
+    closeAccountingModal,
+    modalData,
+    isModalLoading,
+    isModalError,
+    modalError
+  } = useAccountingModal();
 
   // --- 2. LÓGICA DE DATOS (QUERIES Y MUTATIONS) ---
  const { data: documents = [], isLoading, isError, error } = useQuery({
@@ -123,7 +135,8 @@ const onSearch = (data) => {
     setTimeout(() => navigate(routePaths.new), 100);
   };
   const handleEdit = (id) => navigate(`${routePaths.edit}/${id}`);
-  const handleView = (id) => navigate(`${routePaths.view}/${id}`);
+  const handleView = (doc) => openAccountingModal(doc);
+
 const handleDelete = (id) => {
     Swal.fire({
       title: `¿Eliminar documento?`, text: 'Esta acción no se puede deshacer.', icon: 'warning',
@@ -228,6 +241,15 @@ const handleDelete = (id) => {
           </tbody>
         </table>
       </div>
+      {/* --- RENDERIZADO DEL MODAL --- */}
+      <AccountingEntryModal
+        show={isModalOpen}
+        onHide={closeAccountingModal}
+        data={modalData}
+        isLoading={isModalLoading}
+        isError={isModalError}
+        error={modalError}
+      />
     </main>
   );
 };

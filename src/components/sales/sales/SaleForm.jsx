@@ -48,8 +48,11 @@ export default function SaleForm(props) {
   const renderSaleRow = (field, index) => {
     const nombre = field.productId ? field._productName : field.serviceName;
     const codigo = field.productId ? field._productCode : '';
+    // Determinamos si la fila es inválida usando la bandera que pasamos.
+    const isRowInvalid = field._isInvalid === true;
+    const rowClassName = isRowInvalid ? styles.invalidRow : '';
     return (
-      <tr key={field.id}>
+      <tr key={field.id} className={rowClassName}>
         <td>{field.productId ? 'Producto' : 'Servicio'}</td>
         <td>{nombre}</td>
         <td>{codigo}</td>
@@ -58,7 +61,8 @@ export default function SaleForm(props) {
         <td>{field.subtotal.toFixed(2)}</td>
         <td>{field.impuesto ? '✔' : '✘'}</td>
         <td>
-          <button type="button" className={styles.iconBtn} onClick={() => handleEditLine(index, productOptions)}><FaEdit /></button>
+          <button type="button" className={styles.iconBtn} onClick={() => handleEditLine(index, productOptions)} disabled={isRowInvalid} // <-- NUEVO
+            title={isRowInvalid ? "No se puede editar un producto desactivado" : "Editar línea"}><FaEdit /></button>
           <button type="button" className={styles.iconBtn} onClick={() => handleDeleteLine(index)}><FaTrash /></button>
         </td>
       </tr>

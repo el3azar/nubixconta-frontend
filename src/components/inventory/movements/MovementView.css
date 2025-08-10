@@ -14,3 +14,14 @@
   padding: 2rem;      /* Espacio para que el contenido no toque los bordes. */
   margin-top: 2rem;   /* Margen para separarlo de elementos superiores. */
 }
+
+/* Reglas de alta especificidad para los colores de fila */
+.table-container tbody tr.table-success td {
+    background-color: #d1e7dd !important; /* Un verde Bootstrap estándar */
+    color: #0f5132 !important;
+}
+
+.table-container tbody tr.table-danger td {
+    background-color: #f8d7da !important; /* Un rojo Bootstrap estándar */
+    color: #842029 !important;
+}

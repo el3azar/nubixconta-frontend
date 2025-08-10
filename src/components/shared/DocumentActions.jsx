@@ -20,7 +20,6 @@
 
 import React from 'react';
 import { FaEye, FaPen, FaTrashAlt, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
-
 export const DocumentActions = ({
   doc,
   id,
@@ -34,7 +33,10 @@ export const DocumentActions = ({
   isDeleting,
   styles
 }) => {
-    const status = doc.creditNoteStatus || doc.saleStatus;
+     // 1. Determina propiedades genéricas del documento
+  const status = doc.saleStatus || doc.creditNoteStatus;
+
+  
   // Lógica para decidir qué botones mostrar
   if (status === 'PENDIENTE') {
     return (
@@ -57,7 +59,7 @@ export const DocumentActions = ({
   if (status === 'APLICADA') {
     return (
       <div className={styles.actions}>
-        <FaEye title="Ver documento" onClick={() => onView(id)} />
+         <FaEye title="Ver Asiento Contable" onClick={() => onView(doc)} />
         <FaTimesCircle
           title="Anular"
           onClick={() => onCancel(id)}

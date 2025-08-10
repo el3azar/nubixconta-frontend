@@ -1,0 +1,112 @@
+/* Contenedor principal del contenido del modal */
+.viewContainer {
+  background-color: #f8f9fa; /* Un fondo muy claro para el contenido */
+  padding: 2rem;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+.companyName {
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #10031C;
+}
+
+.infoGrid {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+.detailsBox {
+  background-color: #e6e4eb; /* El color gris claro de tu diseño original */
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.detailsBox p {
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+}
+.detailsBox p:last-child {
+  margin-bottom: 0;
+}
+
+.entryTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.entryTable thead {
+  background-color: #dee2e6; /* El color thead-light de Bootstrap */
+}
+
+.entryTable th, .entryTable td {
+  border: 1px solid #ccc;
+  padding: 0.8rem;
+  vertical-align: middle;
+}
+
+.entryTable tfoot {
+  font-weight: bold;
+  background-color: #e9ecef; /* El color tfoot-light de Bootstrap */
+}
+
+.textAlignLeft {
+  text-align: left;
+}
+.textAlignRight {
+  text-align: right;
+}
+
+.signatures {
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+  margin-top: 4rem;
+  margin-bottom: 3rem;
+  color: #555;
+}
+
+.footerInfo {
+  text-align: right;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Estilos personalizados para los botones del modal */
+.btn.registrar {
+  padding: 0.38rem 1.25rem;
+  font-size: 0.97rem;
+  border-radius: 8px;
+  font-weight: 500;
+  border: 2px solid #10031C !important; /* !important para ganar a Bootstrap */
+  transition: 0.18s;
+  background: #10031C !important;
+  color: #fff !important;
+}
+.btn.registrar:hover {
+  background: transparent !important;
+  color: #10031C !important;
+}
+
+.btn.cancelar {
+  padding: 0.38rem 1.25rem;
+  font-size: 0.97rem;
+  border-radius: 8px;
+  font-weight: 500;
+  border: 2px solid #10031C !important;
+  transition: 0.18s;
+  background: transparent !important;
+  color: #10031C !important;
+}
+.btn.cancelar:hover {
+  background: #10031C !important;
+  color: #fff !important;
+}
