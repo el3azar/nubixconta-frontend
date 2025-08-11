@@ -11,7 +11,7 @@ const DashboardCards = ({ title, items, onCardClick }) => (
       <h4 className="fw-bold mb-4" style={{ color: "#000" }}>{title}</h4>
     </header>
     <div className="row justify-content-center">
-      {items.map(({ label, icon: Icon, to, extraInfo }, i) => (
+      {items.map(({ label, icon: Icon, to, extraInfo,image }, i) => (
         <article
           key={i}
           className="col-12 col-md-5 col-lg-5 mb-4 d-flex justify-content-center"
@@ -25,7 +25,11 @@ const DashboardCards = ({ title, items, onCardClick }) => (
               onClick={() => onCardClick(i)}
             >
               <div className="fw-bold mb-2">{label}</div>
-              {Icon && <Icon size={48} />}
+              {image ? (
+                <img src={image} alt={`Logo de ${label}`} className={styles.companyLogo} />
+              ) : (
+                Icon && <Icon size={48} />
+              )}
               {/* Extra info (NIT, DUI) solo si aplica */}
               {extraInfo && (
                 <div className="mb-1" style={{ fontSize: 14 }}>{extraInfo}</div>
@@ -34,7 +38,11 @@ const DashboardCards = ({ title, items, onCardClick }) => (
           ) : (
             <Link to={to} className={`${styles.dashboardCard} d-block text-decoration-none`}>
               <div className="fw-bold mb-2">{label}</div>
-              {Icon && <Icon size={48} />}
+               {image ? (
+                <img src={image} alt={`Logo de ${label}`} className={styles.companyLogo} />
+              ) : (
+                Icon && <Icon size={48} />
+              )}
             </Link>
           )}
         </article>

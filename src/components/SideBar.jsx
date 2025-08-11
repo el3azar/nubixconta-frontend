@@ -1,9 +1,10 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styles from '../styles/Sidebar.module.css'; // Importa el CSS Module
 import { useLocation, Link, useNavigate } from "react-router-dom";
-import { House, PersonLinesFill, PeopleFill, BoxSeam, List, ArrowLeftRight } from 'react-bootstrap-icons';
+import { House, PersonLinesFill, PeopleFill, BoxSeam, List, ArrowLeftRight, JournalRichtext } from 'react-bootstrap-icons';
 import { BoxArrowRight } from "react-bootstrap-icons";
 import { useAuth } from "../context/AuthContext";
+
 
 
 const adminLinks = [
@@ -12,6 +13,7 @@ const adminLinks = [
   { to: "/admin/empresas", label: "Empresas", icon: PersonLinesFill },
   { to: "/admin/bitacora-cambios", label: "Bitácora de cambios", icon: List },
   { to: "/admin/bitacora-accesos", label: "Bitácora de accesos", icon: BoxSeam },
+  { to: "/admin/empresas-contabilidad", label: "Contabilidad", icon: JournalRichtext },
 ];
 
 const moduleLinks = [

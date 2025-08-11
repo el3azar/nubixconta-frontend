@@ -1,7 +1,7 @@
 import axios from "axios";
-//Este enpoint trae el listado de todos los usuarios asistentes
-const API_URL = "http://localhost:8080/api/v1/users/assistant";
-export const getUsersByAssistant = async () => {
+//Este enpoint trae el listado de todas las cuentas activas y asignadas
+const API_URL = "http://localhost:8080/api/v1/companies/active-assigned";
+export const getCompaniesActiveAndAssigned = async () => {
   try {
     const token = sessionStorage.getItem("nubix_token");
     const response = await axios.get(API_URL, {
@@ -12,7 +12,7 @@ export const getUsersByAssistant = async () => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error al obtener las usuarios:", error);
+    console.error("Error al obtener las empresas:", error);
     return [];
   }
 };
