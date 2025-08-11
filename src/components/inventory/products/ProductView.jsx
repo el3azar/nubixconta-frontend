@@ -19,7 +19,8 @@ import TableComponent from '../inventoryelements/TableComponent';
 import SwitchActionProduct from '../inventoryelements/SwitchActionProduct';
 import { useProductService } from '../../../services/inventory/productService';
 import { formatDate } from '../../../utils/dateFormatter';
-import { showErrorAlert } from '../../../utils/alertUtils';
+// Importamos el Notifier completo en lugar de funciones específicas.
+import { Notifier } from '../../../utils/alertUtils';
 // ¡NUEVO! Importamos el formulario unificado
 import ProductFormModal from './ProductFormModal';
 
@@ -54,9 +55,19 @@ const ProductView = () => {
   // --- ¡REFACTORIZACIÓN DE HANDLERS! ---
   
   // LÓGICA DE TABLA (Sin cambios)
+ // --- ¡CAMBIO #2! ---
+  // AÑADIMOS ALERTAS AL TOGGLE DE ACTIVAR/DESACTIVAR
   const handleToggleProduct = useCallback((productId, nuevoEstado) => {
     const action = nuevoEstado ? reactivateProductMutate : deactivateProductMutate;
-    action(productId);
+    action(productId, {
+      onSuccess: () => {
+        const message = nuevoEstado ? 'Producto reactivado con éxito.' : 'Producto desactivado con éxito.';
+        Notifier.successInventory(message); // Usamos el toast temático de inventario (verde)
+      },
+      onError: (error) => {
+        Notifier.errorInventory(error.response?.data?.message || 'No se pudo cambiar el estado del producto.'); // Usamos el toast temático (rojo)
+      }
+    });
   }, [deactivateProductMutate, reactivateProductMutate]);
 
   const columns = useMemo(() => [
@@ -128,36 +139,37 @@ const ProductView = () => {
     // pero es buena práctica. Se limpiará al abrir el de crear.
   };
   
-  // ¡UN ÚNICO HANDLER DE GUARDADO!
- const handleSave = (data) => {
-        const mutationOptions = {
-            onSuccess: () => {
-                // Esto ya lo teníamos: al tener éxito, cerramos el modal.
-                handleCerrarModal();
-                // Opcional: Podríamos añadir una alerta de éxito aquí si quisiéramos.
-            },
-            onError: (error) => {
-                // --- ESTA ES LA LÓGICA NUEVA Y CRUCIAL ---
-                // Comprobamos si el error viene de Axios y tiene un mensaje del backend.
-                if (error.response && error.response.data && error.response.data.message) {
-                    // Mostramos el mensaje de error específico que nos envió el backend.
-                    showErrorAlert(error.response.data.message);
-                } else {
-                    // Si es un error genérico (ej. de red), mostramos un mensaje estándar.
-                    showErrorAlert('Ocurrió un error inesperado. Por favor, intenta de nuevo.');
-                }
-            }
-        };
-
-        if (productoAEditar) { // Si hay un producto para editar...
-            updateProductMutate({ id: productoAEditar.idProduct, payload: data }, mutationOptions);
-        } else { // Si no, es un producto nuevo...
-            createProductMutate(data, mutationOptions);
+  // REFACTORIZAMOS EL HANDLER DE GUARDADO CON EL NUEVO NOTIFIER
+  const handleSave = (data) => {
+    const esEdicion = !!productoAEditar;
+    
+    const mutationOptions = {
+        onSuccess: () => {
+            handleCerrarModal();
+            // Usamos el toast verde de inventario para el éxito
+            const message = esEdicion ? 'Producto actualizado con éxito.' : 'Producto creado con éxito.';
+            Notifier.successInventory(message);
+        },
+        onError: (error) => {
+            // Usamos el modal de error bloqueante, ya que el modal de formulario está abierto
+            const errorMessage = error.response?.data?.message || 'Ocurrió un error inesperado. Por favor, intenta de nuevo.';
+            Notifier.showError('Error al Guardar', errorMessage);
         }
     };
 
+    if (esEdicion) {
+        updateProductMutate({ id: productoAEditar.idProduct, payload: data }, mutationOptions);
+    } else {
+        createProductMutate(data, mutationOptions);
+    }
+  };
+
   if (isLoading) return <p className="text-center">Cargando productos...</p>;
-  if (isError) return <p className="text-center text-danger">Error al cargar los productos.</p>;
+ if (isError) {
+    // ¡OPORTUNIDAD DE MEJORA! AÑADIMOS UNA ALERTA EN LA CARGA INICIAL
+    Notifier.errorRed('No se pudieron cargar los productos desde el servidor.');
+    return <p className="text-center text-danger">Error al cargar los productos.</p>;
+  }
 
   // --- ¡REFACTORIZACIÓN DEL RENDERIZADO! ---
   return (

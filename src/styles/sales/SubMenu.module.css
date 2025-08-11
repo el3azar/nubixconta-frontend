@@ -1,42 +1,67 @@
+/* --- ESTILOS BASE (Móvil Primero) --- */
+/* En móvil, los botones se apilarán verticalmente. */
+
 .subnav {
   background-color: #10031C;
   width: 100%;
-  padding: 0.75rem 0;
   border-radius: 0.6rem;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  overflow-x: auto;
   margin-bottom: 1.5rem;
+  /* TU PADDING ORIGINAL: Lo aplicamos aquí para dar altura a la barra */
+  padding: 0.75rem; 
 }
+
 .subnavContainer {
   display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  width: 100%;
-  max-width: 1600px;
-  margin: 0 auto;
+  flex-direction: column; /* Apilado vertical por defecto */
   gap: 0.5rem;
-  padding: 0 1rem;
-  
 }
+
 .subnavBtn {
   background: none;
   color: #fff;
-  padding: 0.5rem 1.2rem;
+  /* TU PADDING ORIGINAL PARA LOS BOTONES */
+  padding: 0.5rem 1.2rem; 
   text-decoration: none;
   font-weight: 500;
   border-radius: 0.4rem;
-  white-space: nowrap;
   transition: background-color 0.3s ease;
   font-size: 1rem;
   border: none;
   outline: none;
-  display: inline-block;
+  display: block;
+  text-align: center;
+  /* TU WHITE-SPACE ORIGINAL */
+  white-space: nowrap; 
 }
-.subnavBtn:hover {
+
+.subnavBtn:hover, .active {
   background-color: #8581B0;
   color: #fff;
 }
-.active {
-  background-color: #8581B0;
-  color: #fff;
+
+
+/* --- BREAKPOINT PARA TABLETS Y ESCRITORIO (>= 768px) --- */
+/* Aquí es donde se transforma a la vista horizontal que ya tenías. */
+@media (min-width: 768px) {
+  
+  .subnav {
+    /* Mantenemos el padding vertical, pero quitamos el horizontal 
+       porque ahora lo controla el .subnavContainer */
+    padding: 0.75rem 0;
+  }
+
+  .subnavContainer {
+    flex-direction: row; /* Cambia a horizontal */
+    /* TU JUSTIFY-CONTENT ORIGINAL */
+    justify-content: space-between; 
+    /* Propiedades de tu .subnavContainer original */
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 1rem; /* Padding horizontal para que no se pegue a los bordes */
+  }
+
+  /* Los estilos de .subnavBtn ya son correctos, no necesitan cambios aquí. */
+  /* text-align: left; no es necesario porque en flex-row la alineación por defecto es la correcta. */
 }
