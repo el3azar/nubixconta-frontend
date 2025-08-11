@@ -37,6 +37,7 @@
   border-radius: 0.8rem;
   box-shadow: 0 2px 8px 0 rgba(120, 100, 160, 0.05);
   transition: max-width 0.3s;
+  -webkit-overflow-scrolling: touch; 
 }
 
 .tableContainer table {

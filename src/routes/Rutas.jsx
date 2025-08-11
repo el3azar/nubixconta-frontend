@@ -104,10 +104,12 @@ export default function Rutas() {
                   {/* ======== SECCIÓN: ADMINISTRACIÓN ======== */}
                   {/* Cada opción principal del panel de administración debe agregarse aquí */}
                     {/* Rutas para el usuario*/}
+
              <Route path="/admin" element={<DashBoardGeneralAdmin />} />
              <Route path="/admin/empresas-contabilidad" element={<DashBoardEmpresas />} />
              <Route path="/admin/usuarios" element={<UserManagementDashboard />} />
              <Route path="/administration/users/:userId/companies" element={<UserCompaniesDashboard/>} />
+
 
                   {/* Rutas extras que necesites en gestion de usuarios */}
                   <Route path="/admin/empresas" element={
