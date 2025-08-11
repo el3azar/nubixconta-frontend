@@ -5,9 +5,10 @@ import { useForm, Controller } from "react-hook-form";
 import styles from "../../../styles/sales/ViewCustomers.module.css";
 import { useCustomerService } from "../../../services/sales/customerService";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import Swal from 'sweetalert2';
+import { Notifier } from "../../../utils/alertUtils"; 
 import { IMaskInput } from 'react-imask';
 import SubMenu from "../SubMenu"; 
+import ViewContainer from "../../shared/ViewContainer"; 
 
 const ViewCustomers = () => {
   // --- LÓGICA NUEVA ---
@@ -25,18 +26,24 @@ const ViewCustomers = () => {
   const { data: customers = [], isLoading, isError, error } = useQuery({
     queryKey: ['customers', filters],
     queryFn: () => searchCustomers(filters),
+     // --- INICIO DE LA ALERTA RECOMENDADA ---
+    onError: (err) => {
+      // Si la carga inicial falla, muestra un toast de error.
+      Notifier.error(err.response?.data?.message || 'No se pudieron cargar los clientes.');
+    }
+  // --- FIN DE LA ALERTA RECOMENDADA ---
   });
 
   // useMutation para la acción de desactivar
   const { mutate: deactivate, isPending: isDeactivating } = useMutation({
     mutationFn: desactivateCustomer,
     onSuccess: () => {
-      Swal.fire('Desactivado', 'El cliente ha sido desactivado con éxito.', 'success');
-      // Invalida la query para que TanStack Query vuelva a cargar los datos frescos
+      // Usamos el toast de éxito estándar (morado).
+      Notifier.success('El cliente ha sido desactivado con éxito.');
       queryClient.invalidateQueries({ queryKey: ['customers'] });
     },
     onError: (err) => {
-      Swal.fire('Error', err.response?.data?.message || 'No se pudo desactivar el cliente.', 'error');
+      Notifier.error('Error', err.response?.data?.message || 'No se pudo desactivar el cliente.');
     }
   });
 
@@ -54,27 +61,18 @@ const ViewCustomers = () => {
   };
   // --- CAMBIO TERMINA ---
 
-  // --- CAMBIO TERMINA ---
-const handleDeactivate = (id, name) => {
-    Swal.fire({
+// --- ¡CAMBIO IMPORTANTE! ---
+  // 4. Reemplazamos la confirmación con nuestro Notifier.
+  const handleDeactivate = async (id, name) => {
+    const result = await Notifier.confirm({
       title: `¿Desactivar a ${name}?`,
       text: "Esta acción marcará al cliente como inactivo.",
-      icon: 'warning',
-      showCancelButton: true,
-
-      // PALETA APLICADA: Botón de confirmación (acción importante/de atención)
-      confirmButtonColor: '#7D49CC',
-      confirmButtonText: 'Sí, desactivar',
-
-      // PALETA APLICADA: Botón de cancelar (acción secundaria)
-      cancelButtonColor: '#8581B0',
-      cancelButtonText: 'Cancelar'
-
-    }).then((result) => {
-      if (result.isConfirmed) {
-        deactivate(id);
-      }
+      confirmButtonText: 'Sí, desactivar'
     });
+    
+    if (result.isConfirmed) {
+      deactivate(id);
+    }
   };
 
   //funcion que le agrega el guio al telefono
@@ -85,153 +83,169 @@ const handleDeactivate = (id, name) => {
 
   // --- JSX (TU DISEÑO ORIGINAL INTACTO) ---
   return (
-    <>
-    <SubMenu />
- 
+   
+    <div>
+      <SubMenu />
+
+      <ViewContainer title="Gestión de Clientes">
       
-    
-    <section className={styles.mainWrapper}>
+        <section className={styles.mainWrapper}>
 
-      <section className={`${styles.searchBox} mb-4`}>
-        <h5 className="fw-bold mb-3">Buscar Cliente</h5>
-        <form onSubmit={handleSubmit(onSearch)}>
-          <h6 className="fw-bold mb-4">Criterios de Búsqueda:</h6>
-          <div className="row mb-3">
-            <div className="col-md-6 col-lg-6 mb-3"><label className="form-label fw-bold text-black">Nombre:</label><input type="text" className="form-control" {...register("name")} /></div>
-            <div className="col-md-6 col-lg-6 mb-3"><label className="form-label fw-bold text-black">Apellido:</label><input type="text" className="form-control" {...register("lastName")} /></div>
-             <div className="col-md-6 col-lg-6 mb-3">
-                <label htmlFor="searchDui" className="form-label fw-bold text-black">DUI:</label>
-                <Controller
-                  name="dui"
-                  control={control}
-                  // 1. Desestructuramos field para tener más control
-                  render={({ field: { onChange, onBlur, value } }) => ( 
-                    <IMaskInput
-                      id="searchDui"
-                      mask="00000000-0"
-                      className="form-control"
-                      placeholder="########-#"
-                      value={value || ''}
-                      onBlur={onBlur}
-                      // 2. Usamos onAccept para garantizar que el valor con máscara se pase al estado
-                      onAccept={(acceptedValue) => onChange(acceptedValue)}
+          <section className={`${styles.searchBox} mb-4`}>
+            <h5 className="fw-bold mb-3">Buscar Cliente</h5>
+            <form onSubmit={handleSubmit(onSearch)}>
+              <h6 className="fw-bold mb-4">Criterios de Búsqueda:</h6>
+              <div className="row mb-3">
+                <div className="col-12 col-md-6 col-lg-6 mb-3"><label className="form-label fw-bold text-black">Nombre:</label><input type="text" className="form-control" {...register("name")} /></div>
+                <div className="col-12 col-md-6 col-lg-6 mb-3"><label className="form-label fw-bold text-black">Apellido:</label><input type="text" className="form-control" {...register("lastName")} /></div>
+                <div className="col-12 col-md-6 col-lg-6 mb-3">
+                    <label htmlFor="searchDui" className="form-label fw-bold text-black">DUI:</label>
+                    <Controller
+                      name="dui"
+                      control={control}
+                      // 1. Desestructuramos field para tener más control
+                      render={({ field: { onChange, onBlur, value } }) => ( 
+                        <IMaskInput
+                          id="searchDui"
+                          mask="00000000-0"
+                          className="form-control"
+                          placeholder="########-#"
+                          value={value || ''}
+                          onBlur={onBlur}
+                          // 2. Usamos onAccept para garantizar que el valor con máscara se pase al estado
+                          onAccept={(acceptedValue) => onChange(acceptedValue)}
+                        />
+                      )}
                     />
-                  )}
-                />
+                  </div>
+                {/* --- CAMBIO INICIA: CAMPO DE BÚSQUEDA NIT CON MÁSCARA --- */}
+                {/* Se ha aplicado la misma máscara que en el formulario de creación/edición */}
+                {/* para mantener la consistencia en la experiencia del usuario. */}
+                <div className="col-12 col-md-6 col-lg-6 mb-4">
+                  <label htmlFor="searchNit" className="form-label fw-bold text-black">NIT:</label>
+                  <Controller name="nit" control={control} render={({ field: { onChange, onBlur, value } }) => (
+                      <IMaskInput id="searchNit" mask="0000-000000-000-0" className="form-control" placeholder="####-######-###-#" value={value || ''} onBlur={onBlur} onAccept={(acceptedValue) => onChange(acceptedValue)} />
+                  )}/>
+                </div>
+                {/* --- CAMBIO TERMINA --- */}
               </div>
-            {/* --- CAMBIO INICIA: CAMPO DE BÚSQUEDA NIT CON MÁSCARA --- */}
-            {/* Se ha aplicado la misma máscara que en el formulario de creación/edición */}
-            {/* para mantener la consistencia en la experiencia del usuario. */}
-            <div className="col-md-6 col-lg-6 mb-4">
-              <label htmlFor="searchNit" className="form-label fw-bold text-black">NIT:</label>
-              <Controller name="nit" control={control} render={({ field: { onChange, onBlur, value } }) => (
-                  <IMaskInput id="searchNit" mask="0000-000000-000-0" className="form-control" placeholder="####-######-###-#" value={value || ''} onBlur={onBlur} onAccept={(acceptedValue) => onChange(acceptedValue)} />
-              )}/>
-            </div>
-            {/* --- CAMBIO TERMINA --- */}
-          </div>
-          {/* --- CAMBIO INICIA: LÓGICA DE TRES BOTONES --- */}
-          <div className="row">
-            <div className="col-12 d-flex justify-content-center gap-3">
-              
-              {/* 1. Botón "Buscar", siempre visible */}
-              <button type="submit" className={`btn ${styles.searchBtn} px-4 py-2 d-flex align-items-center justify-content-center gap-2`}>
-                <i className="bi bi-search" />Buscar
-              </button>
-              
-              {/* 2. Botón "Mostrar Todos", siempre visible y sin icono */}
-              <button 
-                type="button" 
-                className={`btn ${styles.searchBtn} px-4 py-2`} // Se quita d-flex y gap para alinear el texto
-                onClick={handleClearAndShowAll}
-              >
-                Mostrar Todos
-              </button>
+              {/* --- CAMBIO INICIA: LÓGICA DE TRES BOTONES --- */}
+              <div className="row">
+                <div className="col-12 d-flex justify-content-center flex-wrap gap-3">
+                  
+                  {/* 1. Botón "Buscar", siempre visible */}
+                  <button type="submit" className={`btn ${styles.searchBtn} px-4 py-2 d-flex align-items-center justify-content-center gap-2`}>
+                    <i className="bi bi-search" />Buscar
+                  </button>
+                  
+                  {/* 2. Botón "Mostrar Todos", siempre visible y sin icono */}
+                  <button 
+                    type="button" 
+                    className={`btn ${styles.searchBtn} px-4 py-2`} // Se quita d-flex y gap para alinear el texto
+                    onClick={handleClearAndShowAll}
+                  >
+                    Mostrar Todos
+                  </button>
 
-              {/* 3. Botón "Limpiar Filtros", solo visible si areFiltersActive es true */}
-              {areFiltersActive && (
-                <button 
-                  type="button" 
-                  className={`btn ${styles.searchBtn} px-4 py-2 d-flex align-items-center justify-content-center gap-2`}
-                  onClick={handleClearAndShowAll}
-                >
-                 Limpiar Filtros
-                </button>
-              )}
-            </div>
-          </div>
-          {/* --- CAMBIO TERMINA --- */}
-        </form>
-      </section>
+                  {/* 3. Botón "Limpiar Filtros", solo visible si areFiltersActive es true */}
+                  {areFiltersActive && (
+                    <button 
+                      type="button" 
+                      className={`btn ${styles.searchBtn} px-4 py-2 d-flex align-items-center justify-content-center gap-2`}
+                      onClick={handleClearAndShowAll}
+                    >
+                    Limpiar Filtros
+                    </button>
+                  )}
+                </div>
+              </div>
+              {/* --- CAMBIO TERMINA --- */}
+            </form>
+          </section>
 
-      <section className={`${styles.tableSection} mb-4`}>
-        <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-          <h5 className="fw-bold mb-3 mb-md-0">Clientes:</h5>
-          <div className="d-flex gap-3 ">
-            <Link to="/ventas/clientes/nuevo"  className={styles.actionButton}><FaPlusCircle className="me-2" /> Nuevo</Link>
-            <Link to="/ventas/clientes/desactivated"  className={styles.actionButton}><FaEyeSlash className="me-2" /> Desactivados</Link>
-          </div>
-        </div>
-
-        <div className={styles.tableResponsiveWrapper}>
-          <table className="table table-bordered align-middle w-100">
-            <thead>
-            <tr>
-              <th className={styles.colNombre}>Nombre</th>
-              <th className={styles.colApellido}>Apellido</th>
-              <th className={styles.colDui}>DUI</th>
-              <th className={styles.colNit}>NIT</th>
-              <th className={styles.colDireccion}>Dirección</th>
-              <th className={styles.colCorreo}>Correo</th>
-              <th className={styles.colTelefono}>Teléfono</th>
-              <th className={styles.colDias}>Días de Crédito</th>
-              <th className={styles.colLimite}>Límite de Crédito</th>
-              <th className={styles.colAcciones}>Acciones</th>
-            </tr>
-            </thead>
-            <tbody>
-              {isLoading && <tr><td colSpan="10" className="text-center">Cargando clientes...</td></tr>}
-              {isError && <tr><td colSpan="10" className="text-center text-danger">Error al cargar datos: {error.message}</td></tr>}
-              {!isLoading && !isError && customers.length > 0 ? (
-                customers.map((cliente) => (
-                  <tr key={cliente.clientId}>
-                        <td className={styles.colNombre}>{cliente.customerName}</td>
-                        <td className={styles.colApellido}>{cliente.customerLastName || "-"}</td>
-                        <td className={styles.colDui}>{cliente.customerDui || "-"}</td>
-                        <td className={styles.colNit}>{cliente.customerNit || "-"}</td>
-                        <td className={styles.colDireccion}>{cliente.address}</td>
-                        <td className={styles.colCorreo}>{cliente.email}</td>
-                        <td className={styles.colTelefono}>{formatPhone(cliente.phone)}</td>
-                        <td className={styles.colDias}>{cliente.creditDay}</td>
-                        <td className={styles.colLimite}>${cliente.creditLimit?.toFixed(2)}</td>
-                        <td className={styles.colAcciones}>
-                        <div className="d-flex justify-content-center gap-2">
-                          <button className={styles.iconBtn} title="Editar" onClick={() => navigate(`/ventas/clientes/editar/${cliente.clientId}`)}>
-                            <i className="bi bi-pencil" />
-                          </button>
-                          <button className={styles.iconBtn} title="Desactivar" onClick={() => handleDeactivate(cliente.clientId, cliente.customerName)} disabled={isDeactivating}>
-                            <i className="bi bi-eye-slash" />
-                          </button>
-                          <button className={styles.iconBtn} title="Crear Venta" onClick={() => navigate(`/ventas/nueva/${cliente.clientId}`)}>
-                            <i className="bi bi-receipt" />
-                          </button>
-                          <button className={styles.iconBtn} title="Crear Nota de Crédito" onClick={() => navigate(`/ventas/nueva-nota-credito/${cliente.clientId}`)}>
-                            <i className="bi bi-file-earmark-text" /> 
-                          </button>
-                        </div>
-                     </td>
-                  </tr>
-                ))
-              ) : (
-                !isLoading && <tr><td colSpan="10" className="text-center">No hay clientes para mostrar.</td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </section>
+          <section className={`${styles.tableSection} mb-4`}>
+            <div className="row g-3 mb-3 align-items-center">
     
-    </>
+    {/* Columna para el Título */}
+    <div className="col-12 col-md-auto">
+      <h5 className="fw-bold m-0">Clientes Activos:</h5>
+    </div>
+
+    {/* Columna para los Botones, empujada a la derecha en escritorio */}
+    <div className="col-12 col-md d-md-flex justify-content-md-end">
+      <div className="d-flex flex-column flex-sm-row gap-3">
+        <Link to="/ventas/clientes/nuevo" className={styles.actionButton}>
+          <FaPlusCircle className="me-2" /> Nuevo
+        </Link>
+        <Link to="/ventas/clientes/desactivated" className={styles.actionButton}>
+          <FaEyeSlash className="me-2" /> Desactivados
+        </Link>
+      </div>
+    </div>
+
+  </div>
+
+            <div className={styles.tableResponsiveWrapper}>
+              <table className="table table-bordered align-middle w-100">
+                <thead>
+                <tr>
+                  <th className={styles.colNombre}>Nombre</th>
+                  <th className={styles.colApellido}>Apellido</th>
+                  <th className={styles.colDui}>DUI</th>
+                  <th className={styles.colNit}>NIT</th>
+                  <th className={styles.colDireccion}>Dirección</th>
+                  <th className={styles.colCorreo}>Correo</th>
+                  <th className={styles.colTelefono}>Teléfono</th>
+                  <th className={styles.colDias}>Días de Crédito</th>
+                  <th className={styles.colLimite}>Límite de Crédito</th>
+                  <th className={styles.colAcciones}>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                  {isLoading && <tr><td colSpan="10" className="text-center">Cargando clientes...</td></tr>}
+                  {isError && <tr><td colSpan="10" className="text-center text-danger">Error al cargar datos: {error.message}</td></tr>}
+                  {!isLoading && !isError && customers.length > 0 ? (
+                    customers.map((cliente) => (
+                      <tr key={cliente.clientId}>
+                            <td className={styles.colNombre}>{cliente.customerName}</td>
+                            <td className={styles.colApellido}>{cliente.customerLastName || "-"}</td>
+                            <td className={styles.colDui}>{cliente.customerDui || "-"}</td>
+                            <td className={styles.colNit}>{cliente.customerNit || "-"}</td>
+                            <td className={styles.colDireccion}>{cliente.address}</td>
+                            <td className={styles.colCorreo}>{cliente.email}</td>
+                            <td className={styles.colTelefono}>{formatPhone(cliente.phone)}</td>
+                            <td className={styles.colDias}>{cliente.creditDay}</td>
+                            <td className={styles.colLimite}>${cliente.creditLimit?.toFixed(2)}</td>
+                            <td className={styles.colAcciones}>
+                            <div className={styles.actionsContainer}>
+                              <button className={styles.iconBtn} title="Editar" onClick={() => navigate(`/ventas/clientes/editar/${cliente.clientId}`)}>
+                                <i className="bi bi-pencil" />
+                              </button>
+                              <button className={styles.iconBtn} title="Desactivar" onClick={() => handleDeactivate(cliente.clientId, cliente.customerName)} disabled={isDeactivating}>
+                                <i className="bi bi-eye-slash" />
+                              </button>
+                              <button className={styles.iconBtn} title="Crear Venta" onClick={() => navigate(`/ventas/nueva/${cliente.clientId}`)}>
+                                <i className="bi bi-receipt" />
+                              </button>
+                              <button className={styles.iconBtn} title="Crear Nota de Crédito" onClick={() => navigate(`/ventas/nueva-nota-credito/${cliente.clientId}`)}>
+                                <i className="bi bi-file-earmark-text" /> 
+                              </button>
+                            </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    !isLoading && <tr><td colSpan="10" className="text-center">No hay clientes para mostrar.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+      </ViewContainer>
+
+      </div>
+
     
   );
 };

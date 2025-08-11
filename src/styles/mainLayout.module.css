@@ -6,19 +6,21 @@
   display: flex;
 }
 
-/* Área principal (main), tarjetas, etc */
+/* Área principal (main) donde se renderiza el contenido de las páginas */
 .mainContent {
-  flex-grow: 1; /* Permite que el contenido ocupe el espacio restante */
+  flex-grow: 1;
   width: 100%;
-  overflow-y: auto; /* Permite scroll vertical si el contenido es muy alto */
-  padding: 1.5rem; /* Mantenemos tu padding */
-
-
+  overflow-y: auto;
+  /* El fondo de mainContent se quita para que herede el color de layoutRoot.
+     Si quieres que el área de las tarjetas y tablas tenga un fondo diferente (recomendado para legibilidad),
+     se lo daremos a las propias tarjetas o a un contenedor interno. */
+  background: transparent; /* O puedes quitar esta línea por completo */
+  transition: margin-left 0.3s ease-in-out;
 }
 
+/* Contenedor estándar para VISTAS. Este será usado por el nuevo componente ViewContainer */
 .viewWrapper {
   width: 100%;
-  max-width: 1200px; /* Límite para pantallas grandes */
-  margin: 0 auto;    /* CLAVE: Centra el contenedor si la pantalla es más ancha que max-width */
-  padding: 1.5rem 2rem;
+  max-width: 1800px;
+  margin: 0 auto;
 }

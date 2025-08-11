@@ -14,9 +14,7 @@
   border-radius: 1rem;
   padding: 1.5rem;
   width: 100%;
-  max-width: 1200px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  margin: 0 auto; /* Centra el contenedor en pantallas grandes */
 }
 
 /* Navegación superior del módulo (Clientes, Ventas...) */
@@ -104,12 +102,30 @@
   padding-top: 1.5rem;
 }
 
-/* Wrapper DIRECTO de la tabla para un scroll limpio y contenido */
 .tableResponsiveWrapper {
-  overflow-x: auto;
+  overflow-x: auto; /* Permite el scroll horizontal */
   width: 100%;
   border: 1px solid #dee2e6;
   border-radius: 0.5rem;
+  
+  /* --- Propiedades añadidas para mejorar la experiencia táctil --- */
+  /* Hace que el scroll sea más suave en iOS */
+  -webkit-overflow-scrolling: touch; 
+  /* Muestra una barra de scroll sutil en navegadores Webkit (Chrome, Safari) */
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #aaa;
+  }
 }
 
 .table {
@@ -181,12 +197,19 @@
   max-width: 100px;
 }
 .colAcciones {
-  min-width: 130px;
-  max-width: 160px;
+  min-width: 180px;
+  max-width: 200px;
   white-space: nowrap;
   text-align: center;
 }
-
+/* 2. AÑADIMOS UNA NUEVA CLASE PARA EL CONTENEDOR DE BOTONES */
+.actionsContainer {
+  /* Le decimos al div que se comporte como un elemento de texto (inline)
+     pero que mantenga las propiedades de flexbox para sus hijos (los botones). */
+  display: inline-flex; 
+  gap: 0.5rem; /* Usamos gap para un espaciado consistente (equivale a gap-2) */
+  align-items: center;
+}
 
 .table tbody {
   background-color: white;
@@ -208,3 +231,4 @@
   color: #fff;
   border-color: var(--bg-purple);
 }
+
