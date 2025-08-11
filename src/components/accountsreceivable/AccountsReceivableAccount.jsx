@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "../../styles/accountsreceivable/AccountReceivableAccount.module.css";
 import { FaSearch, FaFilePdf, FaFileExcel, FaEye } from "react-icons/fa";
 import { getAccountStatementsByCustomer } from "../../services/accountsreceivable/accountReceivableCustumerService";
@@ -8,6 +8,27 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { useCompany } from "../../context/CompanyContext";
+import { useAuth } from "../../context/AuthContext";
+
+// Función para cargar una imagen como Base64 (reutilizada del otro reporte)
+const loadImageAsBase64 = (url) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "Anonymous";
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      resolve(canvas.toDataURL('image/png'));
+    };
+    img.onerror = (error) => reject(error);
+    img.src = url;
+  });
+};
+
 const AccountStatement = () => {
   const [filters, setFilters] = useState({
     nombre: "",
@@ -19,6 +40,25 @@ const AccountStatement = () => {
   const [data, setData] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [accounts, setAccounts] = useState([]);
+  const [logoBase64, setLogoBase64] = useState(null);
+
+  const { user } = useAuth();
+  const { company } = useCompany();
+
+  useEffect(() => {
+    if (company?.imageUrl) {
+      loadImageAsBase64(company.imageUrl)
+        .then(base64 => {
+          setLogoBase64(base64);
+        })
+        .catch(error => {
+          console.error("Error al cargar el logo como Base64:", error);
+          setLogoBase64(null);
+        });
+    } else {
+      setLogoBase64(null);
+    }
+  }, [company?.imageUrl]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,15 +67,13 @@ const AccountStatement = () => {
 
   const handleSearch = async () => {
     const results = await getAccountStatementsByCustomer(filters);
-
     const mappedData = results.map((item, index) => ({
       correlativo: index + 1,
       documento: item.documentNumber,
-      fecha: item.issueDate,
+      fecha: new Date(item.issueDate).toLocaleDateString("es-ES"),
       mora: item.daysLate,
       saldo: item.balance,
     }));
-
     setData(mappedData);
   };
 
@@ -44,84 +82,141 @@ const AccountStatement = () => {
     setAccounts(cuentas);
     setShowModal(true);
   };
-//Metodo para generar el pdf
-  const generateAccountPDF = ({ cliente, usuario, tabla, cuentas }) => {
-    const doc = new jsPDF();
-    const fechaActual = new Date().toLocaleDateString();
 
+  // Método para generar el pdf
+  const generateAccountPDF = async () => { // <-- Ahora la función es async
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.width;
+    const margin = 14;
+    const fechaActual = new Date().toLocaleDateString("es-ES");
+    const usuario = user?.sub || "Sistema";
+    const companyName = company?.companyName || "Nombre de la Empresa";
+    
+    // Contenido del lado izquierdo
+    if (logoBase64) {
+      doc.addImage(logoBase64, 'PNG', margin, 10, 30, 15);
+    }
     doc.setFontSize(14);
-    doc.text(`REPORTE DE ESTADOS DE CUENTA DEL CLIENTE ${cliente}`, 14, 20);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(44, 26, 71);
+    doc.text(companyName, margin, 32);
+    
+    // Contenido del lado derecho
     doc.setFontSize(10);
-    doc.text(`Fecha del reporte: ${fechaActual}`, 14, 28);
-    doc.text(`Generado por: ${usuario}`, 14, 34);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(0, 0, 0);
+    doc.text("Reporte de Estados de Cuenta", pageWidth - margin, 18, { align: 'right' });
+    doc.text(`Generado por: ${usuario}`, pageWidth - margin, 24, { align: 'right' });
+    doc.text(`Fecha de generación: ${fechaActual}`, pageWidth - margin, 30, { align: 'right' });
+
+    // Línea divisoria
+    doc.setDrawColor(189, 195, 199);
+    doc.line(margin, 40, pageWidth - margin, 40);
+
+    // Obtener las cuentas bancarias justo antes de generar el PDF
+    const cuentas = await getBankAcount();
 
     autoTable(doc, {
-      startY: 40,
+      startY: 45,
       head: [["Correlativo", "Documento", "Fecha", "Mora", "Saldo"]],
-      body: tabla.map(row => [
+      body: data.map(row => [
         row.correlativo,
         row.documento,
         row.fecha,
         row.mora,
         `$${row.saldo.toFixed(2)}`
       ]),
-      theme: "striped"
+      theme: "striped",
+      headStyles: {
+        fillColor: [44, 26, 71],
+        textColor: 255,
+        fontStyle: 'bold'
+      }
     });
 
     autoTable(doc, {
       startY: doc.lastAutoTable.finalY + 10,
       head: [["Código", "Nombre"]],
       body: cuentas.map(c => [c.generatedCode, c.accountName]),
-      theme: "grid"
+      theme: "grid",
+      headStyles: { // Aplicar el mismo estilo de encabezado a la tabla de cuentas
+        fillColor: [44, 26, 71],
+        textColor: 255,
+        fontStyle: 'bold'
+      }
     });
 
-    doc.save(`estado_cuenta_${cliente}.pdf`);
+    const getClienteName = () => {
+      if (filters.nombre && filters.apellido) return `${filters.nombre} ${filters.apellido}`;
+      if (filters.nombre) return filters.nombre;
+      if (filters.dui) return `DUI: ${filters.dui}`;
+      if (filters.nit) return `NIT: ${filters.nit}`;
+      return "Desconocido";
+    };
+
+    doc.save(`estado_cuenta_${getClienteName()}.pdf`);
   };
-  //Exportar en excel
-const exportToExcel = ({ cliente, usuario, tabla, cuentas }) => {
-  const fechaActual = new Date().toLocaleDateString();
 
-  //  Estado de cuenta
-  const estadoCuentaData = [
-    ["REPORTE DE ESTADOS DE CUENTA DEL CLIENTE", cliente],
-    ["Fecha del reporte", fechaActual],
-    ["Generado por", usuario],
-    [],
-    ["Correlativo", "Documento", "Fecha de emisión", "Días de mora", "Saldo"],
-    ...tabla.map((item) => [
-      item.correlativo,
-      item.documento,
-      item.fecha,
-      item.mora,
-      item.saldo,
-    ]),
-  ];
+  // Exportar en excel
+  const exportToExcel = ({ cliente, tabla, cuentas }) => {
+    const fechaActual = new Date().toLocaleDateString("es-ES");
+    const usuario = user?.sub || "Sistema";
+    const companyName = company?.companyName || "Nombre de la Empresa";
 
-  const cuentasBancariasData = [
-    ["CUENTAS BANCARIAS DEL SISTEMA"],
-    ["Fecha del reporte", fechaActual],
-    [],
-    ["Código", "Nombre"],
-    ...cuentas.map((c) => [c.generatedCode, c.accountName]),
-  ];
+    const headerData = [
+      [companyName],
+      ["REPORTE DE ESTADOS DE CUENTA"],
+      [`Generado por: ${usuario} | Fecha: ${fechaActual}`],
+      [],
+    ];
 
-  // Crear hojas
-  const wb = XLSX.utils.book_new();
+    const estadoCuentaData = [
+      ["Correlativo", "Documento", "Fecha de emisión", "Días de mora", "Saldo"],
+      ...tabla.map((item) => [
+        item.correlativo,
+        item.documento,
+        item.fecha,
+        item.mora,
+        item.saldo,
+      ]),
+    ];
 
-  const wsEstado = XLSX.utils.aoa_to_sheet(estadoCuentaData);
-  XLSX.utils.book_append_sheet(wb, wsEstado, "Estado de Cuenta");
+    const cuentasBancariasData = [
+      [],
+      ["CUENTAS BANCARIAS DEL SISTEMA"],
+      [`Fecha del reporte: ${fechaActual}`],
+      [],
+      ["Código", "Nombre"],
+      ...cuentas.map((c) => [c.generatedCode, c.accountName]),
+    ];
 
-  const wsCuentas = XLSX.utils.aoa_to_sheet(cuentasBancariasData);
-  XLSX.utils.book_append_sheet(wb, wsCuentas, "Cuentas Bancarias");
+    const wb = XLSX.utils.book_new();
+    const wsEstado = XLSX.utils.aoa_to_sheet([...headerData, ...estadoCuentaData]);
+    wsEstado['A1'].s = { font: { sz: 16, bold: true }, alignment: { horizontal: 'center' } };
+    wsEstado['A2'].s = { font: { sz: 14 }, alignment: { horizontal: 'center' } };
+    wsEstado['A3'].s = { font: { sz: 10 }, alignment: { horizontal: 'center' } };
+    wsEstado['A1'].t = 's';
 
-  // Guardar archivo
-  const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-  const blob = new Blob([excelBuffer], {
-    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  });
+    XLSX.utils.book_append_sheet(wb, wsEstado, "Estado de Cuenta");
+    const wsCuentas = XLSX.utils.aoa_to_sheet(cuentasBancariasData);
+    XLSX.utils.book_append_sheet(wb, wsCuentas, "Cuentas Bancarias");
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const blob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
 
-  saveAs(blob, `estado_cuenta_${cliente}.xlsx`);
-};
+    saveAs(blob, `estado_cuenta_${cliente}.xlsx`);
+  };
+
+  const getClienteName = () => {
+    if (filters.nombre && filters.apellido) {
+      return `${filters.nombre} ${filters.apellido}`;
+    }
+    if (filters.nombre) return filters.nombre;
+    if (filters.dui) return `DUI: ${filters.dui}`;
+    if (filters.nit) return `NIT: ${filters.nit}`;
+    return "Desconocido";
+  };
 
   return (
     <section className={styles.container}>
@@ -164,32 +259,24 @@ const exportToExcel = ({ cliente, usuario, tabla, cuentas }) => {
           <div className={styles.exportaciones}>
             <button
               className={styles.exportBtn}
-              onClick={() =>
-                generateAccountPDF({
-                  cliente: filters.nombre || "Desconocido",
-                  usuario: sessionStorage.getItem("nubix_user") || "Sistema",
-                  tabla: data,
-                  cuentas: accounts
-                })
-              }
+              onClick={generateAccountPDF} // <-- Llamada a la función sin parámetros
             >
               <FaFilePdf />
               Exportar en PDF
             </button>
-        <button
-  className={styles.exportBtn}
-  onClick={() =>
-    exportToExcel({
-      cliente: filters.nombre || "Desconocido",
-      usuario: sessionStorage.getItem("nubix_user") || "Sistema",
-      tabla: data,
-      cuentas: accounts,
-    })
-  }
->
-  <FaFileExcel />
-  Exportar en Excel
-</button>
+            <button
+              className={styles.exportBtn}
+              onClick={() =>
+                exportToExcel({
+                  cliente: getClienteName(),
+                  tabla: data,
+                  cuentas: accounts,
+                })
+              }
+            >
+              <FaFileExcel />
+              Exportar en Excel
+            </button>
 
           </div>
         </div>
@@ -230,5 +317,3 @@ const exportToExcel = ({ cliente, usuario, tabla, cuentas }) => {
 };
 
 export default AccountStatement;
-
-
