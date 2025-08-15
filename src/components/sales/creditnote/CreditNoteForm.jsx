@@ -1,6 +1,6 @@
 // src/components/sales/creditnote/CreditNoteForm.jsx
 import React from 'react';
-import Swal from 'sweetalert2';
+import { Notifier } from '../../../utils/alertUtils';
 import { FaTrash } from 'react-icons/fa';
 import { useWatch } from 'react-hook-form';
 import { DocumentCustomerInfo } from '../../shared/form/DocumentCustomerInfo';
@@ -26,29 +26,42 @@ export default function CreditNoteForm(props) {
 
   const watchedDetails = useWatch({ control, name: 'details' });
 
+   // --- ¡AQUÍ VA LA NUEVA LÓGICA DE CONFIRMACIÓN! ---
+  const handleFormSubmit = async (formData) => {
+    const isEditMode = title.toLowerCase().includes('editar');
+    
+    const result = await Notifier.confirm({
+      title: isEditMode ? '¿Actualizar Nota de Crédito?' : '¿Registrar Nota de Crédito?',
+      text: "La información será guardada en el sistema.",
+      confirmButtonText: isEditMode ? 'Sí, actualizar' : 'Sí, registrar'
+    });
+
+    if (result.isConfirmed) {
+      // Si el usuario confirma, llamamos a la función 'onSubmit' que viene de las props.
+      onSubmit(formData);
+    }
+  };
+
   const onValidationError = (errors) => {
     console.error('❌ Validación de Zod falló (NC):', errors);
-    Swal.fire('Formulario Incompleto', 'Por favor, revisa todos los campos.', 'warning');
+    Notifier.showError('Formulario Incompleto', 'Por favor, revisa todos los campos.');
   };
 
   // --- LÓGICA DE LA TABLA AHORA VIVE AQUÍ ---
   const tableHeaders = ['Tipo', 'Nombre', 'Código', 'Cantidad', 'Precio', 'Subtotal', 'Imp.', 'Acciones'];
 
-  // --- LÓGICA DE ALERTA RESTAURADA ---
-  const handleDeleteLine = (index) => {
-    Swal.fire({
+   // --- CAMBIO #3: Refactorizamos la alerta de eliminación de línea ---
+  const handleDeleteLine = async (index) => {
+    const result = await Notifier.confirm({
       title: '¿Eliminar este detalle?',
       text: 'No podrás revertir esta acción.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then(result => {
-      if (result.isConfirmed) {
-        remove(index); // Llama a la función del hook
-      }
+      confirmButtonText: 'Sí, eliminar'
     });
+    if (result.isConfirmed) {
+      remove(index);
+    }
   };
+
   
   const renderCreditNoteRow = (field, index) => {
     const currentItem = watchedDetails?.[index] || {};
@@ -76,12 +89,24 @@ export default function CreditNoteForm(props) {
     <>
        <DocumentCustomerInfo client={customer} />
       {/* Se usa la prop 'onSubmit' que ahora sí está definida y es una función */}
-      <form onSubmit={handleSubmit(onSubmit, onValidationError)}>
+      <form onSubmit={handleSubmit(handleFormSubmit, onValidationError)}>
         <section className={styles.card}>
-          <div className="row g-3 align-items-end">
-            <div className="col-md-4"><label className="form-label">N° de Documento</label><input className="form-control" {...register('documentNumber')} />{errors.documentNumber && <small className='text-danger'>{errors.documentNumber.message}</small>}</div>
-            <div className="col-md-4"><label className="form-label">Fecha de Emisión</label><input className="form-control" type="date" {...register('issueDate')} readOnly />{errors.issueDate && <small className='text-danger'>{errors.issueDate.message}</small>}</div>
-            <div className="col-md-4"><label className="form-label">Descripción</label><TextareaAutosize  minRows={1} maxRows={3} {...register('description')} />{errors.description && <small className='text-danger'>{errors.description.message}</small>}</div>
+          <div className="row g-3 align-items-center">
+            <div className="col-12 col-md-6 col-lg-4 ">
+              <label className="form-label">N° de Documento</label>
+              <input className="form-control" {...register('documentNumber')} />
+              {errors.documentNumber && <small className='text-danger'>{errors.documentNumber.message}</small>}
+            </div>
+            <div className="col-12 col-md-6 col-lg-4">
+              <label className="form-label">Fecha de Emisión</label>
+              <input className="form-control" type="date" {...register('issueDate')} readOnly />
+              {errors.issueDate && <small className='text-danger'>{errors.issueDate.message}</small>}
+            </div>
+            <div className="col-12 col-md-6 col-lg-4">
+              <label className="form-label">Descripción</label>
+              <TextareaAutosize  minRows={1} maxRows={3} {...register('description')} />
+              {errors.description && <small className='text-danger'>{errors.description.message}</small>}
+            </div>
           </div>
         </section>
 

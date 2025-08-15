@@ -9,29 +9,28 @@ export const DocumentHeader = ({ register, errors, children }) => {
     // Se restaura la estructura y clases originales que controlan el diseño
     <section  className={formStyles.card}>
       <div className="card-body p-0">
-        <div className="row g-3 ">
-          <div className="col-md-3 col-sm-6 mb-md-0 mb-2">
+      <div className="row g-3 align-items-center">
+          {/* Ocupa 12 en móvil, 6 en tablet, 3 en escritorio */}
+          <div className="col-12 col-md-6 col-lg-3">
             <label className="form-label">N° de Documento</label>
             <input className="form-control" {...register('documentNumber')} />
             {errors.documentNumber && <small className='text-danger'>{errors.documentNumber.message}</small>}
           </div>
-          <div className="col-md-4 col-sm-6 mb-md-0 mb-2">
+          {/* Ocupa 12 en móvil, 6 en tablet, 4 en escritorio */}
+          <div className="col-12 col-md-6 col-lg-4">
             <label className="form-label">Descripción</label>
-            <TextareaAutosize
-              minRows={1} // Empieza con la altura de 1 línea
-              maxRows={3} // Crecerá hasta un máximo de 3 líneas para no descontrolar el layout
-              placeholder="Añade una descripción"
-              {...register('saleDescription')} 
-            />
+            <TextareaAutosize minRows={1} maxRows={3} {...register('saleDescription')} />
             {errors.saleDescription && <small className='text-danger'>{errors.saleDescription.message}</small>}
           </div>
-          <div className="col-md-3 col-sm-6 mb-md-0 mb-2">
+          <div className="col-12 col-md-6 col-lg-3">
             <label className="form-label">Fecha</label>
             <input className="form-control" type="date" {...register('issueDate')} readOnly />
             {errors.issueDate && <small className='text-danger'>{errors.issueDate.message}</small>}
           </div>
-          {/* 'children' sigue siendo la ranura para el 'Tipo de Ítem' */}
-          {children} 
+          {/* 'children' para el Tipo de Ítem */}
+          <div className="col-12 col-md-6 col-lg-2">
+            {children}
+          </div>
         </div>
       </div>
     </section>
