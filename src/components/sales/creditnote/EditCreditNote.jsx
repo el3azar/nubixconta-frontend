@@ -6,7 +6,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { CreditNoteService } from '../../../services/sales/CreditNoteService';
 import { useCreditNoteForm } from '../../../hooks/useCreditNoteForm';
 import CreditNoteForm  from './CreditNoteForm';
-import Swal from 'sweetalert2';
+import { Notifier } from '../../../utils/alertUtils';
 import { useCustomerService } from '../../../services/sales/customerService';
 
 export default function EditCreditNote() {
@@ -26,6 +26,7 @@ export default function EditCreditNote() {
     queryKey: ['creditNote', creditNoteId],
     queryFn: () => creditNoteService.getCreditNoteById(creditNoteId),
     enabled: !!creditNoteId,
+    onError: (err) => Notifier.error('No se pudo cargar la nota de crédito.')
   });
   
   const customerId = creditNoteToEdit?.sale?.customer?.clientId;
@@ -33,16 +34,14 @@ export default function EditCreditNote() {
     queryKey: ['customer', customerId],
     queryFn: () => getCustomerById(customerId),
     enabled: !!customerId,
+    onError: (err) => Notifier.error('No se pudieron cargar los datos del cliente asociado.')
   });
 
   useEffect(() => {
     if (creditNoteToEdit) {
       if (creditNoteToEdit.creditNoteStatus !== 'PENDIENTE') {
-        Swal.fire({
-          icon: 'error',
-          title: 'Acción no permitida',
-          text: `No se puede editar una nota de crédito en estado "${creditNoteToEdit.creditNoteStatus}".`,
-        }).then(() => navigate('/ventas/notas-credito'));
+        Notifier.showError('Acción no permitida', `No se puede editar una nota de crédito en estado "${creditNoteToEdit.creditNoteStatus}".`)
+        .then(() => navigate('/ventas/notas-credito'));
         return;
       }
       
@@ -64,29 +63,25 @@ export default function EditCreditNote() {
   const { mutate: submitUpdate, isPending: isSaving } = useMutation({
     mutationFn: (data) => creditNoteService.updateCreditNote(creditNoteId, data),
     onSuccess: (updatedNote) => {
-      Swal.fire('¡Actualizado!', `Nota de crédito #${updatedNote.documentNumber} guardada.`, 'success');
+      Notifier.success(`Nota de crédito #${updatedNote.documentNumber} actualizada.`);
       queryClient.invalidateQueries({ queryKey: ['creditNotes'] });
       queryClient.invalidateQueries({ queryKey: ['creditNote', creditNoteId] });
       navigate('/ventas/notas-credito');
     },
     onError: (error) => {
-      Swal.fire('Error', error.response?.data?.message || 'No se pudo actualizar la nota de crédito.', 'error');
+      Notifier.showError('Error', error.response?.data?.message || 'No se pudo actualizar la nota de crédito.');
     }
   });
   
-  const handleCancel = () => {
-    Swal.fire({
+  const handleCancel = async () => {
+    const result = await Notifier.confirm({
       title: '¿Descartar Cambios?',
       text: 'Los cambios que hayas realizado no se guardarán.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, descartar',
-      cancelButtonText: 'No, continuar editando'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        navigate('/ventas/notas-credito');
-      }
+      confirmButtonText: 'Sí, descartar'
     });
+    if (result.isConfirmed) {
+      navigate('/ventas/notas-credito');
+    }
   };
 
   const onFormSubmit = (formData) => {
