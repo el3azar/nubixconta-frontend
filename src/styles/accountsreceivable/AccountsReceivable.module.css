@@ -57,6 +57,12 @@ label{
   cursor: pointer;
   font-weight: bold;
 }
+.btnBuscar:hover {
+  background: transparent;
+  color: #10031C;
+  border-color: #10031C; 
+  border: 2px solid;
+}
 
 /* Botón Nueva debajo del filtro */
 .botonNuevaWrapper {
@@ -69,10 +75,17 @@ label{
   background-color: #10031C;
   color: white;
   padding: 0.6rem 1rem;
-  border: none;
+  
   border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
+}
+
+.btnNueva:hover {
+   background: transparent;
+  color: #10031C;
+  border-color: #10031C; 
+  border: 2px solid;
 }
 
 /* Tabla con scroll */
@@ -94,7 +107,7 @@ label{
 
 /* Encabezado */
 .tabla thead {
-  background-color: #f3f3f3;
+  background-color: #2C1A47;
   position: sticky;
   top: 0;
   z-index: 2;
@@ -104,7 +117,7 @@ label{
   padding: 0.2rem 1rem;
   font-weight: bold;
   text-align: left;
-  color: #333;
+  color: #fff;
   border-bottom: 1px solid #ccc;
 }
 
@@ -238,4 +251,54 @@ label{
   min-width: 200px;
   height: 48px;
   border: none;
+}
+/* --- RESPONSIVE --- */
+
+/* Contenedor general en pantallas pequeñas */
+@media (max-width: 1024px) {
+  .container {
+    width: 100%;
+    padding: 0 1rem;
+  }
+
+  .buscador {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .filtroGrupo, .fechaGrupo {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .fechaGrupo input[type="date"] {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .btnBuscar {
+    width: 100%;
+    text-align: center;
+  }
+
+  .botonNuevaWrapper {
+    justify-content: center;
+  }
+
+  .btnNueva {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* --- TABLA RESPONSIVE --- */
+@media (max-width: 900px) {
+  .tablaWrapper {
+    overflow-x: auto;
+  }
+
+  .tabla {
+    width: 900px; /* fuerza ancho mínimo para scroll horizontal */
+  }
 }

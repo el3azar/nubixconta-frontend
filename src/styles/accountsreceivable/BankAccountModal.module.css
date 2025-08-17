@@ -9,40 +9,83 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 1rem;
+  margin-right: -3rem;
 }
 
 .modalContent {
   background: #f8f4ff;
-  padding: 2rem;
+  padding: 1.5rem;
   border-radius: 10px;
-  width: 500px;
+  width: 70%;       /* ancho flexible */
+  max-width: 400px; /* ancho máximo en desktop */
   max-height: 80vh;
   overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .modalContent h3 {
   margin-bottom: 1rem;
   color: #1b043b;
+  font-size: 1.3rem;
+  text-align: center;
+}
+
+/* Contenedor scroll horizontal para la tabla */
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 1rem;
+  font-size: 0.85rem;
+  min-width: 300px; /* asegura que se pueda scrollear */
 }
 
 .table th,
 .table td {
-  padding: 0.5rem;
+  padding: 0.4rem;
   border: 1px solid #ccc;
   text-align: left;
 }
 
 .acceptButton {
-  background-color: #1b043b;
-  color: white;
+  background-color: transparent;
+  color: #10031C;
   padding: 0.5rem 1rem;
-  border: none;
+  border-color: #10031C; 
+  border: 2px solid;
   border-radius: 6px;
   cursor: pointer;
+  width: 100%;
+  max-width: 150px;
+  display: block;
+  margin: 0 auto;
+}
+.acceptButton:hover {
+  background: #10031C;
+  color: #fff;
+  border-color: #10031C; 
+  border: 2px solid;
+}
+
+
+/* Media query para pantallas muy pequeñas */
+@media (max-width: 400px) {
+  .modalContent {
+    padding: 1rem;
+  }
+
+  .modalContent h3 {
+    font-size: 1.1rem;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.3rem;
+    font-size: 0.75rem;
+  }
 }

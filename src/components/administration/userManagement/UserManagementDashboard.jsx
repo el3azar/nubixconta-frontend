@@ -194,7 +194,7 @@ const showSuccess = (msg) =>
 
       <div className="row">
         {filteredUsers.map((u) => (
-          <div className="col-md-4 mb-3" key={u.id}>
+          <div className="col-lg-4 col-md-6 col-sm-12 mb-3" key={u.id}>
             <div className="card shadow-sm h-100" style={cardStyle(u.status)}>
               <div className="card-body">
                 <h5 className="card-title">

@@ -8,6 +8,7 @@ const BankAccountModal = ({ isOpen, onClose, accounts }) => {
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
         <h3>Cuentas bancarias</h3>
+          <div className={styles.tableWrapper}>
         <table className={styles.table}>
           <thead>
             <tr>
@@ -24,6 +25,7 @@ const BankAccountModal = ({ isOpen, onClose, accounts }) => {
             ))}
           </tbody>
         </table>
+        </div>
         <button className={styles.acceptButton} onClick={onClose}>
           Aceptar
         </button>

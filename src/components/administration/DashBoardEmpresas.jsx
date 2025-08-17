@@ -112,8 +112,8 @@ const DashBoardEmpresas = () => {
        title={dashboardTitle}
         items={items}
         onCardClick={handleCompanySelect}
-      />
-    </div>
+      />
+    </div>
   );
 };
 

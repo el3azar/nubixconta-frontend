@@ -71,8 +71,8 @@ export default function ChangeHistory() {
         onSearch={onSearch}
       />
 
-      <div className={styles.tableContainer}>
-        <table className={styles.table}>
+     <div className={`${styles.tableContainer} table-responsive`}>
+       <table className={`${styles.table} table-hover align-middle mb-0 `}>
           <thead>
             <tr>
               <th>Usuario</th>
