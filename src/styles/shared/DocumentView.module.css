@@ -136,6 +136,11 @@
   gap: 0.75rem;
 }
 
+/* Anulamos el flexbox de tu clase .filter para que el grid de Bootstrap tenga control total */
+.filter {
+  display: block;
+}
+
 /*
  ==================================================================
  == INICIO: SECCIÓN DE MEDIA QUERIES GRANULARES (LA SOLUCIÓN)
@@ -151,6 +156,8 @@
     justify-content: center; /* Centra los grupos cuando se apilan */
     gap: 1.5rem;
   }
+
+ 
 }
 
 /* --- BREAKPOINT 2: Tablets (< 992px) --- */
@@ -164,6 +171,9 @@
     width: 100%;
     max-width: 500px; /* Ancho máximo para los inputs de fecha */
   }
+
+
+ 
 }
 
 /* --- BREAKPOINT 3: Móviles (< 768px) --- */
@@ -176,6 +186,7 @@
   .actionsContainer {
     flex-direction: column;
   }
+  
 }
 
 /* --- BREAKPOINT 4: Móviles Pequeños (< 520px) --- */
@@ -191,4 +202,5 @@
   .filterButtonGroup .actionButton {
     justify-content: center; /* Centra el texto del botón */
   }
+ 
 }
