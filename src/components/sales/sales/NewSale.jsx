@@ -6,7 +6,7 @@ import { useCustomerService } from '../../../services/sales/customerService';
 import { SaleService } from '../../../services/sales/SaleService';
 import { useSaleForm } from '../../../hooks/useSaleForm';
 import SaleForm from './SaleForm';
-import Swal from 'sweetalert2';
+import { Notifier } from '../../../utils/alertUtils';
 import { useActiveProducts } from '../../../hooks/useProductQueries'; 
 export default function NewSale() {
   const { clientId } = useParams();
@@ -44,12 +44,12 @@ export default function NewSale() {
   const { mutate: submitSale, isPending: isSaving } = useMutation({
     mutationFn: (saleData) => createSale(saleData),
     onSuccess: (savedSale) => {
-      Swal.fire('Venta Registrada', `Venta #${savedSale.documentNumber} registrada con éxito.`, 'success');
+      Notifier.success(`Venta #${savedSale.documentNumber} registrada con éxito.`);
       queryClient.invalidateQueries({ queryKey: ['sales'] });
       navigate('/ventas/ventas');
     },
     onError: (error) => {
-      Swal.fire('Error al Registrar', error.response?.data?.message || 'Ocurrió un error.', 'error');
+     Notifier.showError('Error al Registrar', error.response?.data?.message || 'Ocurrió un error.');
     }
   });
 
@@ -58,14 +58,7 @@ export default function NewSale() {
     submitSale(dto);
   };
 
-  const handleCancel = () => {
-    Swal.fire({
-      title: '¿Cancelar venta?', text: 'Perderás los datos ingresados.', icon: 'warning',
-      showCancelButton: true, confirmButtonText: 'Sí, cancelar', cancelButtonText: 'No',
-    }).then(result => {
-      if (result.isConfirmed) navigate('/ventas/ventas');
-    });
-  };
+ 
 
   return (
     <SaleForm
@@ -77,7 +70,6 @@ export default function NewSale() {
       isSaving={isSaving}
       formLogic={formLogic}
       onFormSubmit={onFormSubmit}
-      onCancel={handleCancel}
       submitButtonText="Registrar Venta"
     />
   );

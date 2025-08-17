@@ -9,7 +9,7 @@ import { useCustomerService } from '../../../services/sales/customerService';
 import { useCreditNoteForm } from '../../../hooks/useCreditNoteForm';
 import { SelectableSalesTable } from './SelectableSalesTable';
 import CreditNoteForm  from './CreditNoteForm';
-import Swal from 'sweetalert2';
+import { Notifier } from '../../../utils/alertUtils';
 import styles from '../../../styles/shared/DocumentForm.module.css'; // Usa el CSS compartido
 
 export default function NewCreditNote() {
@@ -38,23 +38,25 @@ export default function NewCreditNote() {
     queryKey: ['customer', clientId],
     queryFn: () => getCustomerById(clientId),
     enabled: !!clientId,
+    onError: (err) => Notifier.error('No se pudieron cargar los datos del cliente.')
   });
 
   const { data: appliedSales = [], isLoading: isLoadingSales } = useQuery({
     queryKey: ['appliedSales', clientId],
     queryFn: () => saleService.getAppliedSalesByCustomer(clientId),
     enabled: !!clientId,
+    onError: (err) => Notifier.error('No se pudieron cargar las ventas aplicadas.')
   });
 
   const { mutate: submitCreditNote, isPending: isSaving } = useMutation({
     mutationFn: (data) => creditNoteService.createCreditNote(data),
     onSuccess: (savedNote) => {
-      Swal.fire('¡Éxito!', `Nota de crédito #${savedNote.documentNumber} registrada.`, 'success');
+      Notifier.success(`Nota de crédito #${savedNote.documentNumber} registrada.`);
       queryClient.invalidateQueries({ queryKey: ['creditNotes'] });
       navigate('/ventas/notas-credito');
     },
     onError: (error) => {
-      Swal.fire('Error', error.response?.data?.message || 'No se pudo registrar la nota de crédito.', 'error');
+      Notifier.showError('Error', error.response?.data?.message || 'No se pudo registrar la nota de crédito.');
     }
   });
 
@@ -63,19 +65,15 @@ export default function NewCreditNote() {
     updateFormWithSaleDetails(sale);
   };
   
-  const handleCancel = () => {
-    Swal.fire({
+const handleCancel = async () => {
+    const result = await Notifier.confirm({
       title: '¿Cancelar Creación?',
       text: 'Perderás todos los datos ingresados en el formulario.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, cancelar',
-      cancelButtonText: 'No, continuar editando'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        navigate('/ventas/notas-credito');
-      }
+      confirmButtonText: 'Sí, cancelar'
     });
+    if (result.isConfirmed) {
+      navigate('/ventas/notas-credito');
+    }
   };
 
   const onFormSubmit = (formData) => {
@@ -96,6 +94,7 @@ export default function NewCreditNote() {
       {selectedSale && (
         <CreditNoteForm
           customer={customerData}
+          title="Nueva Nota de Crédito"
           // --- INICIO DE LA CORRECCIÓN ---
           formMethods={formLogic.formMethods} // Se pasa el objeto correcto
           fields={fields}

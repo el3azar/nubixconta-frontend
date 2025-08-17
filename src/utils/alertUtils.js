@@ -29,8 +29,28 @@ export const Notifier = {
   /** Muestra un toast de error con el tema principal de la aplicación. */
   error: (message = 'Ocurrió un error.') => toast.error(message),
   
-  /** Muestra un toast de información con el tema principal de la aplicación. */
-  info: (message) => toast(message, { icon: 'ℹ️' }),
+  /**
+   * Muestra un toast de información. Acepta opciones para personalizarlo.
+   * @param {string} message - El mensaje a mostrar.
+   * @param {object} [options] - Opciones adicionales de react-hot-toast.
+   * @param {React.ReactNode} [options.icon] - Un icono personalizado en formato JSX.
+   * @param {number} [options.duration] - Duración personalizada en milisegundos.
+   */
+  info: (message, options = {}) => {
+    // Definimos un icono por defecto.
+    const defaultIcon = 'ℹ️';
+
+    // Usamos el operador de coalescencia nula (??) para asegurarnos
+    // de que siempre haya un icono. Si options.icon no se proporciona, usa el default.
+    const finalIcon = options.icon ?? defaultIcon;
+    
+    // Pasamos el icono y cualquier otra opción al toast.
+    // El operador '...' fusiona las opciones personalizadas con las por defecto.
+    toast(message, { 
+      icon: finalIcon,
+      ...options 
+    });
+  },
   
   /** Muestra un toast de advertencia con el tema principal de la aplicación. */
   warning: (message) => toast(message, { icon: '⚠️' }),

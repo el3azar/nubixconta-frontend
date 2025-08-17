@@ -7,6 +7,7 @@ import SubMenu from "../SubMenu";
 import { DefaultFilterComponent, DefaultActionsComponent } from '../../shared/DocumentViewDefaults';
 import { formatDate } from '../../../utils/dateFormatter';
 import viewStyles from '../../../styles/shared/DocumentView.module.css';
+import ViewContainer from '../../shared/ViewContainer';
 // Definimos la configuración de las columnas aquí, fuera del componente.
 const salesColumns = [
   { header: 'Correlativo', accessor: 'saleId', style: { minWidth: '100px' }  },
@@ -38,20 +39,22 @@ export default function Sales() {
   };
 
   return (
-    <>
+ <div> {/* Usamos un div simple como contenedor raíz */}
       <SubMenu />
-      <DocumentListView
-        pageTitle="Filtrar Ventas"
-        listTitle="Ventas"
-        queryKey="sales"
-        documentService={serviceAdapter}
-        routePaths={routePaths}
-        newDocumentMessage="Redirigiendo para seleccionar un cliente"
-        // --- PROPS NUEVAS ---
-        columns={salesColumns}
-        FilterComponent={DefaultFilterComponent}
-        ActionsComponent={DefaultActionsComponent}
-      />
-    </>
+      {/* --- 2. ENVOLVEMOS LA VISTA CON VIEWCONTAINER --- */}
+      <ViewContainer>
+        <DocumentListView
+          pageTitle="Filtrar Ventas"
+          listTitle="Ventas"
+          queryKey="sales"
+          documentService={serviceAdapter}
+          routePaths={routePaths}
+          newDocumentMessage="Redirigiendo para seleccionar un cliente"
+          columns={salesColumns}
+          FilterComponent={DefaultFilterComponent}
+          ActionsComponent={DefaultActionsComponent}
+        />
+      </ViewContainer>
+    </div>
   );
 }

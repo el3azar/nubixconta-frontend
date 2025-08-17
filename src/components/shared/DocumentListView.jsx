@@ -4,8 +4,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
-import toast from 'react-hot-toast';
+import { Notifier } from '../../utils/alertUtils';
 import { FaArrowRight } from 'react-icons/fa';
 import { DocumentTable } from './DocumentTable';
 import styles from '../../styles/shared/DocumentView.module.css';
@@ -82,29 +81,29 @@ export const DocumentListView = ({
   const { mutate: approveDoc, isPending: isApproving } = useMutation({
     mutationFn: documentService.approve,
     onSuccess: () => {
-      Swal.fire('Aprobado', `El documento ha sido aprobado con éxito.`, 'success');
+      Notifier.success('El documento ha sido aprobado con éxito.');
       queryClient.invalidateQueries({ queryKey: [queryKey] });
     },
-    onError: (err) => Swal.fire('Error', err.response?.data?.message || `No se pudo aprobar el documento.`, 'error'),
+    onError: (err) => Notifier.showError('Error', err.response?.data?.message || `No se pudo aprobar el documento.`),
   });
   // ... resto de mutaciones (cancelDoc, deleteDoc) permanecen idénticas
 
   const { mutate: cancelDoc, isPending: isCancelling } = useMutation({
     mutationFn: documentService.cancel,
     onSuccess: () => {
-      Swal.fire('Anulado', `El documento ha sido anulado con éxito.`, 'success');
+      Notifier.success('El documento ha sido anulado con éxito.');
       queryClient.invalidateQueries({ queryKey: [queryKey] });
     },
-    onError: (err) => Swal.fire('Error', err.response?.data?.message || `No se pudo anular el documento.`, 'error'),
+    onError: (err) => Notifier.showError('Error', err.response?.data?.message || `No se pudo anular el documento.`),
   });
   
   const { mutate: deleteDoc, isPending: isDeleting } = useMutation({
     mutationFn: documentService.delete,
     onSuccess: () => {
-      Swal.fire('Eliminado', `El documento ha sido eliminado con éxito.`, 'success');
+      Notifier.success('El documento ha sido eliminado con éxito.');
       queryClient.invalidateQueries({ queryKey: [queryKey] });
     },
-    onError: (err) => Swal.fire('Error', err.response?.data?.message || `No se pudo eliminar el documento.`, 'error'),
+    onError: (err) => Notifier.showError('Error', err.response?.data?.message || `No se pudo eliminar el documento.`),
   });
 
   // --- 3. MANEJADORES DE EVENTOS (SIN CAMBIOS EN SU MAYORÍA) ---
@@ -128,8 +127,13 @@ const onSearch = (data) => {
 
   // El resto de manejadores (handleNew, handleEdit, handleDelete, etc.) no cambian.
   const handleNew = () => {
-    const toastMessage = newDocumentMessage || `Redirigiendo para crear ${documentType.toLowerCase()}...`;
-    toast(toastMessage, {
+   // Usamos tu mensaje original
+    const toastMessage = newDocumentMessage || `Redirigiendo...`;
+
+    // --- ¡AQUÍ ESTÁ LA MAGIA! ---
+    // Llamamos a Notifier.info y le pasamos un objeto de opciones
+    // para personalizar el icono.
+    Notifier.info(toastMessage, {
       icon: <FaArrowRight style={{ color: '#7D49CC' }} />,
     });
     setTimeout(() => navigate(routePaths.new), 100);
@@ -137,25 +141,31 @@ const onSearch = (data) => {
   const handleEdit = (id) => navigate(`${routePaths.edit}/${id}`);
   const handleView = (doc) => openAccountingModal(doc);
 
-const handleDelete = (id) => {
-    Swal.fire({
-      title: `¿Eliminar documento?`, text: 'Esta acción no se puede deshacer.', icon: 'warning',
-      showCancelButton: true, confirmButtonText: 'Sí, eliminar', cancelButtonText: 'Cancelar'
-    }).then(result => result.isConfirmed && deleteDoc(id));
+const handleDelete = async (id) => {
+    const result = await Notifier.confirm({
+      title: '¿Eliminar documento?',
+      text: 'Esta acción no se puede deshacer.',
+      confirmButtonText: 'Sí, eliminar'
+    });
+    if (result.isConfirmed) deleteDoc(id);
   };
   
-  const handleApprove = (id) => {
-    Swal.fire({
-      title: `¿Aprobar documento?`, text: 'El estado del documento cambiará.', icon: 'question',
-      showCancelButton: true, confirmButtonText: 'Sí, aprobar', cancelButtonText: 'Cancelar'
-    }).then(result => result.isConfirmed && approveDoc(id));
+  const handleApprove = async (id) => {
+    const result = await Notifier.confirm({
+      title: '¿Aprobar documento?',
+      text: 'El estado del documento cambiará y se afectará el inventario.',
+      confirmButtonText: 'Sí, aprobar'
+    });
+    if (result.isConfirmed) approveDoc(id);
   };
 
-  const handleCancel = (id) => {
-    Swal.fire({
-      title: `¿Anular documento?`, text: 'Esta acción podría revertir cambios de inventario.', icon: 'warning',
-      showCancelButton: true, confirmButtonText: 'Sí, anular', cancelButtonText: 'Cancelar'
-    }).then(result => result.isConfirmed && cancelDoc(id));
+  const handleCancel = async (id) => {
+    const result = await Notifier.confirm({
+      title: '¿Anular documento?',
+      text: 'Esta acción podría revertir cambios de inventario.',
+      confirmButtonText: 'Sí, anular'
+    });
+    if (result.isConfirmed) cancelDoc(id);
   };
 
   // PASO 2: GUARDIA DE RENDERIZADO CONDICIONAL (AHORA ESTÁ AQUÍ)
@@ -165,7 +175,7 @@ const handleDelete = (id) => {
   if (!company) {
     return (
       <main>
-        <h2 className="mb-4">{pageTitle}</h2>
+        <h2 className={`mb-4 ${styles.sectionTitle}`}>{pageTitle}</h2>
         <div className="text-center mt-5">
           {/* <Spinner /> Si tienes un componente de Spinner */}
           <p className="mt-2">Esperando selección de empresa...</p>
