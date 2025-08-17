@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCustomerService } from '../../../services/sales/customerService';
 import { CustomerForm } from './CustomerForm';
-import Swal from 'sweetalert2';
+import { Notifier } from '../../../utils/alertUtils';
 
 const NewCustomer = () => {
   const navigate = useNavigate();
@@ -13,12 +13,12 @@ const NewCustomer = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: createCustomer,
     onSuccess: () => {
-      Swal.fire('¡Éxito!', 'Cliente creado correctamente.', 'success');
+      Notifier.success('Cliente creado correctamente.');
       queryClient.invalidateQueries({ queryKey: ['customers'] });
       navigate('/ventas/clientes');
     }, onError: (error) => {
       const message = error.response?.data?.message || 'No se pudo crear el cliente.';
-      Swal.fire('Error', message, 'error');
+      Notifier.showError('Error al Crear', message);
     },
   });
 

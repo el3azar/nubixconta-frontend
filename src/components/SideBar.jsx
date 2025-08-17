@@ -27,13 +27,10 @@ const SideBar = ({ sidebarOpen, toggleSidebar }) => {
   const { pathname } = useLocation();
   const { role, logout } = useAuth(); 
   const navigate = useNavigate();
-// Define si estamos en sección admin
   const isAdminRoute = pathname.startsWith("/admin");
-  // Filtra 'Administración' en sidebar si el usuario no es admin
- const filteredModuleLinks = role === true
-  ? moduleLinks
-  : moduleLinks.filter(link => link.to !== "/admin");
-
+  const filteredModuleLinks = role === true
+    ? moduleLinks
+    : moduleLinks.filter(link => link.to !== "/admin");
   const linksToShow = isAdminRoute ? adminLinks : filteredModuleLinks;
 
   const handleLogout = () => {
@@ -41,74 +38,41 @@ const SideBar = ({ sidebarOpen, toggleSidebar }) => {
     navigate("/");
   };
 
-  return (
-    <>
-      {/* Overlay en móvil/tablet */}
-      <div className={`${styles.sidebarOverlay} d-md-none`} style={{ display: sidebarOpen ? 'block' : 'none' }}
-        onClick={toggleSidebar} />
-      {/* Sidebar principal */}
-      <aside  className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : styles.sidebarCollapsed} text-white position-relative`}
-        aria-label="Menú lateral principal"
-      >
-        {/* Encabezado del menú */}
-        <header className={styles.sidebarHeader}>
-          {sidebarOpen && (
-            <span className={styles.sidebarLogo}>
-              NUBIXCONTA
-            </span>
-          )}
-          <button className={`btn btn-link btn-sm text-white ms-auto ${styles.sidebarToggleBtn}`}
-            onClick={toggleSidebar} aria-label="Mostrar/ocultar menú lateral"
-          >
-            <List size={28} />
-          </button>
-        </header>
-        {/* Navegación principal */}
-        <nav className={styles.sidebarNav} aria-label="Secciones principales">
-          <ul className="nav nav-pills flex-column mb-auto">
-            {linksToShow.map(({ to, label, icon: Icon }, i) => (
-              <li key={i} className="nav-item">
-                <Link to={to} className={`nav-link ${styles.menuLink} d-flex align-items-center ${pathname === to ? styles.active : "text-white"}`}>
-                  <Icon className="me-2" size={20} />
-                  <span className={sidebarOpen ? 'd-inline' : styles.menuLabelHidden}>{label}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
+return (
+    <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : styles.sidebarCollapsed}`} aria-label="Menú lateral principal">
+      <header className={styles.sidebarHeader}>
+        <span className={styles.sidebarLogo}>NUBIXCONTA</span>
+        <button className={`btn btn-link btn-sm text-white ${styles.sidebarToggleBtn}`} onClick={toggleSidebar} aria-label="Mostrar/ocultar menú lateral">
+          <List size={28} />
+        </button>
+      </header>
 
-        {/* Este bloque se muestra justo encima del de Cerrar Sesión. */}
-        {/* La condición !isAdminRoute asegura que solo aparezca en las vistas de módulos, */}
-        {/* no en las vistas de administración, lo cual es el comportamiento deseado. */}
+      <nav className={styles.sidebarNav}>
+        <ul className="nav nav-pills flex-column mb-auto">
+          {linksToShow.map(({ to, label, icon: Icon }, i) => (
+            <li key={i} className="nav-item">
+              <Link to={to} className={`nav-link ${styles.menuLink} ${pathname === to ? styles.active : "text-white"}`} title={label}>
+                <Icon className={styles.menuIcon} size={20} />
+                <span className={styles.menuLabel}>{label}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <div className="mt-auto w-100 p-2">
         {!isAdminRoute && (
-            <div className="mt-auto w-100">
-                <Link
-                    to="/empresas"
-                    className="btn btn-outline-light w-100 d-flex align-items-center justify-content-center"
-                    style={{ marginBottom: '0.5rem', minHeight: 48 }}
-                    title="Cambiar de Empresa"
-                >
-                    <ArrowLeftRight size={20} className="me-2" />
-                    {sidebarOpen && "Cambiar Empresa"}
-                </Link>
-            </div>
+          <Link to="/empresas"  className={`btn btn-outline-light w-100 d-flex align-items-center justify-content-center ${styles.bottomBtn}`} title="Cambiar de Empresa">
+            <ArrowLeftRight className={styles.menuIcon} size={20} />
+            <span className={styles.menuLabel}>Cambiar Empresa</span>
+          </Link>
         )}
-
-        {/* Botón Cerrar sesión pegado abajo */}
-       {/* Ajustamos el estilo condicionalmente para que el botón de logout siga pegado abajo */}
-        <div className="w-100" style={isAdminRoute ? {marginTop: 'auto'} : {}}>
-          <button
-            className="btn btn-outline-light w-100 d-flex align-items-center justify-content-center"
-            style={{ marginBottom: '1rem', minHeight: 48 }}
-            onClick={handleLogout} title="Cerrar sesión">
-              
-            <BoxArrowRight size={20} className="me-2" />
-            {sidebarOpen && "Cerrar sesión"}
-          </button>
-        </div>
-
-      </aside>
-    </>
+        <button className={`btn btn-outline-light w-100 d-flex align-items-center justify-content-center mt-2 ${styles.bottomBtn}`} onClick={handleLogout} title="Cerrar sesión">
+          <BoxArrowRight className={styles.menuIcon} size={20} />
+          <span className={styles.menuLabel}>Cerrar sesión</span>
+        </button>
+      </div>
+    </aside>
   );
 };
 
