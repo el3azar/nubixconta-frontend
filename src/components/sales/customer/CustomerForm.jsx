@@ -174,7 +174,7 @@ export const CustomerForm = ({ onFormSubmit, defaultValues, isSubmitting = false
           )}
           
           {/* El resto de campos siguen la misma estructura simple */}
-          <div className={formStyles.formGroup}><label htmlFor="ncr" className={formStyles.formLabel}>NRC</label><input id="ncr" type="text" className={formStyles.formControl} {...register("ncr")} />{errors.ncr && <p className={formStyles.errorMessage}>{errors.ncr.message}</p>}</div>
+          <div className={formStyles.formGroup}><label htmlFor="ncr" className={formStyles.formLabel}>NRC</label><input id="ncr" type="text" className={formStyles.formControl} {...register("ncr")} maxLength={14}/>{errors.ncr && <p className={formStyles.errorMessage}>{errors.ncr.message}</p>}</div>
           <div className={formStyles.formGroup}><label htmlFor="address" className={formStyles.formLabel}>Dirección</label><input id="address" type="text" className={formStyles.formControl} {...register("address")} />{errors.address && <p className={formStyles.errorMessage}>{errors.address.message}</p>}</div>
           <div className={formStyles.formGroup}><label htmlFor="email" className={formStyles.formLabel}>Correo</label><input id="email" type="email" placeholder="ejemplo@correo.com" className={formStyles.formControl} {...register("email")} />{errors.email && <p className={formStyles.errorMessage}>{errors.email.message}</p>}</div>
           
