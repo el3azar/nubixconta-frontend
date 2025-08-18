@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { showConfirmationDialog } from '../alertsmodalsa';
 import { showSuccess } from '../alertstoast';
-import './SwitchBase.css';
+import styles from '../../../styles/inventory/SwitchBase.module.css'; // Asegúrate de que este archivo exista
+
 
 /**
  * Componente Switch genérico que muestra un diálogo de confirmación.

@@ -2,7 +2,7 @@
 import React from 'react';
 import Boton from './Boton';
 // Asumo que tienes un archivo CSS para el tamaño, si no, puedes eliminar esta línea.
-import './SearchCardBase.module.css';
+import styles from "../../../styles/inventory/SearchCardBase.module.css";
 import SelectBase from './SelectBase';
 
 /**

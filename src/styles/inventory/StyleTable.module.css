@@ -1,0 +1,122 @@
+/*
+  CSS fusionado que combina las propiedades de los dos archivos originales.
+  - Se mantiene la estructura de clases del primer archivo.
+  - Se añaden las propiedades de diseño (bordes, sombras, colores) del segundo.
+*/
+
+.tableContainer {
+  /* Propiedades de BaseTable.css */
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background: white;
+
+  /* Propiedades de StyleTable.module.css */
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  /* Propiedades de BaseTable.css */
+  min-width: 2000px;
+  border-collapse: collapse;
+
+  /* Propiedades de StyleTable.module.css */
+  width: 100%;
+}
+
+.th {
+  /* Propiedades de BaseTable.css */
+  padding: 12px 16px;
+  text-align: center;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  background-color: #2e2c50;
+  color: white;
+
+  /* Propiedades de StyleTable.module.css (modificadas para coincidir con la nueva apariencia) */
+  /* text-align: center; -- Se reemplaza por left */
+}
+
+.td {
+  /* Propiedades de BaseTable.css */
+  padding: 12px 16px;
+  font-size: 0.875rem;
+
+  /* Propiedades de StyleTable.module.css (simplificadas) */
+  /* border: 1px solid #ddd; -- Se quita para usar el borde de la fila */
+}
+
+/* Nuevas clases importadas de BaseTable.css para la estructura de la tabla */
+thead {
+  background-color: #2e2c50;
+  color: white;
+}
+
+tbody tr {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+/* Clases para la paginación */
+.pagination {
+  /* Propiedades de BaseTable.css */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+
+  /* Propiedades de StyleTable.module.css (sobrescritas) */
+  /* justify-content: center; -- Se reemplaza por space-between */
+  /* gap: 12px; -- Se quita para usar space-between */
+  /* margin-top: 12px; -- Se quita, no es necesario */
+}
+
+.pageButton {
+  /* Propiedades de BaseTable.css */
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background-color: #fff; /* Se añade para que el botón tenga un fondo */
+  color: black;
+}
+
+.pageButton:disabled {
+  /* Propiedades de BaseTable.css */
+  opacity: 0.6;
+  cursor: not-allowed;
+
+  /* Propiedades de StyleTable.module.css (sobrescritas) */
+  /* opacity: 0.5; -- Se reemplaza por 0.6 */
+}
+
+.pageInfo {
+  /* Propiedades de StyleTable.module.css (se mantiene sin cambios) */
+  align-self: center;
+}
+
+/*
+  Las siguientes clases son del segundo archivo y no están en el componente de React.
+  Si decides usarlas, deberás añadirlas a tu componente.
+*/
+
+.global-filter {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.global-filter:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}

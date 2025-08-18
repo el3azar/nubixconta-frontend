@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 // 1. Importa los servicios que necesitas
 import { showConfirmationDialog } from '../alertsmodalsa'; // Asegúrate que la ruta sea correcta
 import { showSuccess } from '../alertstoast'; // Asegúrate que la ruta sea correcta
-import './SwitchBase.css';
+import styles from "../../../styles/inventory/SwitchBase.module.css"; // Asegúrate de que este archivo exista
 
 /**
  * Componente Switch que muestra un diálogo de confirmación antes de cambiar de estado.

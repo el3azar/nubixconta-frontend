@@ -2,8 +2,10 @@
 import React from 'react';
 import Boton from './Boton';
 // Asumo que tienes un archivo CSS para el tamaño, si no, puedes eliminar esta línea.
-import './SearchCardBase.module.css';
+import styles from "../../../styles/inventory/SearchCardBase.module.css";
+
 import SelectBase from './SelectBase';
+import { Dropdown } from 'react-bootstrap';
 
 /**
  * Tarjeta de búsqueda controlada. No tiene estado propio.
@@ -80,14 +82,28 @@ function SearchCardMovement({
 
           {/* Columna para el buscador de Tipo de Movimiento */}
           <div className="col-md-6">
-            <label htmlFor="tipo-movimiento-search" className="form-label">Tipo de Movimiento</label>
-            <SelectBase
-              apiData={apiDataTipoMovimiento}
-              value={tipoMovimientoValue}
-              onChange={onTipoMovimientoChange}
-              placeholder="Ej: Entrada, Salida..."
-            />
-          </div>
+  <label htmlFor="tipo-movimiento-search" className="form-label">Tipo de Movimiento</label>
+  <select
+    id="tipo-movimiento-search"
+    className="form-select"
+    value={tipoMovimientoValue?.value || ''}
+    onChange={(e) => {
+      const selected = e.target.value
+        ? { value: e.target.value, label: e.target.value }
+        : null;
+      onTipoMovimientoChange(selected);
+    }}
+  >
+    <option value="">Seleccione un tipo...</option>
+    {apiDataTipoMovimiento.map((item) => (
+      <option key={item.value} value={item.value}>
+        {item.label}
+      </option>
+    ))}
+  </select>
+</div>
+
+
           {/* --- ¡NUEVAS COLUMNAS PARA LAS FECHAS! --- */}
           <div className="col-md-6">
             <label className="form-label fw-bold">Fecha Inicio:</label>

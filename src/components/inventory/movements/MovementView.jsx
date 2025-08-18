@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 // 1. IMPORTAMOS LAS FUNCIONES DE ALERTA NECESARIAS
 import { showSuccess, showError } from '../alertstoast';
 import { showConfirmationDialog } from '../alertsmodalsa';
-import './MovementView.css';
+import styles from "../../../styles/inventory/MovementView.module.css";
 import ViewDetailsMovement from './ViewDetailsMovement';
 import { formatDate } from '../../../utils/dateFormatter';
 import MovementFormModal from './MovementFormModal'; 
@@ -120,7 +120,12 @@ const MovementView = () => {
     { header: 'Tipo', accessorKey: 'movementType' },
     { header: 'Cantidad', accessorKey: 'quantity' },
     { header: 'Stock Resultante', accessorKey: 'stockAfterMovement' },
-    { header: 'Descripción', accessorKey: 'description' },
+    { 
+      header: 'Descripción', 
+      accessorKey: 'description', 
+      size: 400,
+      minSize: 300,
+    },
     { header: 'Cliente', accessorKey: 'customerName' },
     { header: 'Módulo Origen', accessorKey: 'originModule' },
     {
@@ -173,13 +178,7 @@ const MovementView = () => {
       <SubMenu />
       <div>
         <h2>Gestión de Movimientos de Inventario</h2>
-        <div>
-            <Link to="/inventario/movimientosproductos">
-                <Boton color="morado" forma="pastilla" className="mb-4" ><i className="bi bi-arrow-left-circle-fill me-2"></i>
-                  Regresar
-              </Boton>
-          </Link>
-      </div>
+        
 
      <SearchCardMovement tamano='tamano-grande' {...searchProps} />
       <div className='contenedor-movimientos'>

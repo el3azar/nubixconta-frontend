@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import Boton from './Boton';
 // Asumo que tienes un archivo CSS para el tamaño.
-import './SearchCardBase.module.css';
+import styles from '../../../styles/inventory/SearchCardBase.module.css';
 import SelectBase from './SelectBase';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
