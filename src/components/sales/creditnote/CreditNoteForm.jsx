@@ -59,6 +59,7 @@ export default function CreditNoteForm(props) {
     });
     if (result.isConfirmed) {
       remove(index);
+      Notifier.success('El detalle ha sido eliminado.');
     }
   };
 
