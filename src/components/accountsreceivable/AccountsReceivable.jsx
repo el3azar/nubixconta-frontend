@@ -5,6 +5,10 @@ import {fetchAccountsReceivable,fetchAccountsByDate,} from "../../services/accou
 import DateRangeFilter from "../../components/accountsreceivable/DateRangeFilter";
 import EditReceivableLiquidation from "./EditReceivableLiquidation";
 import { getCollectionDetailById } from "../../services/accountsreceivable/getCollectionDetailById";
+import { useCompany } from "../../context/CompanyContext";
+import { useAuth } from "../../context/AuthContext";
+import AccountingEntryModal from "../shared/AccountingEntryModal";
+import { getCollectionEntryById } from "../../services/accountsreceivable/getCollectionEntryById";
 import {
   FaPlus,
   FaCheck,
@@ -28,6 +32,14 @@ const AccountsReceivable = () => {
   const [endDate, setEndDate] = useState("");
   const [showEditModal, setShowEditModal] = useState(false);
   const [detalleSeleccionado, setDetalleSeleccionado] = useState(null);
+
+//Estados para el modal de ver el asiento contable
+  const [showAccountingModal, setShowAccountingModal] = useState(false);
+  const [accountingEntryData, setAccountingEntryData] = useState(null);
+  const [isLoadingAccountingEntry, setIsLoadingAccountingEntry] = useState(false);
+  const [accountingEntryError, setAccountingEntryError] = useState(null);
+  const { company } = useCompany();
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchAccountsReceivable()
@@ -181,6 +193,43 @@ const handleCancel = async (id) => {
     setData(transformed);
   };
 
+    //  MANEJADOR PARA EL MODAL DE ASIENTO CONTABLE ---
+  const handleViewAccountingEntry = async (id) => {
+    setIsLoadingAccountingEntry(true);
+    setShowAccountingModal(true);
+    setAccountingEntryError(null);
+    try {
+      const entry = await getCollectionEntryById(id);
+      // Adaptar el formato de datos para que el componente AccountingEntry lo entienda
+      const formattedEntry = {
+        accountingEntryId: entry[0]?.id || "N/A",
+        entryDate: entry[0]?.date.substring(0, 10) || "N/A",
+        documentType: entry[0]?.tipo,
+        documentNumber: entry[0]?.documentNumber,
+        partnerLabel: 'Cliente',
+        partnerName: entry[0]?.custumerName,
+        description: entry[0]?.description,
+        documentStatus: entry[0]?.status,
+        lines: entry.map(line => ({
+          accountCode: line.codAccount,
+          accountName: line.accountName,
+          debit: line.debit,
+          credit: line.credit,
+        })),
+        totalDebits: entry.reduce((sum, line) => sum + line.debit, 0),
+        totalCredits: entry.reduce((sum, line) => sum + line.credit, 0),
+        companyName: company?.companyName || "No disponible",
+        username: user?.sub || "No disponible",
+      };
+      setAccountingEntryData(formattedEntry);
+    } catch (error) {
+      setAccountingEntryError(error.message);
+      setAccountingEntryData(null);
+    } finally {
+      setIsLoadingAccountingEntry(false);
+    }
+  };
+
   const toggleDescripcion = (index) => {
     setDescripcionExpandida((prev) => ({ ...prev, [index]: !prev[index] }));
   };
@@ -261,7 +310,7 @@ const handleCancel = async (id) => {
                     )}
                     {fila.estado === "APLICADO" && (
                       <>
-                        <FaEye title="Ver" className={styles.icono} />
+                        <FaEye title="Ver" className={styles.icono} onClick={() => handleViewAccountingEntry(fila.id)} />
                           <FaBan title="Anular" className={styles.icono} onClick={() => handleCancel(fila.id)} />
                       </>
                     )}
@@ -302,6 +351,15 @@ const handleCancel = async (id) => {
           </tbody>
         </table>
       </div>
+       {/* --- RENDERIZADO DEL MODAL DE ASISTENCIA CONTABLE REUTILIZADO --- */}
+       <AccountingEntryModal
+        show={showAccountingModal}
+        onHide={() => setShowAccountingModal(false)}
+        data={accountingEntryData}
+        isLoading={isLoadingAccountingEntry}
+        isError={!!accountingEntryError}
+        error={{ message: accountingEntryError }}
+      />
     </section>
   );
 };

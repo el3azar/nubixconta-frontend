@@ -22,10 +22,22 @@
   margin-bottom: 24px;
 }
 
+
+/* Wrapper para la tabla de selección de ventas */
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto; /* Activa el scroll horizontal */
+  -webkit-overflow-scrolling: touch; /* Mejora la experiencia en iOS */
+  border: 1px solid var(--border-light);
+  border-radius: 8px; /* Bordes redondeados consistentes */
+}
+
+/* Damos un ancho mínimo a la tabla para asegurar que el scroll se active en móvil */
 .table {
   width: 100%;
+  min-width: 500px;
   border-collapse: collapse;
-  margin-top: 8px;
+  margin-top: 0; /* Ya no es necesario, el wrapper lo maneja */
 }
 
 .table th,

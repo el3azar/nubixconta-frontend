@@ -6,7 +6,7 @@ import { useCustomerService } from '../../../services/sales/customerService';
 import { SaleService } from '../../../services/sales/SaleService';
 import { useSaleForm } from '../../../hooks/useSaleForm';
 import SaleForm from './SaleForm';
-import Swal from 'sweetalert2';
+import { Notifier } from '../../../utils/alertUtils';
 import { useActiveProducts } from '../../../hooks/useProductQueries'; 
 
 export default function EditSale() {
@@ -99,13 +99,13 @@ export default function EditSale() {
   const { mutate: submitUpdate, isPending: isSaving } = useMutation({
     mutationFn: (data) => updateSale(data.saleId, data.dto),
     onSuccess: (updatedSale) => {
-      Swal.fire('Venta Actualizada', `La venta #${updatedSale.documentNumber} se guardó con éxito.`, 'success');
+      Notifier.success(`Venta #${updatedSale.documentNumber} actualizada con éxito.`);
       queryClient.invalidateQueries({ queryKey: ['sales'] });
       queryClient.invalidateQueries({ queryKey: ['sale', saleId] });
       navigate('/ventas/ventas');
     },
     onError: (error) => {
-      Swal.fire('Error al Actualizar', error.response?.data?.message || 'Ocurrió un error.', 'error');
+      Notifier.showError('Error al Actualizar', error.response?.data?.message || 'Ocurrió un error.');
     },
   });
 
@@ -127,14 +127,7 @@ export default function EditSale() {
     submitUpdate({ saleId, dto });
   };
   
-  const handleCancel = () => {
-    Swal.fire({
-      title: '¿Descartar cambios?', text: 'Volverás a la lista de ventas.', icon: 'warning',
-      showCancelButton: true, confirmButtonText: 'Sí, descartar', cancelButtonText: 'No',
-    }).then(result => {
-      if (result.isConfirmed) navigate('/ventas/ventas');
-    });
-  };
+
 
   if (isLoadingSale || isLoadingClient) {
     return <main className="container-lg text-center p-5"><h2>Cargando datos de la venta...</h2></main>;
@@ -154,7 +147,6 @@ export default function EditSale() {
       isSaving={isSaving}
       formLogic={formLogic}
       onFormSubmit={onFormSubmit}
-      onCancel={handleCancel}
       submitButtonText="Guardar Cambios"
     />
   );

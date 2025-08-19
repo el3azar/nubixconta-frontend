@@ -1,5 +1,5 @@
 import axios from "axios";
-//Este enpoint trae el listado de todas las cuentas bancarias de la empresa
+//Este enpoint trae el listado de todos los usuarios asistentes
 const API_URL = "http://localhost:8080/api/v1/users/assistant";
 export const getUsersByAssistant = async () => {
   try {
