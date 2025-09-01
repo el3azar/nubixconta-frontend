@@ -1,22 +1,22 @@
 /* Contenedor principal del switch */
 .switch-container {
-  width: 50px; /* Ancho del switch */
-  height: 28px; /* Alto del switch */
+  width: 3.5rem; /* Unidades relativas a la fuente raíz (aprox. 56px) */
+  height: 2rem;  /* Altura que se adapta de forma proporcional */
   border-radius: 50px; /* Bordes redondeados para forma de pastilla */
   cursor: pointer;
   display: flex;
   align-items: center;
-  padding: 4px;
+  padding: 0px;
   transition: background-color 0.3s ease;
   box-sizing: border-box;
 }
 
 /* Círculo interior que se desliza (el "thumb") */
 .switch-thumb {
-  width: 20px; /* Diámetro del círculo */
-  height: 20px; /* Diámetro del círculo */
+  width: 1.5rem; /* El círculo interior también se adapta */
+  height: 1.5rem;
   background-color: white;
-  border-radius: 50%;
+  border-radius: 75%;
   transition: transform 0.3s ease;
 }
 

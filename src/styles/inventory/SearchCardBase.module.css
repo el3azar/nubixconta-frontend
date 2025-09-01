@@ -38,3 +38,48 @@
 .tamano-grande {
   max-width: 1200px;
 }
+
+/* * Media Query para pantallas de tabletas y más pequeñas.
+ * (992px es un punto de interrupción común de Bootstrap)
+ */
+@media (max-width: 992px) {
+    .tamano-pequeno {
+        max-width: 350px; /* Un poco más pequeño para tablets. */
+    }
+    .tamano-mediano {
+        max-width: 650px; /* También ajustado para tablets. */
+    }
+    .tamano-grande {
+        max-width: 900px; /* Usa el valor que mencionaste. */
+    }
+}
+
+/* * Media Queries para hacer que los tamaños sean responsive.
+ * Estos estilos se activarán en pantallas de 768px o menos,
+ * cubriendo la mayoría de tabletas y móviles.
+ */
+@media (max-width: 768px) {
+  /* En pantallas más pequeñas, todas las tarjetas deben ser fluidas
+   * para evitar el desbordamiento. Usar 100% de ancho.
+   */
+  .tamano-pequeno,
+  .tamano-mediano,
+  .tamano-grande {
+    max-width: 100%;
+    margin-left: 1rem; /* Margen para no pegar a los bordes */
+    margin-right: 1rem; /* Margen para no pegar a los bordes */
+  }
+}
+
+@media (min-width: 1400px) {
+  .tamano-grande {
+    /*
+    * Limita el ancho de la tarjeta a un valor más razonable.
+    * Puedes usar 1000px o un poco más, dependiendo de cómo quieras que se vea.
+    * 1000px es un buen ancho para un monitor de 3000px.
+    */
+    max-width: 1000px;
+    margin-left: auto; /* Centra la tarjeta */
+    margin-right: auto;
+  }
+}

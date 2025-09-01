@@ -50,8 +50,8 @@ const SwitchAction = ({
   };
 
   return (
-    <div className={`switch-container ${isOn ? 'on' : 'off'}`} onClick={handleToggle}>
-      <div className="switch-thumb" />
+    <div className={`${styles['switch-container']} ${isOn ? 'on' : 'off'}`} onClick={handleToggle}>
+      <div className={styles['switch-thumb']} />
     </div>
   );
 };

@@ -13,6 +13,9 @@
   /* Propiedades de StyleTable.module.css */
   width: 100%;
   overflow-x: auto;
+  /* Propiedades para el límite vertical */
+  /*max-height: 400px;*/ /* Ajusta este valor según tus necesidades */
+  /*overflow-y: auto;*/
 }
 
 .table {
@@ -47,6 +50,29 @@
   /* border: 1px solid #ddd; -- Se quita para usar el borde de la fila */
 }
 
+/* 1. Estilos para fijar el encabezado de la primera columna */
+.th:first-child {
+  position: sticky;
+  left: 0;
+  /* El color de fondo es crucial para evitar transparencia */
+  background-color: #2e2c50; 
+  z-index: 10;
+}
+
+/* 2. Estilos para fijar la celda de la fila */
+.td:first-child {
+  position: sticky;
+  left: 0;
+  /* El color de fondo es necesario */
+  background-color: white; 
+  z-index: 9;
+}
+
+/* 3. Estilos al pasar el mouse por la fila */
+tbody tr:hover .td:first-child {
+  background-color: #b2d2f3c7;
+}
+
 /* Nuevas clases importadas de BaseTable.css para la estructura de la tabla */
 thead {
   background-color: #2e2c50;
@@ -75,6 +101,8 @@ tbody tr:hover {
   /* justify-content: center; -- Se reemplaza por space-between */
   /* gap: 12px; -- Se quita para usar space-between */
   /* margin-top: 12px; -- Se quita, no es necesario */
+  /* Agrega esta línea para que la paginación tenga el mismo ancho que la tabla */
+  min-width: 2000px;
 }
 
 .pageButton {

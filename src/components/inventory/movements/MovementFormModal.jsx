@@ -5,7 +5,8 @@ import { manualMovementSchema } from '../../../schemas/inventoryMovementSchema';
 import { useActiveProducts } from '../../../hooks/useProductQueries';
 import SelectBase from '../inventoryelements/SelectBase';
 import Boton from '../inventoryelements/Boton';
-import Swal from 'sweetalert2';
+//import Swal from 'sweetalert2'
+import { Notifier } from '../../../utils/alertUtils';
 
 const MovementFormModal = ({ show, onClose, onSave, initialData = null }) => {
   const isCreateMode = !initialData;
@@ -61,18 +62,18 @@ const MovementFormModal = ({ show, onClose, onSave, initialData = null }) => {
     }
   };
 
-  const handleCancelClick = () => {
-    // SIN CAMBIOS: Tu lógica de Swal se mantiene, con texto dinámico
-    Swal.fire({
-      title: `¿Desea cancelar la ${isCreateMode ? 'creación' : 'edición'}?`,
-      text: "Los cambios no se guardarán.",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#1B043B',
-      cancelButtonColor: '#6c757d',
-      confirmButtonText: 'Sí, cancelar',
-      cancelButtonText: 'No, continuar'
-    }).then(result => result.isConfirmed && onClose());
+  const handleCancelClick = async () => {
+    const result = await Notifier.confirm({
+        title: `¿Desea cancelar la ${isCreateMode ? 'creación' : 'edición'}?`,
+        text: "Los cambios no se guardarán.",
+        confirmButtonText: 'Sí, cancelar',
+        cancelButtonText: 'No, continuar'
+    });
+
+    // Si el usuario confirma, cerramos el modal
+    if (result.isConfirmed) {
+        onClose();
+    }
   };
 
   if (!show) {

@@ -2,11 +2,10 @@ import React, { useState, useMemo, useCallback } from 'react';
 import Boton from '../inventoryelements/Boton';
 import SearchCardMovement from '../inventoryelements/SearchCardMovement';
 import TableComponent from '../inventoryelements/TableComponent';
-import SwitchAction from '../inventoryelements/SwitchActionMovement';
+//import SwitchAction from '../inventoryelements/SwitchActionMovement';
 import { Link } from 'react-router-dom';
 // 1. IMPORTAMOS LAS FUNCIONES DE ALERTA NECESARIAS
-import { showSuccess, showError } from '../alertstoast';
-import { showConfirmationDialog } from '../alertsmodalsa';
+import { Notifier } from '../../../utils/alertUtils';
 import styles from "../../../styles/inventory/MovementView.module.css";
 import ViewDetailsMovement from './ViewDetailsMovement';
 import { formatDate } from '../../../utils/dateFormatter';
@@ -40,31 +39,49 @@ const MovementView = () => {
   // ===================================================================
 
   const handleApply = async (movementId) => {
-    const result = await showConfirmationDialog('¿Aplicar Movimiento?', 'El stock del producto se verá afectado.', 'Sí, aplicar');
+    // 2. Sustitución de showConfirmationDialog por Notifier.confirm
+    const result = await Notifier.confirm({
+      title: '¿Aplicar Movimiento?',
+      text: 'El stock del producto se verá afectado.',
+      confirmButtonText: 'Sí, aplicar'
+    });
     if (result.isConfirmed) {
       applyMovementMutate(movementId, {
-        onSuccess: () => showSuccess('¡Movimiento aplicado con éxito!'),
-        onError: (err) => showError(err.response?.data?.message || 'Error al aplicar el movimiento.'),
+        // 3. Sustitución de showSuccess y showError por Notifier
+        onSuccess: () => Notifier.success('¡Movimiento aplicado con éxito!'),
+        onError: (err) => Notifier.error(err.response?.data?.message || 'Error al aplicar el movimiento.'),
       });
     }
   };
 
   const handleCancel = async (movementId) => {
-    const result = await showConfirmationDialog('¿Anular Movimiento?', 'Esta acción es irreversible.', 'Sí, anular');
+    // 4. Sustitución de showConfirmationDialog por Notifier.confirm
+    const result = await Notifier.confirm({
+      title: '¿Anular Movimiento?',
+      text: 'Esta acción es irreversible.',
+      confirmButtonText: 'Sí, anular'
+    });
     if (result.isConfirmed) {
       cancelMovementMutate(movementId, {
-        onSuccess: () => showSuccess('¡Movimiento anulado con éxito!'),
-        onError: (err) => showError(err.response?.data?.message || 'Error al anular el movimiento.'),
+        // 5. Sustitución de showSuccess y showError por Notifier
+        onSuccess: () => Notifier.success('¡Movimiento anulado con éxito!'),
+        onError: (err) => Notifier.error(err.response?.data?.message || 'Error al anular el movimiento.'),
       });
     }
   };
 
   const handleDelete = async (movementId) => {
-    const result = await showConfirmationDialog('¿Eliminar Movimiento?', 'El movimiento se eliminará permanentemente.', 'Sí, eliminar');
+    // 6. Sustitución de showConfirmationDialog por Notifier.confirm
+    const result = await Notifier.confirm({
+      title: '¿Eliminar Movimiento?',
+      text: 'El movimiento se eliminará permanentemente.',
+      confirmButtonText: 'Sí, eliminar'
+    });
     if (result.isConfirmed) {
       deleteManualMovementMutate(movementId, {
-        onSuccess: () => showSuccess('¡Movimiento eliminado con éxito!'),
-        onError: (err) => showError(err.response?.data?.message || 'Error al eliminar el movimiento.'),
+        // 7. Sustitución de showSuccess y showError por Notifier
+        onSuccess: () => Notifier.success('¡Movimiento eliminado con éxito!'),
+        onError: (err) => Notifier.error(err.response?.data?.message || 'Error al eliminar el movimiento.'),
       });
     }
   };
@@ -99,10 +116,12 @@ const MovementView = () => {
     const isEditing = !!movementToEdit;
     const mutationOptions = {
       onSuccess: () => {
-        showSuccess(`¡Movimiento ${isEditing ? 'actualizado' : 'registrado'}!`);
+        // 8. Sustitución de showSuccess por Notifier
+        Notifier.success(`¡Movimiento ${isEditing ? 'actualizado' : 'registrado'}!`);
         handleCloseFormModal();
       },
-      onError: (err) => showError(err.response?.data?.message || 'Ocurrió un error'),
+      // 9. Sustitución de showError por Notifier
+      onError: (err) => Notifier.error(err.response?.data?.message || 'Ocurrió un error'),
     };
     if (isEditing) {
       updateManualMovementMutate(data, mutationOptions);
@@ -126,7 +145,12 @@ const MovementView = () => {
       size: 400,
       minSize: 300,
     },
-    { header: 'Cliente', accessorKey: 'customerName' },
+    { 
+      header: 'Cliente', 
+      accessorKey: 'customerName',
+      size: 200,
+      minSize: 150,
+    },
     { header: 'Módulo Origen', accessorKey: 'originModule' },
     {
       header: 'Acciones',
@@ -136,11 +160,11 @@ const MovementView = () => {
         const isManual = movement.originModule.includes('Manual');
 
         return (
-          <div className="d-flex gap-2 justify-content-center">
+          <div className="d-flex gap-2 justify-content-center flex-wrap">
             {isManual && movement.status === 'PENDIENTE' && (
               <>
                 <Boton color="morado" title="Editar" onClick={() => handleOpenEditModal(movement)} size="icon">
-                  <i className="bi bi-pencil-square"></i>
+                  <i className="bi bi-pencil-square me-2 mb-2 mt-2 ms-2"></i>
                 </Boton>
                 <Boton color="verde" title="Aplicar" onClick={() => handleApply(movement.movementId)} size="icon">
                   <i className="bi bi-check-circle"></i>
@@ -185,9 +209,9 @@ const MovementView = () => {
         <div className="card-header text-center bg-morado mb-4">
           <h4 className="mb-4">Movimientos de Inventario</h4>
         </div>
-        <div className="d-flex justify-content-between align-items-center mt-4 mb-3 px-3">
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 mb-3 px-3">
             {/* --- Lado Izquierdo: Botones de Ordenamiento --- */}
-            <div className="d-flex gap-2">
+            <div className="d-flex gap-2 flex-wrap mb-2 mb-md-0">
                 <Boton color={sortBy === 'status' ? "morado" : "blanco"} forma="pastilla" onClick={() => setSortBy('status')}>
                     Ordenar por Estado
                 </Boton>
@@ -197,7 +221,7 @@ const MovementView = () => {
             </div>
 
             {/* --- Lado Derecho: Botones de Acción y Filtro Rápido --- */}
-            <div className="d-flex gap-2 align-items-center">
+            <div className="d-flex gap-2 flex-wrap mt-2 mt-md-0">
                 <Boton color="morado" forma="pastilla" onClick={handleOpenCreateModal}>
                     <i className="bi bi-plus-circle me-2"></i>
                     Agregar

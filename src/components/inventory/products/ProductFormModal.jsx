@@ -3,8 +3,9 @@ import { useForm, Controller } from 'react-hook-form';
 // ¡CAMBIO IMPORTANTE! Importamos el resolver de Zod
 import { zodResolver } from '@hookform/resolvers/zod';
 import { productSchema } from '../../../schemas/productSchema';
-import Swal from 'sweetalert2';
+//import Swal from 'sweetalert2';
 import styles from "../../../styles/inventory/Boton.module.css"; // Asegúrate de que este archivo exista
+import { Notifier } from '../../../utils/alertUtils';
 
 const ProductFormModal = ({ show, onSave, onClose, initialData = null }) => {
   const isCreateMode = !initialData;
@@ -54,21 +55,18 @@ const ProductFormModal = ({ show, onSave, onClose, initialData = null }) => {
     onSave(data);
   };
 
-  const handleCancel = () => {
-    Swal.fire({
+  const handleCancel = async () => {
+    const result = await Notifier.confirm({
       title: `¿Desea cancelar la ${isCreateMode ? 'creación' : 'edición'}?`,
       text: "Los cambios no se guardarán.",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#1B043B',
-      cancelButtonColor: '#6c757d',
+      // Notifier.confirm ya tiene un ícono de 'warning' por defecto
       confirmButtonText: 'Sí, cancelar',
       cancelButtonText: 'No, continuar'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        onClose();
-      }
     });
+
+    if (result.isConfirmed) {
+      onClose();
+    }
   };
 
   return (

@@ -36,7 +36,7 @@ function SearchCardBase({
   tamano = 'tamano-grande'
 }) {
   return (
-    <div className={`card shadow-sm ${tamano} mb-4`}>
+    <div className={`card shadow-sm ${styles[tamano]} mb-4`}>
       <div className="card-header">
         <h4 className="mb-0">Buscar Producto</h4>
       </div>

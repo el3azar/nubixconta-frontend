@@ -2,8 +2,8 @@ import React, { useState, useMemo, useCallback } from 'react';
 import Boton from '../inventoryelements/Boton';
 import { Link } from 'react-router-dom';
 import TableComponent from '../inventoryelements/TableComponent';
-import { showSuccess } from '../alertstoast';
-import { showConfirmationDialog } from '../alertsmodalsa';
+//import { showSuccess } from '../alertstoast';
+//import { showConfirmationDialog } from '../alertsmodalsa';
 import { formatDate } from '../../../utils/dateFormatter';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -13,6 +13,7 @@ import {
   useReactivateProduct,
 } from '../../../hooks/useProductQueries'; // Ajusta la ruta si es necesario
 
+import { Notifier } from '../../../utils/alertUtils';
 
 const DesableProductView = () => {
   const queryClient = useQueryClient(); // Cliente de React Query para invalidaciones
@@ -35,7 +36,12 @@ const DesableProductView = () => {
   // La función ahora usa la mutación para reactivar.
   const handleReactivate = async (productId) => {
     // Llama a tu servicio de confirmación
-    const result = await showConfirmationDialog('¿Activar producto?', "El estado del producto cambiará a ACTIVO.", 'Sí, activar', 'Cancelar');
+    const result = await Notifier.confirm({
+      title: '¿Activar producto?',
+      text: "El estado del producto cambiará a ACTIVO.",
+      confirmButtonText: 'Sí, activar',
+      cancelButtonText: 'Cancelar'
+    });
 
     if (result.isConfirmed) {
       // Si el usuario confirma, llamamos a la mutación.
@@ -43,12 +49,13 @@ const DesableProductView = () => {
         onSuccess: () => {
           // El 'onSuccess' de la mutación ya invalida la query, por lo que la lista se
           // actualizará automáticamente. Mostramos un feedback al usuario.
-          showSuccess('¡Producto activado con éxito!');
+          Notifier.success('¡Producto activado con éxito!');
         },
         onError: (error) => {
           // Opcional: Manejo de errores específico aquí si lo necesitas.
           console.error("Error al reactivar el producto:", error);
           // Podrías mostrar una alerta de error aquí.
+          Notifier.error(error.response?.data?.message || 'Hubo un error al activar el producto.');
         }
       });
     }
