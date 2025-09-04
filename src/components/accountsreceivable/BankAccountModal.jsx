@@ -1,4 +1,3 @@
-import React from "react";
 import styles from "../../styles/accountsreceivable/BankAccountModal.module.css";
 
 const BankAccountModal = ({ isOpen, onClose, accounts }) => {

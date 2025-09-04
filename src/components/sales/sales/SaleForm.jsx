@@ -40,7 +40,7 @@ export default function SaleForm(props) {
   const { register, handleSubmit, watch, formState: { errors } } = formMethods;
   // --- FIN DE LA CORRECCIÓN DEFINITIVA ---
   const onValidationError = (validationErrors) => {
-    console.error('❌ Validación de Zod falló (Venta):', validationErrors);
+    console.error('Validación de Zod falló (Venta):', validationErrors);
     Notifier.showError('Formulario Incompleto', 'Por favor, revisa todos los campos marcados en rojo.');
   };
 

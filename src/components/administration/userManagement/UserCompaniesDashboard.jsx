@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import CompanyCard from "./CompanyCard";
-import Swal from "sweetalert2";
 import { getCompaniesByUser } from "../../../services/administration/user/companyByUserIdService";
 import formStyles from '../../../styles/sales/CustomerForm.module.css';
 const UserCompaniesDashboard = () => {
@@ -12,12 +11,7 @@ const UserCompaniesDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const showError = (msg) =>
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: msg,
-    });
+
 
   useEffect(() => {
     const fetchCompanies = async () => {

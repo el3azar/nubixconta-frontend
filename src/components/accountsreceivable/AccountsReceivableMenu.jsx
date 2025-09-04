@@ -8,9 +8,9 @@ import DashboardCards from "../../components/DashboardCards";
 const AccountsReceivableMenu = () => {
   const items = [
     { label: "Cobros", icon: FaHandHoldingUsd, to: "/cuentas/cobros" },
-    { label: "Liquidaciones", icon: MdOutlineBarChart, to: "/cuentas/liquidaciones" },
     { label: "Estado de cuenta", icon: RiBillLine, to: "/cuentas/estado_cuenta" },
     { label: "Reportes", icon: HiOutlineDocumentReport, to: "/cuentas/reportes" },
+    { label: "Visualizacion de ventas", icon: HiOutlineDocumentReport, to: "/cuentas/visualizar_ventas" },
   ];
 
   return (

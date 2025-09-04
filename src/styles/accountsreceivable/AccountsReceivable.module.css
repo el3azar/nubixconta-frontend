@@ -95,6 +95,7 @@ label{
   border: 1px solid #bbb;
   border-radius: 12px;
   background-color: white;
+  margin-top: 1rem;
 }
 
 /* Tabla general */
@@ -103,6 +104,7 @@ label{
   border-collapse: separate;
   border-spacing: 0;
   font-size: 0.95rem;
+
 }
 
 /* Encabezado */
@@ -114,7 +116,7 @@ label{
 }
 
 .tabla thead th {
-  padding: 0.2rem 1rem;
+  padding: .8rem 1rem;
   font-weight: bold;
   text-align: left;
   color: #fff;

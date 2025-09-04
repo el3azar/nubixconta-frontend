@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Form } from 'react-bootstrap';
 import formStyles from '../../../styles/sales/CustomerForm.module.css';
 import styles from '../../../styles/administration/UserManagementDashboard.module.css';
 import { resetUserPasswordByAdmin } from '../../../services/administration/user/passwordAssistantService';
+import { Notifier } from "../../../utils/alertUtils";
 // Importa el custom hook
 import usePasswordLockout from '../userManagement/usePasswordLockout'; 
 
@@ -25,7 +26,7 @@ const ChangePasswordModal = ({
   // Agrega un useEffect para manejar la redirección cuando sea necesario
   useEffect(() => {
     if (shouldRedirect) {
-      showError('Demasiados intentos fallidos. Será redirigido a la pantalla de inicio de sesión.');
+      Notifier.error('Demasiados intentos fallidos. Será redirigido a la pantalla de inicio de sesión.');
       onClose(); 
       navigate('/');
     }
@@ -33,16 +34,16 @@ const ChangePasswordModal = ({
 
   const handleSave = async () => {
     if (isLocked) {
-      showError(`El formulario está bloqueado. Por favor, espere ${remainingTime} minutos.`);
+      Notifier.error(`El formulario está bloqueado. Por favor, espere ${remainingTime} minutos.`);
       return;
     }
 
     if (!adminPassword || !newPassword || !confirmPassword) {
-      showError('Todos los campos son obligatorios.');
+      Notifier.error('Todos los campos son obligatorios.');
       return;
     }
     if (newPassword !== confirmPassword) {
-      showError('La nueva contraseña y su confirmación no coinciden.');
+      Notifier.error('La nueva contraseña y su confirmación no coinciden.');
       return;
     }
     
@@ -55,13 +56,13 @@ const ChangePasswordModal = ({
       };
       await resetUserPasswordByAdmin(user.id, passwordData);
 
-      showSuccess('Contraseña actualizada exitosamente.');
+      Notifier.success('Contraseña actualizada exitosamente.');
       resetLockoutState(); // Llama a la función del hook para reiniciar el estado
       onClose();
 
     } catch (error) {
       const errorMessage = error.response?.data || 'Error al actualizar la contraseña.';
-      showError(errorMessage);
+      Notifier.error(errorMessage);
       handleFailedAttempt(); // Llama a la función del hook para manejar el intento fallido
     } finally {
       setIsLoading(false);

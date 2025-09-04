@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { getAllUsers, getChangeHistory, getChangeHistoryByUser, getChangeHistoryByDateRange } from '../../../services/administration/change/historyServices';
 import styles from '../../../styles/administration/changeHistory.module.css';
 import SearchFilters from './SearchFilters'; // Importa el nuevo componente de filtros
-import formStyles from '../../../styles/sales/CustomerForm.module.css';
 export default function ChangeHistory() {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState('');

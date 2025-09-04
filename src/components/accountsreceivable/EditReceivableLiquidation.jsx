@@ -4,7 +4,7 @@ import AutocompleteSelect from "./AutocompleteSelect";
 import { getBankAcount } from "../../services/accountsreceivable/bankService";
 import { editarLiquidacionVenta } from "../../services/accountsreceivable/editarLiquidacionVenta";
 import { showError, showSuccess } from "../inventory/alerts";
-
+import { Notifier } from "../../utils/alertUtils";
 const EditReceivableLiquidation = ({ onClose, collectionDetail }) => {
   const [cuentas, setCuentas] = useState([]);
   const [cuentaSeleccionada, setCuentaSeleccionada] = useState("");
@@ -48,7 +48,7 @@ const EditReceivableLiquidation = ({ onClose, collectionDetail }) => {
   const handleEditar = async () => {
     const cuentaObj = cuentas.find((c) => c.accountName === cuentaSeleccionada);
     if (!cuentaObj) {
-      showError("Debe seleccionar una cuenta válida");
+      Notifier.error("Debe seleccionar una cuenta válida");
       return;
     }
 
@@ -65,14 +65,14 @@ const EditReceivableLiquidation = ({ onClose, collectionDetail }) => {
       });
 
       if (result.success) {
-        showSuccess("Liquidación actualizada con éxito.");
+        Notifier.success("Liquidación actualizada con éxito.");
         onClose();
       } else {
-        showError("Error al actualizar: " + result.message);
+        Notifier.error("Error al actualizar: " + result.message);
       }
     } catch (error) {
       console.error("Error al editar liquidación:", error);
-      showError("Ocurrió un error: " + error.message);
+      Notifier.error("Ocurrió un error: " + error.message);
     }
   };
 

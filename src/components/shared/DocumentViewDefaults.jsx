@@ -60,3 +60,38 @@ export const DefaultActionsComponent = ({listTitle, handleNew, setSortBy, sortBy
     </div>
   </>
 );
+
+//Este componente se ocupa en Cuentas por cobrar por que no senecesita el boton de nuevo
+
+export const SortActionsComponent = ({ listTitle, setSortBy, sortBy, filters, styles }) => (
+  <>
+    {/* 1. Título */}
+    <div className={styles.titleContainer}>
+      <h3 className={`text-center mb-3 ${styles.sectionTitle}`}>{listTitle}</h3>
+    </div>
+
+    {/* 2. Contenedor de acciones, ahora solo con los botones de ordenamiento */}
+    <div className={styles.actionsContainer}>
+      <div className={styles.sortButtonGroup}>
+        {/* La lógica para mostrar/ocultar los botones se mantiene */}
+        {(!filters.startDate && !filters.endDate) && (
+          <>
+            <button 
+              className={`${styles.actionButton} ${sortBy !== 'status' ? styles.inactiveSortButton : ''}`} 
+              onClick={() => setSortBy('status')}
+            >
+              Ordenar por Estado
+            </button>
+            <button 
+              className={`${styles.actionButton} ${sortBy !== 'date' ? styles.inactiveSortButton : ''}`} 
+              onClick={() => setSortBy('date')}
+            >
+              Ordenar por Fecha
+            </button>
+          </>
+        )}
+      </div>
+      {/* El div para el botón "Nuevo" ha sido eliminado completamente */}
+    </div>
+  </>
+);

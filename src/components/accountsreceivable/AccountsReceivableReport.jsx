@@ -3,7 +3,6 @@ import DateRangeFilter from '../../components/accountsreceivable/DateRangeFilter
 import styles from "../../styles/accountsreceivable/AccountsReceivableReport.module.css";
 import { FaFilePdf, FaFileExcel } from "react-icons/fa";
 import { getAccountsReceivable } from "../../services/accountsreceivable/accountsReceivableReportService";
-
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";

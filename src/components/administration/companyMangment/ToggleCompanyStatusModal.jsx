@@ -1,4 +1,5 @@
 import Swal from 'sweetalert2';
+import { Notifier } from "../../../utils/alertUtils";
 /**
  * Llama a este método cuando el usuario intente activar o desactivar una empresa.
  * Muestra un modal de confirmación y si acepta, ejecuta la función `onConfirm()`.

@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import { useCompany } from './CompanyDataContext'; 
 import { IMaskInput } from 'react-imask';
 import formStyles from '../../../styles/sales/CustomerForm.module.css';
+import { Notifier } from "../../../utils/alertUtils";
 
   const EditCompanyView = () => {
   const navigate = useNavigate();
@@ -101,20 +102,15 @@ const handleUpdate = async () => {
       });
 
       if (success) {
-        Swal.fire({
-          title: 'Empresa actualizada correctamente',
-          icon: 'success',
-          confirmButtonColor: '#28a745',
-        }).then(() => {
+        Notifier.success('Empresa actualizada correctamente')
           setErrors({});
           navigate('/admin/empresas');
-        });
       } else {
-        Swal.fire('Error', 'Hubo un problema al actualizar la empresa.', 'error');
+        Notifier.error('Error, Hubo un problema al actualizar la empresa.');
       }
     } catch (error) {
       console.error('Error al actualizar la empresa:', error);
-      Swal.fire('Error', 'Ocurrió un error inesperado al actualizar la empresa.', 'error');
+      Notifier.error('Error Ocurrió un error inesperado al actualizar la empresa.');
     }
   };
 
