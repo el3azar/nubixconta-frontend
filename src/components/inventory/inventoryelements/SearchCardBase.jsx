@@ -2,7 +2,7 @@
 import React from 'react';
 import Boton from './Boton';
 // Asumo que tienes un archivo CSS para el tamaño, si no, puedes eliminar esta línea.
-import './SearchCardBase.module.css';
+import styles from "../../../styles/inventory/SearchCardBase.module.css";
 import SelectBase from './SelectBase';
 
 /**
@@ -36,7 +36,7 @@ function SearchCardBase({
   tamano = 'tamano-grande'
 }) {
   return (
-    <div className={`card shadow-sm ${tamano} mb-4`}>
+    <div className={`card shadow-sm ${styles[tamano]} mb-4`}>
       <div className="card-header">
         <h4 className="mb-0">Buscar Producto</h4>
       </div>

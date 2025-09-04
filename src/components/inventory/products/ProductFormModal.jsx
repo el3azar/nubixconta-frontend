@@ -3,8 +3,9 @@ import { useForm, Controller } from 'react-hook-form';
 // ¡CAMBIO IMPORTANTE! Importamos el resolver de Zod
 import { zodResolver } from '@hookform/resolvers/zod';
 import { productSchema } from '../../../schemas/productSchema';
-import Swal from 'sweetalert2';
-import styles from '../inventoryelements/Boton.module.css';
+//import Swal from 'sweetalert2';
+import styles from "../../../styles/inventory/Boton.module.css"; // Asegúrate de que este archivo exista
+import { Notifier } from '../../../utils/alertUtils';
 
 const ProductFormModal = ({ show, onSave, onClose, initialData = null }) => {
   const isCreateMode = !initialData;
@@ -54,28 +55,26 @@ const ProductFormModal = ({ show, onSave, onClose, initialData = null }) => {
     onSave(data);
   };
 
-  const handleCancel = () => {
-    Swal.fire({
+  const handleCancel = async () => {
+    const result = await Notifier.confirm({
       title: `¿Desea cancelar la ${isCreateMode ? 'creación' : 'edición'}?`,
       text: "Los cambios no se guardarán.",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#1B043B',
-      cancelButtonColor: '#6c757d',
+      // Notifier.confirm ya tiene un ícono de 'warning' por defecto
       confirmButtonText: 'Sí, cancelar',
       cancelButtonText: 'No, continuar'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        onClose();
-      }
     });
+
+    if (result.isConfirmed) {
+      onClose();
+    }
   };
 
   return (
     <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-      <div className="modal-dialog modal-lg">
-        <div className="modal-content text-white p-4 rounded" style={{ backgroundColor: '#6B5E80' }}>
-          <h3 className="text-center mb-4">{isCreateMode ? 'Nuevo Producto' : 'Editar Producto'}</h3>
+      <div className="modal-dialog modal-lg modal-dialog-centered">
+        <div className="modal-content text-black p-4 rounded" style={{ backgroundColor: '#baadd4ff' }}>
+          <div className="modal-body">
+          <h2 className="text-center mb-4">{isCreateMode ? 'Nuevo Producto' : 'Editar Producto'}</h2>
 
           <form onSubmit={handleSubmit(onSubmit)}>
             {/* ... Aquí va el JSX del formulario, ahora conectado a react-hook-form ... */}
@@ -83,13 +82,13 @@ const ProductFormModal = ({ show, onSave, onClose, initialData = null }) => {
             <div className="row mb-3">
                 <div className="col-md-3">
                     <label>Código de producto</label>
-                    <input type="text" {...register("productCode")} className={`form-control rounded-pill ${errors.productCode ? 'is-invalid' : ''}`} placeholder='Ejemplo: 1, 2, 303 etc.'
+                    <input type="text" {...register("productCode")} className={`form-control rounded-pill ${errors.productCode ? 'is-invalid' : ''}`}
                   maxLength={10}/>
                     {errors.productCode && <div className="invalid-feedback">{errors.productCode.message}</div>}
                 </div>
                 <div className="col-md-7">
                     <label>Nombre de producto</label>
-                    <input type="text" {...register("productName")} className={`form-control rounded-pill ${errors.productName ? 'is-invalid' : ''}`}  placeholder='Ejemplo: Laptop Dell, Procesador Lentium4, etc.'
+                    <input type="text" {...register("productName")} className={`form-control rounded-pill ${errors.productName ? 'is-invalid' : ''}`}
                   maxLength={50}/>
                     {errors.productName && <div className="invalid-feedback">{errors.productName.message}</div>}
                 </div>
@@ -98,7 +97,7 @@ const ProductFormModal = ({ show, onSave, onClose, initialData = null }) => {
             <div className="row mb-3">
                 <div className="col-md-5">
                   <label>Unidad de Representacion</label>
-                  <input type="text" {...register("unit")} className={`form-control rounded-pill ${errors.unit ? 'is-invalid' : ''}`} placeholder="Ejemplo: M, Cm, etc."
+                  <input type="text" {...register("unit")} className={`form-control rounded-pill ${errors.unit ? 'is-invalid' : ''}`}
                   maxLength={20} />
                   {errors.unit && <div className="invalid-feedback">{errors.unit.message}</div>}
                 </div>
@@ -106,7 +105,7 @@ const ProductFormModal = ({ show, onSave, onClose, initialData = null }) => {
                 {isCreateMode ? (
                   <div className="col-md-4">
                     <label>Cantidad Inicial</label>
-                    <input type="number" {...register("stockQuantity")} className={`form-control rounded-pill ${errors.stockQuantity ? 'is-invalid' : ''}`} placeholder='Ejemplo: 10, 20, 100, etc.' min="0" />
+                    <input type="number" {...register("stockQuantity")} className={`form-control rounded-pill ${errors.stockQuantity ? 'is-invalid' : ''}`}/>
                     {errors.stockQuantity && <div className="invalid-feedback">{errors.stockQuantity.message}</div>}
                   </div>
                 ) : (
@@ -126,6 +125,7 @@ const ProductFormModal = ({ show, onSave, onClose, initialData = null }) => {
               </button>
             </div>
           </form>
+          </div>
         </div>
       </div>
     </div>

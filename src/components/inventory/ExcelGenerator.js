@@ -28,8 +28,8 @@ export const generateProductMovementsExcel = async (fileName, movements, user, c
 
   // --- CABECERAS DE LA TABLA CON ESTILO ---
   const headerRow = worksheet.addRow([
-    "Cód. Producto", "Nombre Producto", "Fecha", "Tipo", "Cantidad",
-    "Stock Resultante", "Descripción", "Módulo Origen"
+    "Cód. Producto", "Nombre Producto", "Fecha", "Estado", "Tipo", "Cantidad",
+    "Stock Resultante", "Descripción", "Cliente", "Módulo Origen"
   ]);
 
   headerRow.eachCell((cell) => {
@@ -44,10 +44,12 @@ export const generateProductMovementsExcel = async (fileName, movements, user, c
       mov.product.productCode,
       mov.product.productName,
       formatDate(mov.date),
+      mov.status,
       mov.movementType,
       mov.quantity,
       mov.stockAfterMovement,
       mov.description,
+      mov.customerName,
       mov.originModule,
     ]);
     row.eachCell((cell) => {

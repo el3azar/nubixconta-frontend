@@ -83,7 +83,7 @@ const ProductView = () => {
       cell: ({ row }) => (
         <div className="d-flex gap-2 justify-content-center">
           <Boton color="morado" forma="pastilla" className='me-2' title='Editar' size="icon" onClick={() => handleAbrirModalEditar(row.original)}>
-            <i className="bi bi-pencil-square"></i>
+            <i className="bi bi-pencil-square me-2 mb-2 mt-2 ms-2"></i>
           </Boton>
           <div className="d-flex align-items-center" title='Activar/Desactivar'>
             <SwitchActionProduct
@@ -189,21 +189,17 @@ const ProductView = () => {
         onLimpiar={handleLimpiar}
         isSearching={isSearching}
       />
-      <div className="row">
-        <div className="col-auto">
-          <Boton color="morado" forma="pastilla" className="mb-4" onClick={handleAbrirModalCrear}>
-            <i className="bi bi-plus-circle me-2"></i>
-            Agregar Producto
+      <div className="d-flex gap-2">
+        <Boton color="morado" forma="pastilla" className="mb-4" onClick={handleAbrirModalCrear}>
+          <i className="bi bi-plus-circle me-2"></i>
+          Agregar Producto
+        </Boton>
+        <Link to="/inventario/desactiveprod">
+          <Boton color="morado" forma="pastilla" className="mb-4">
+            <i className="bi bi-eye me-2"></i>
+            Ver Desactivados
           </Boton>
-        </div>
-        <div className="col-md-3">
-          <Link to="/inventario/desactiveprod">
-            <Boton color="morado" forma="pastilla" className="mb-4">
-              <i className="bi bi-eye me-2"></i>
-              Ver Desactivados
-            </Boton>
-          </Link>
-        </div>
+        </Link>
       </div>
       
       {/* ¡UN ÚNICO MODAL PARA GOBERNARLOS A TODOS! */}
@@ -213,7 +209,6 @@ const ProductView = () => {
         onSave={handleSave}
         initialData={productoAEditar}
       />
-      
       <TableComponent
         columns={columns}
         data={productosParaMostrar}

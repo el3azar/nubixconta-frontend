@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './Boton.module.css'; // Importamos los estilos del módulo
+import styles from '../../../styles/inventory/Boton.module.css'; // Importamos los estilos del módulo
 //import './Boton.css'; // Importamos los estilos del componente
 
 /**
