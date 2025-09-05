@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getUsersByAssistant } from '../../../services/administration/company/usersByAssistanService';
 import CompanyRow from './CompanyRow';
-
-
+import styles from '../../../styles/accountsreceivable/AccountsReceivable.module.css';
 const CompanyTable = ({
   companies = [],
   onEdit,
@@ -33,16 +32,16 @@ useEffect(() => {
 
 
   return (
-    <div className="table-responsive shadow-sm rounded border">
-      <table className="table  table-hover align-middle text-center w-100 mb-0" >
-<thead style={{ backgroundColor: '#2C1A47' }}>
-  <tr style={{ color: 'white' }}>
-    <th style={{ width: '5%' }}>N°</th>
-    <th style={{ width: '15%' }}>NRC</th>
-    <th style={{ width: '20%' }}>DUI/NIT</th>
-    <th style={{ width: '35%' }}>Nombre</th>
-    <th style={{ width: '10%' }}>Estado</th>
-    <th style={{ width: '30%' }}>Acciones</th>
+<div className={styles.tablaWrapper}>
+      <table className={styles.tabla}>
+<thead>
+  <tr className="text-center">
+    <th>N°</th>
+    <th  >NRC</th>
+    <th >DUI/NIT</th>
+    <th >Nombre</th>
+    <th >Estado</th>
+    <th >Acciones</th>
   </tr>
 </thead>
         <tbody>

@@ -3,7 +3,6 @@ import CompanyActions from './CompanyActions';
 import '../../../styles/administration/CompanyRowAdministration.module.css';
 import { getUsersByAssistant } from '../../../services/administration/company/usersByAssistanService';
 import { assignUserToCompany } from '../../../services/administration/company/assignUserToCompanyService';
-import { showSuccess, showError } from '../../inventory/alerts';
 import Swal from "sweetalert2";
 import { Notifier } from "../../../utils/alertUtils";
 const CompanyRow = ({

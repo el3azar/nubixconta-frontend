@@ -118,7 +118,7 @@ label{
 .tabla thead th {
   padding: .8rem 1rem;
   font-weight: bold;
-  text-align: left;
+  text-align: center;
   color: #fff;
   border-bottom: 1px solid #ccc;
 }

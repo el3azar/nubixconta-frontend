@@ -1,16 +1,14 @@
-// src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { authService } from "../services/authServices"; 
+import { authService } from "../services/authServices";
 import { jwtDecode } from 'jwt-decode';
-// Claves para sessionStorage (puedes cambiarlas si quieres)
+
 const TOKEN_KEY = "nubix_token";
 const ROLE_KEY = "nubix_role";
-// Es una buena práctica tener la clave del accessLogId como constante también
 const ACCESS_LOG_ID_KEY = "nubix_access_log_id";
+
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  // Estado inicial: lee de sessionStorage si existe
   const [token, setToken] = useState(() => sessionStorage.getItem(TOKEN_KEY) || null);
 
    // --- CAMBIO: Estado para el objeto de usuario decodificado ---
@@ -23,6 +21,8 @@ export function AuthProvider({ children }) {
       return null;
     }
   });
+
+
 
   const [role, setRole] = useState(() => {
     const stored = sessionStorage.getItem(ROLE_KEY);
@@ -82,7 +82,7 @@ export function AuthProvider({ children }) {
       sessionStorage.removeItem(ACCESS_LOG_ID_KEY); // Limpiamos también el log ID
     }
   };
-
+  
   // Sincroniza el contexto si el storage cambia en otras pestañas/ventanas
   useEffect(() => {
     const syncLogout = () => {
@@ -96,7 +96,9 @@ export function AuthProvider({ children }) {
     return () => window.removeEventListener("storage", syncLogout);
   }, []);
 
-   // --- CAMBIO: Exponer el 'user' en el valor del contexto ---
+
+
+   // Exponer el 'user' en el valor del contexto ---
   const contextValue = { token, role, user, login, logout };
 
   return (

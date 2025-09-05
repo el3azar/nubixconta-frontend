@@ -3,8 +3,7 @@ import styles from "../../styles/accountsreceivable/RegisterReceivableLiquidacio
 import AutocompleteSelect from "./AutocompleteSelect";
 import { getBankAcount } from "../../services/accountsreceivable/bankService";
 import { editarLiquidacionVenta } from "../../services/accountsreceivable/editarLiquidacionVenta";
-import { showError, showSuccess } from "../inventory/alerts";
-import { Notifier } from "../../utils/alertUtils";
+import { Notifier } from '../../utils/alertUtils';
 const EditReceivableLiquidation = ({ onClose, collectionDetail }) => {
   const [cuentas, setCuentas] = useState([]);
   const [cuentaSeleccionada, setCuentaSeleccionada] = useState("");
