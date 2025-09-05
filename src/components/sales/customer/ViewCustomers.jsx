@@ -9,7 +9,8 @@ import { Notifier } from "../../../utils/alertUtils";
 import { IMaskInput } from 'react-imask';
 import SubMenu from "../SubMenu"; 
 import ViewContainer from "../../shared/ViewContainer"; 
-
+import CreditNoteIcon from "../../../assets/icons/credit-note.svg?react";
+import CreateSaleIcon from "../../../assets/icons/create-sale.svg?react";
 const ViewCustomers = () => {
   // --- LÓGICA NUEVA ---
   const { searchCustomers, desactivateCustomer } = useCustomerService();
@@ -225,10 +226,10 @@ const ViewCustomers = () => {
                                 <i className="bi bi-eye-slash" />
                               </button>
                               <button className={styles.iconBtn} title="Crear Venta" onClick={() => navigate(`/ventas/nueva/${cliente.clientId}`)}>
-                                <i className="bi bi-receipt" />
+                                <CreateSaleIcon />
                               </button>
                               <button className={styles.iconBtn} title="Crear Nota de Crédito" onClick={() => navigate(`/ventas/nueva-nota-credito/${cliente.clientId}`)}>
-                                <i className="bi bi-file-earmark-text" /> 
+                                <CreditNoteIcon /> 
                               </button>
                             </div>
                         </td>

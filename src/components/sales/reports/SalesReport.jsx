@@ -278,10 +278,10 @@ return (
             <div className="d-flex align-items-center justify-content-center flex-wrap gap-3">
                 <span className="fw-bold">Guardar como:</span>
                 <button type="button" className={styles.exportButton} onClick={handleExportPDF} title="Exportar a PDF" disabled={!documents || documents.length === 0}>
-                    <FaFilePdf size="1.5em" />
+                   <FaFilePdf className="me-2" /> PDF
                 </button>
                 <button type="button" className={styles.exportButton} onClick={handleExportExcel} title="Exportar a Excel" disabled={!documents || documents.length === 0}>
-                    <FaFileExcel size="1.5em" />
+                    <FaFileExcel className="me-2" /> Excel
                 </button>
             </div>
         </div>
