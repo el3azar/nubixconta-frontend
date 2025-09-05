@@ -1,7 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import './styles/custom-swal.module.css'; // <-- ¡AÑADE ESTA LÍNEA AQUÍ!
+import './styles/custom-swal.css'; // <-- ¡AÑADE ESTA LÍNEA AQUÍ!
 import App from './App.jsx'
 import { AuthProvider } from './context/AuthContext.jsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
