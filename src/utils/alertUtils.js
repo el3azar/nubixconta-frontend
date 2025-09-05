@@ -147,7 +147,14 @@ export const Notifier = {
       placeholder,
       showCancelButton: true,
       confirmButtonText: 'Guardar',
-      customClass: swalCustomClasses,
+       // --- INICIO DEL CAMBIO ---
+      // Le pasamos un objeto de clases más completo.
+      // Fusionamos nuestras clases base con una específica para el input.
+      customClass: {
+        ...swalCustomClasses,
+        input: 'swal-input-custom' // <-- NUEVA CLASE PARA EL CAMPO DE TEXTO
+      },
+      // --- FIN DEL CAMBIO ---
       inputValidator: (value) => {
         if (!value || value.trim() === '') {
           return '¡Este campo es requerido!';
