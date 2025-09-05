@@ -40,14 +40,17 @@ const useCustomerService = () => {
     return res.data;
   };
 
-  // Desactivar cliente (PATCH status a false)
+  // --- CAMBIO CLAVE: Desactivar cliente llama a su propio endpoint ---
   const desactivateCustomer = async (id) => {
-    return updateCustomer({ id, payload: { status: false } });
+    // La petición PATCH no necesita un cuerpo (payload), la acción está en la URL.
+    const res = await axios.post(`${API_URL}/${id}/deactivate`, null, getAuthHeader());
+    return res.data; // El backend devuelve 204, pero retornamos por consistencia en React Query.
   };
 
-  // Reactivar cliente (PATCH status a true)
+  // --- CAMBIO CLAVE: Reactivar cliente llama a su propio endpoint ---
   const reactivateCustomer = async (id) => {
-    return updateCustomer({ id, payload: { status: true } });
+    const res = await axios.post(`${API_URL}/${id}/activate`, null, getAuthHeader());
+    return res.data;
   };
 
   return {

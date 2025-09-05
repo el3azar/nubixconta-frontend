@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import SubMenu from "../SubMenu";
+import { inventorySubMenuLinks } from '../../../config/menuConfig'; // <-- La configuración de inventario
+import SubMenu from "../../shared/SubMenu";
 
 // HOOKS DE DATOS (Sin cambios)
 import {
@@ -174,7 +175,7 @@ const ProductView = () => {
   // --- ¡REFACTORIZACIÓN DEL RENDERIZADO! ---
   return (
     <>
-      <SubMenu />
+      <SubMenu links={inventorySubMenuLinks} />
       <div>
         <h2>Lista de Productos</h2>
         <SearchCardBase

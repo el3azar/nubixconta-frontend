@@ -140,6 +140,55 @@
 .filter {
   display: block;
 }
+/*
+ ==================================================================
+ == INICIO: NUEVOS ESTILOS PARA BOTONES DE EXPORTACIÓN
+ ==================================================================
+*/
+
+.exportButton {
+  /* --- Diseño Base (Outline) --- */
+  background-color: transparent;
+  color: var(--color-dark); /* Usa tu color primario morado */
+  border: 2px solid var(--color-dark);
+  
+  /* --- Consistencia con .actionButton --- */
+  padding: 0.5rem 1.2rem;
+  border-radius: 50px; /* Misma forma de píldora */
+  font-weight: 500;
+  min-width: 110px; /* Ancho mínimo para que quepan ícono y texto */
+  
+  /* --- Alineación del Ícono y Texto --- */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* --- Transición Suave --- */
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+/* --- Efecto Hover (Inversión de colores) --- */
+.exportButton:hover {
+  background-color: var(--color-dark);
+  color: #fff; /* Texto blanco al pasar el ratón */
+}
+
+/* --- Estilo para el Estado Deshabilitado --- */
+.exportButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #e9ecef; /* Un gris estándar para deshabilitado */
+  border-color: #dee2e6;
+  color: #6c757d;
+}
+
+.exportButton svg {
+  margin-right: 0.5rem; /* Espacio entre el ícono y el texto */
+  font-size: 1.3rem;    /* Tamaño del ícono */
+  margin-top: -1px; 
+} 
 
 /*
  ==================================================================

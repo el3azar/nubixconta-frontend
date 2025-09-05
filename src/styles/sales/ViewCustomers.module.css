@@ -232,3 +232,15 @@
   border-color: var(--bg-purple);
 }
 
+/* En ViewCustomers.module.css */
+.iconBtn svg {
+  width: 16px;  /* Ajusta el tamaño como necesites */
+  height: 16px;
+  fill: #4a4a4a; /* Color por defecto del ícono */
+  transition: fill 0.2s ease-in-out;
+}
+
+.iconBtn:hover svg {
+  fill: #6d28d9; /* Color morado al hacer hover, ¡combina con tu marca! */
+  
+}

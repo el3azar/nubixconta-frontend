@@ -14,7 +14,8 @@ import MovementFormModal from './MovementFormModal';
 import { useMovementLogic } from '../../../hooks/useMovementLogic';
 // --- HOOKS ESPECÍFICOS PARA LAS ACCIONES DE ESTA VISTA ---
 import { useApplyMovement, useCancelMovement, useDeleteManualMovement, useCreateManualMovement, useUpdateManualMovement } from '../../../hooks/useInventoryMovementQueries';
-import SubMenu from "../SubMenu";
+import SubMenu from "../../shared/SubMenu";
+import { inventorySubMenuLinks } from '../../../config/menuConfig';
 
 const MovementView = () => {
   // ===================================================================
@@ -199,7 +200,7 @@ const MovementView = () => {
   if (isError) return <p className="text-center text-danger">Error: {error.response?.data?.message || error.message}</p>;
   return (
     <>
-      <SubMenu />
+      <SubMenu links={inventorySubMenuLinks} />
       <div>
         <h2>Gestión de Movimientos de Inventario</h2>
         
