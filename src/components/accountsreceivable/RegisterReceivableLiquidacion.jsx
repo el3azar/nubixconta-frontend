@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import AutocompleteSelect from "./AutocompleteSelect";
 import styles from "../../styles/accountsreceivable/RegisterReceivableLiquidacion.module.css";
-import { getAllSales } from "../../services/salesServices";
 import { getBankAcount } from "../../services/accountsreceivable/bankService";
 import { registrarLiquidacionVenta } from "../../services/accountsreceivable/liquidacionVentaServices";
-import { showSuccess, showError } from "../../components/inventory/alerts";
+import { Notifier } from '../../utils/alertUtils';
 
-const RegisterReceivableLiquidacion = ({ onClose }) => {
+const RegisterReceivableLiquidacion = ({ onClose, selectedSale }) => {
   const [tipoLiquidacion, setTipoLiquidacion] = useState("VENTA");
-  const [documentos, setDocumentos] = useState([]);
   const [cuentas, setCuentas] = useState([]);
+  const [documento, setDocumento] = useState("");
+  const [saleId, setSaleId] = useState(null);
+  const [montoTotalVenta, setMontoTotalVenta] = useState(selectedSale ? parseFloat(selectedSale.montoTotal.replace('$', '')) : 0);
+   const [saldoActualVenta, setSaldoActualVenta] = useState(selectedSale ? parseFloat(selectedSale.saldo.replace('$', '')) : 0);
   const [ventaSeleccionada, setVentaSeleccionada] = useState(null);
   const [cuentaSeleccionada, setCuentaSeleccionada] = useState("");
   const [descripcion, setDescripcion] = useState("");
@@ -18,54 +20,88 @@ const RegisterReceivableLiquidacion = ({ onClose }) => {
   const [metodoPago, setMetodoPago] = useState("Transacción");
 
   useEffect(() => {
-    const fetchData = async () => {
-      const ventas = await getAllSales();
-      setDocumentos(ventas);
-      const cuentas = await getBankAcount();
-      setCuentas(cuentas);
-    };
-    fetchData();
-  }, []);
+    // Si se pasa una venta seleccionada, actualiza los estados
+    if (selectedSale) {
+      setVentaSeleccionada(selectedSale);
+      
+      // El saleId del backend lo obtenemos del 'id' de la fila de la tabla
+      setSaleId(selectedSale.saleId); 
+      // Convertir el monto total de string a número para los cálculos
+      setMontoTotalVenta(parseFloat(selectedSale.montoTotal.replace("$", "")));
+    }
 
-  const handleRegistrar = async () => {
-    if (!ventaSeleccionada?.saleId) {
-      showError("Debes seleccionar un documento válido.");
+    const fetchCuentas = async () => {
+      try {
+        const data = await getBankAcount();
+        setCuentas(data);
+        if (data.length > 0) {
+          setCuentaSeleccionada(data[0].accountName); // Seleccionar la primera cuenta por defecto
+        }
+      } catch (error) {
+        Notifier.error("Error al cargar las cuentas bancarias.");
+        console.error("Error al cargar las cuentas bancarias:", error);
+      }
+    };
+    fetchCuentas();
+  }, [selectedSale]);
+
+  // Maneja el cambio de radio button y actualiza el valor del monto si se cambia a "VENTA"
+  const handleTipoLiquidacionChange = (e) => {
+    const newTipo = e.target.value;
+    setTipoLiquidacion(newTipo);
+
+    // Si el usuario selecciona "Liquidar venta" (total),
+    // actualizamos el monto del abono con el saldo actual.
+    if (newTipo === "VENTA") {
+      setMontoAbono(saldoActualVenta.toFixed(2));
+    } else {
+      // Si cambia a "Parcial", limpiamos el monto del abono
+      // para que el usuario pueda ingresar uno nuevo.
+      setMontoAbono("");
+    }
+  };
+
+const handleRegistrar = async () => {
+ if (!ventaSeleccionada?.saleId) {
+      Notifier.error("No se ha seleccionado una venta para liquidar.");
       return;
     }
 
     const cuentaObj = cuentas.find((c) => c.accountName === cuentaSeleccionada);
     if (!cuentaObj) {
-      showError("Debes seleccionar una cuenta válida.");
+      Notifier.error("Debes seleccionar una cuenta válida.");
       return;
     }
 
-    if (tipoLiquidacion === "PARCIAL" && (!montoAbono || parseFloat(montoAbono) <= 0)) {
-      showError("Debe ingresar un monto válido para abonar.");
-      return;
-    }
+     let montoFinalAPagar;
 
+  if (tipoLiquidacion === "PARCIAL") {
+    montoFinalAPagar = parseFloat(montoAbono);
+    
+  } else {
+    montoFinalAPagar = saldoActualVenta;
+  }
     try {
       const result = await registrarLiquidacionVenta({
-        documentNumber: ventaSeleccionada.documentNumber,
+        saleId: ventaSeleccionada.saleId,
+        accountId: cuentaObj.id, //  Pasamos el ID de la cuenta directamente
         cuentaNombre: cuentaSeleccionada,
         metodoPago,
         referencia,
         descripcion,
-        ventas: documentos,
         cuentas,
-        tipoLiquidacion,
-        montoAbono,
+       montoAPagar: montoFinalAPagar,
       });
 
       if (result.success) {
-        showSuccess("Liquidación registrada con éxito.");
+        Notifier.success("Liquidación registrada con éxito.");
         onClose();
       } else {
-        showError("Error al registrar: " + result.message);
+        Notifier.error("Error al registrar: " + result.message);
       }
     } catch (error) {
       console.error("Error al registrar liquidación:", error);
-      showError("Ocurrió un error: " + error.message);
+      Notifier.error("Ocurrió un error: " + error.message);
     }
   };
 
@@ -83,9 +119,9 @@ const RegisterReceivableLiquidacion = ({ onClose }) => {
               name="tipo"
               value="VENTA"
               checked={tipoLiquidacion === "VENTA"}
-              onChange={() => setTipoLiquidacion("VENTA")}
+              onChange={handleTipoLiquidacionChange}
             />
-            Liquidar venta
+            Liquidación total
           </label>
           <label>
             <input
@@ -93,23 +129,33 @@ const RegisterReceivableLiquidacion = ({ onClose }) => {
               name="tipo"
               value="PARCIAL"
               checked={tipoLiquidacion === "PARCIAL"}
-              onChange={() => setTipoLiquidacion("PARCIAL")}
+              onChange={ handleTipoLiquidacionChange}
             />
             Liquidación Parcial
           </label>
         </div>
 
         <div className={styles.formGrid}>
-          <AutocompleteSelect
-            label="N° De documento"
-            options={documentos.map((v) => v.documentNumber)}
-            placeholder="Buscar documento"
-            onSelect={(value) => {
-              const venta = documentos.find((v) => v.documentNumber === value);
-              setVentaSeleccionada(venta);
-            }}
+   <div>
+    <label className={styles.label}>N° De documento</label>
+    <input
+      type="text"
+      className={styles.input}
+      // Usamos el valor de la venta seleccionada
+      value={ventaSeleccionada?.documento || "N/A"}
+      // Deshabilitamos el input para que no se pueda modificar
+      disabled
+    />
+  </div>
+    <div>
+      <label className={styles.label}>Saldo Actual</label>
+        <input
+            type="text"
+            className={styles.input}
+            value={`$${saldoActualVenta.toFixed(2)}`}
+            disabled
           />
-
+       </div>
           <div>
             <label className={styles.label}>Método de pago</label>
             <select
@@ -147,6 +193,7 @@ const RegisterReceivableLiquidacion = ({ onClose }) => {
             options={cuentas.map((c) => c.accountName)}
             placeholder="Buscar cuenta bancaria"
             onSelect={(value) => setCuentaSeleccionada(value)}
+            value={cuentaSeleccionada}
           />
 
           {tipoLiquidacion === "PARCIAL" && (
@@ -160,6 +207,7 @@ const RegisterReceivableLiquidacion = ({ onClose }) => {
                 onWheel={(e) => e.target.blur()}
                 value={montoAbono}
                 onChange={(e) => setMontoAbono(e.target.value)}
+                 disabled={tipoLiquidacion === "VENTA"}
               />
             </div>
           )}

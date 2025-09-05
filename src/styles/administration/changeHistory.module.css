@@ -65,9 +65,9 @@
 /* --- ESTILOS DE LA TABLA --- */
 
 .tableContainer {
- max-height: 500px;
+  width: 100%;
+ max-height: 400px;
  overflow: auto;
- border: 1px solid #ccc;
  border-radius: 1rem;
  background-color: white;
 }
@@ -84,12 +84,12 @@
  background: #fff;
  text-align: left;
  border-bottom: 1px solid #ddd;
- border-right: 1px solid #ddd;
+
  white-space: normal;
 }
 
 .table th {
- background-color: #f7f7f7;
+ background-color: #2C1A47;
  font-weight: bold;
  position: sticky;
  top: 0;

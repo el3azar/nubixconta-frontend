@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { getAllUsers, getChangeHistory, getChangeHistoryByUser, getChangeHistoryByDateRange } from '../../../services/administration/change/historyServices';
 import styles from '../../../styles/administration/changeHistory.module.css';
 import SearchFilters from './SearchFilters'; // Importa el nuevo componente de filtros
-import formStyles from '../../../styles/sales/CustomerForm.module.css';
 export default function ChangeHistory() {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState('');
@@ -71,8 +70,8 @@ export default function ChangeHistory() {
         onSearch={onSearch}
       />
 
-      <div className={styles.tableContainer}>
-        <table className={styles.table}>
+     <div className={`${styles.tableContainer} table-responsive`}>
+       <table className={`${styles.table} table-hover align-middle mb-0 `}>
           <thead>
             <tr>
               <th>Usuario</th>

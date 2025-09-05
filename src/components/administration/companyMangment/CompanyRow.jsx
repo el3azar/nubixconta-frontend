@@ -3,8 +3,8 @@ import CompanyActions from './CompanyActions';
 import '../../../styles/administration/CompanyRowAdministration.module.css';
 import { getUsersByAssistant } from '../../../services/administration/company/usersByAssistanService';
 import { assignUserToCompany } from '../../../services/administration/company/assignUserToCompanyService';
-import { showSuccess, showError } from '../../inventory/alerts';
 import Swal from "sweetalert2";
+import { Notifier } from "../../../utils/alertUtils";
 const CompanyRow = ({
   company,
   index,
@@ -70,7 +70,6 @@ if (!confirm.isConfirmed) return;
   try {
     await assignUserToCompany(company.id, selectedUserId);
     //await assignUserToCompany(company.id, selectedUser.value);
-     showSuccess("Empresa asignada con exito");
     onAssign({
       ...company,
       asignada: true,
@@ -78,7 +77,7 @@ if (!confirm.isConfirmed) return;
       assignedAssistantName: nombreUsuario,
     });
   } catch (error) {
-    showError('Ocurrió un error al asignar la empresa. Intente nuevamente.');
+    Notifier.error('Ocurrió un error al asignar la empresa. Intente nuevamente.');
   } finally {
     setShowSelect(false);
   }

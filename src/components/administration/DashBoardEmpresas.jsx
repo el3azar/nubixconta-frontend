@@ -7,7 +7,6 @@ import { useCompany } from "../../context/CompanyContext";
 import { FaBuilding } from "react-icons/fa";
 import DashboardCards from "../DashboardCards"; // Ajusta el path según tu estructura
 import { authService } from "../../services/authServices"; // <-- ¡NUEVO! Usamos el servicio centralizado.
-
 import { toast } from "react-hot-toast"; // Para notificaciones
 import { getCompaniesActiveAndAssigned } from "../../services/administration/company/listCompaniesByActive-assigned";
 
@@ -112,8 +111,8 @@ const DashBoardEmpresas = () => {
        title={dashboardTitle}
         items={items}
         onCardClick={handleCompanySelect}
-      />
-    </div>
+      />
+    </div>
   );
 };
 

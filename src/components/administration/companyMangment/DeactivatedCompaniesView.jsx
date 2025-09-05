@@ -6,7 +6,7 @@ import CompanySearchBar from '../companyMangment/CompanySearchBar';
 import CompanyTable from '../companyMangment/CompanyTable'; 
 import Swal from 'sweetalert2';
 import styles from "../../../styles/sales/ViewCustomers.module.css";
-
+import { Notifier } from "../../../utils/alertUtils";
 const DeactivatedCompaniesView = () => {
   const navigate = useNavigate();
   const { companies, toggleCompanyStatus,loadingAssistants,getAssistantOptions } = useCompany(); 
@@ -56,14 +56,14 @@ const DeactivatedCompaniesView = () => {
         const success = await toggleCompanyStatus(company.id, true);
 
         if (success) {
-          await Swal.fire('¡Éxito!', `La empresa "${company.nombre}" ha sido reactivada con éxito.`, 'success');
+          Notifier.success(`'¡Éxito!', La empresa "${company.nombre}" ha sido reactivada con éxito.`);
 
         } else {
-          Swal.fire('Error', `Hubo un problema al reactivar la empresa "${company.nombre}".`, 'error');
+          Notifier.error('Error', `Hubo un problema al reactivar la empresa "${company.nombre}".`, 'error');
         }
       } catch (error) {
         console.error("Error al reactivar la empresa:", error);
-        Swal.fire('Error', 'Ocurrió un error inesperado al intentar reactivar la empresa.', 'error');
+        Notifier.error('Error', 'Ocurrió un error inesperado al intentar reactivar la empresa.', 'error');
       }
     }
   };

@@ -5,9 +5,9 @@ const CompanySearchBar = ({ filters, onChange, onSearch, assistantOptions }) => 
       style={{ backgroundColor: '#A6A0BD' }}
       
     >
-      <div className="d-flex justify-content-around">
-        <h1 style={{ color: '#2C1A47' }}>Buscar por</h1>
-        <div className="col-md-4">
+     <div className="d-flex flex-column flex-lg-row justify-content-around">
+        <h1 className="text-center" style={{ color: '#2C1A47' }}>Buscar por</h1>
+        <div className="col-lg-4 mb-3"> 
           <label className="form-label text-dark">Nombre de la empresa</label>
           <input
             type="text"
@@ -20,7 +20,7 @@ const CompanySearchBar = ({ filters, onChange, onSearch, assistantOptions }) => 
 
 
          {/* CAMBIO: Usar un select para Asistente Asignado */}
-        <div className="col-md-4">
+        <div className="col-lg-4">
           <label className="form-label text-dark">Asistente asignado</label>
           <select
             value={filters.asistente || ''} 

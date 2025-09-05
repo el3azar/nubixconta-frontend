@@ -6,7 +6,7 @@ import { RiUserReceived2Line } from 'react-icons/ri';
 import Swal from "sweetalert2";
 import { getCompaniesActive } from "../../../services/administration/company/companiesViewServices";
 import { assignUserToCompany } from "../../../services/administration/company/assignUserToCompanyService";
-
+import { Notifier } from '../../../utils/alertUtils';
 
 const AssignCompanyModal = ({ isOpen, onClose, user, showSuccess, showError, onCompanyAssigned }) => {
   const [companies, setCompanies] = useState([]);
@@ -74,7 +74,7 @@ const AssignCompanyModal = ({ isOpen, onClose, user, showSuccess, showError, onC
     try {
       await assignUserToCompany(company.id, user.id);
 
-       showSuccess(`${companyActionText} de empresa realizada correctamente`);
+       Notifier.success(`${companyActionText} de empresa realizada correctamente`);
        // Actualizamos la lista de empresas y cerramos el modal.
         await fetchCompanies();
           onCompanyAssigned();
