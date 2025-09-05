@@ -3,7 +3,8 @@ import { useMovementLogic } from '../../../hooks/useMovementLogic'; // ¡REUTILI
 import Boton from '../inventoryelements/Boton';
 import { BsFileEarmarkExcel, BsFileEarmarkPdf } from 'react-icons/bs';
 import TableComponent from '../inventoryelements/TableComponent';
-import { showInputDialog } from '../alertsmodalsa';
+//import { showInputDialog } from '../alertsmodalsa';
+import { Notifier } from '../../../utils/alertUtils';
 import { generateProductMovementsPDF } from '../PdfGenerator';
 import { generateProductMovementsExcel } from '../ExcelGenerator';
 import SearchCardMovement from '../inventoryelements/SearchCardMovement'; // Usamos el mismo SearchCard
@@ -41,17 +42,27 @@ const MovementListView = () => {
 
   // --- 4. La lógica específica de esta vista (reportes) se queda aquí ---
   const handleGenerateExcel = async () => {
-    const result = await showInputDialog('Nombre del Archivo', 'Ingresa el nombre para tu reporte de Excel:');
-    if (result.isConfirmed && result.value) {
-      generateProductMovementsExcel(result.value, movimientosDeReporte, user, company);
-    }
+    const result = await Notifier.input({
+      title: 'Nombre del Archivo',
+      inputLabel: 'Ingresa el nombre para tu reporte de Excel:',
+      placeholder: 'Ej: Reporte_Movimientos_Enero'
+    });
+    if (result.isConfirmed && result.value) {
+      generateProductMovementsExcel(result.value, movimientosDeReporte, user, company);
+      Notifier.success('Reporte de Excel generado con éxito.');
+    }
   };
 
   const handleGeneratePdf = async () => {
-    const result = await showInputDialog('Nombre del Archivo', 'Ingresa el nombre para tu reporte PDF:');
-    if (result.isConfirmed && result.value) {
-      generateProductMovementsPDF(result.value, movimientosDeReporte, user, company);
-    }
+    const result = await Notifier.input({
+      title: 'Nombre del Archivo',
+      inputLabel: 'Ingresa el nombre para tu reporte PDF:',
+      placeholder: 'Ej: Reporte_Movimientos_Enero'
+    });
+    if (result.isConfirmed && result.value) {
+      generateProductMovementsPDF(result.value, movimientosDeReporte, user, company);
+      Notifier.success('Reporte PDF generado con éxito.');
+    }
   };
 
   // --- 5. La definición de columnas es específica de esta vista (SIN ACCIONES) ---
@@ -80,9 +91,9 @@ const MovementListView = () => {
         <SearchCardMovement tamano='tamano-grande' {...searchProps} />
 
       {/* Los botones de acción son específicos de esta vista */}
-        <div className='d-flex justify-content-between align-items-center mt-4 mb-3'>
+        <div className='d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 mb-3'>
         {/* Lado Izquierdo: Nuevos botones de filtro por origen */}
-        <div className="d-flex gap-2">
+        <div className="d-flex gap-2 flex-wrap mb-2 mb-md-0">
             <Boton color={!originFilter ? 'morado' : 'blanco'} forma="pastilla" onClick={() => setOriginFilter(null)}>
                 Todos
             </Boton>
@@ -95,7 +106,7 @@ const MovementListView = () => {
         </div>
 
         {/* Lado Derecho: Botones de generación de reportes */}
-        <div className="d-flex gap-2">
+        <div className="d-flex gap-2 flex-wrap">
           <Boton color="morado" forma="pastilla" onClick={handleGeneratePdf}>
             Generar Reporte en PDF
             <BsFileEarmarkPdf size={19} className='ms-2'/>
@@ -106,6 +117,7 @@ const MovementListView = () => {
           </Boton>
         </div>
       </div>
+      
       
       {/* Reutilizamos la misma tabla, pero sin colores de fila y con las columnas de reporte */}
       <TableComponent

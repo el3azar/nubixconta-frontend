@@ -89,23 +89,7 @@ export const useCreditNoteForm = (clientId=null) => {
   };
 
    
-  // --- INICIO DE LA RESTAURACIÓN DE LA ALERTA ---
-  const handleDeleteLine = (index) => {
-    Swal.fire({
-      title: '¿Eliminar este detalle?',
-      text: 'No podrás revertir esta acción.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then(result => {
-      if (result.isConfirmed) {
-        remove(index);
-        Swal.fire('Eliminado', 'El detalle ha sido eliminado.', 'success');
-      }
-    });
-  };
-  // --- FIN DE LA RESTAURACIÓN DE LA ALERTA ---
+
 
    // --- INICIO DE LA MODIFICACIÓN ---
   // Se añade la función para preparar los datos para el envío,
@@ -138,7 +122,6 @@ export const useCreditNoteForm = (clientId=null) => {
   return {
     formMethods,
     fields,
-    handleDeleteLine,
     replace,
     remove,
     updateFormWithSaleDetails,

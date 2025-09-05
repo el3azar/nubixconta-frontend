@@ -1,6 +1,6 @@
 import React from 'react';
 import AsyncSelect from 'react-select/async';
-import './SelectBase.css';
+import styles from "../../../styles/inventory/SelectBase.module.css"; // Asegúrate de que este archivo exista
 
 // La función de búsqueda no cambia, pero la movemos dentro para mantener todo junto.
 const buscarEnApi = (terminoDeBusqueda, baseDeDatos) => {
