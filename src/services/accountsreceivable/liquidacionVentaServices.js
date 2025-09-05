@@ -6,15 +6,13 @@ const BASE_URL_AR = 'http://localhost:8080/api/v1/accounts-receivable';
 const BASE_URL_CD = 'http://localhost:8080/api/v1/collection-detail';
 
 export const registrarLiquidacionVenta = async ({
-  documentNumber,
+  saleId,
   cuentaNombre,
   metodoPago,
   referencia,
   descripcion,
-  ventas,
   cuentas,
-  tipoLiquidacion,
-  montoAbono
+  montoAPagar,
 }) => {
   try {
     const token = sessionStorage.getItem("nubix_token");
@@ -23,22 +21,22 @@ export const registrarLiquidacionVenta = async ({
       "Content-Type": "application/json",
     };
 
-    const ventaSeleccionada = ventas.find(v => v.documentNumber === documentNumber);
-    if (!ventaSeleccionada) throw new Error("No se encontró la venta");
-
     const cuentaSeleccionada = cuentas.find(c => c.accountName === cuentaNombre);
     if (!cuentaSeleccionada) throw new Error("No se encontró la cuenta bancaria");
 
-    const monto = tipoLiquidacion === "PARCIAL" ? parseFloat(montoAbono) : ventaSeleccionada.totalAmount;
-    if (isNaN(monto) || monto <= 0) throw new Error("El monto del abono debe ser un número positivo");
-    
+    const montoFinal = parseFloat(montoAPagar);
+
+    if (isNaN(montoFinal) || montoFinal <= 0) {
+      throw new Error("El monto a registrar debe ser un número positivo y válido.");
+    }
+
     const nuevoDetalle = {
-      saleId:  ventaSeleccionada.saleId,
+      saleId:  saleId,
       accountId: cuentaSeleccionada.id,
       reference: referencia,
       paymentMethod: metodoPago,
       paymentStatus: "PENDIENTE",
-      paymentAmount: monto,
+      paymentAmount: montoFinal,
       paymentDetailDescription: descripcion,
       collectionDetailDate:DateTime.local().toFormat("yyyy-MM-dd'T'HH:mm:ss"),
       moduleType: "Cuentas por cobrar",

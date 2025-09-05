@@ -14,7 +14,7 @@
   border: 1px solid #ced4da;
   appearance: none;
   transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
-  border-radius: 50rem !important;
+  /*border-radius: 1rem !important;*/
 }
 
 .custom-select__control--is-focused {

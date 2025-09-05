@@ -17,6 +17,9 @@
   border-radius: 12px;
   width: 650px;
   position: relative;
+  margin-right: -3rem;
+  max-height: none; /* por defecto sin límite */
+  overflow: visible; /* sin scroll */
 }
 
 .closeButton {
@@ -76,12 +79,17 @@ select {
 }
 
 .cancel {
-  background: #fff;
+  background:transparent;
   border: 2px solid #10031C;
   padding: 0.7rem 1.5rem;
   font-weight: bold;
   border-radius: 8px;
 }
+.cancel:hover {
+   background: #10031C;
+  color: #fff;
+}
+
 
 .register {
   background: #10031C;
@@ -91,6 +99,14 @@ select {
   border-radius: 8px;
   border: none;
 }
+.register:hover {
+  background: transparent;
+  color: #10031C;
+  border-color: #10031C; 
+  border: 2px solid;
+}
+
+
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -112,3 +128,53 @@ textarea {
   font-size: 1rem;
   box-sizing: border-box;
 }
+/* --- RESPONSIVE MODAL --- */
+@media (max-width: 768px) {
+  .modal {
+    width: 70%;           /* ocupa casi todo el ancho */
+    max-width: 70%;     /* límite en tablets */
+    padding: 1.5rem;
+    max-height: 80vh; /* ocupa 80% del alto de la pantalla */
+    overflow-y: auto; /* scroll vertical */
+
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr; /* los inputs en una sola columna */
+  }
+
+  .buttons {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .cancel, 
+  .register {
+    width: 100%;          /* botones ocupan todo el ancho */
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal {
+    width: 95%;           /* aún más compacto en móviles */
+    padding: 1rem;
+  }
+
+  .tipo {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .title {
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  .closeButton {
+    top: 5px;
+    right: 10px;
+    font-size: 1.2rem;
+  }
+}
+

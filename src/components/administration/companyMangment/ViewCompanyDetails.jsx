@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { Notifier } from "../../../utils/alertUtils";
 import { useCompany } from './CompanyDataContext';
 import styles from "../../../styles/sales/ViewCustomers.module.css";
 const ViewCompanyDetails = () => {
@@ -26,20 +27,13 @@ const ViewCompanyDetails = () => {
         if (foundCompany) {
           setEmpresa(foundCompany);
         } else {
-          Swal.fire({
-            title: 'Empresa no encontrada',
-            icon: 'error',
-            confirmButtonColor: '#d33'
-          }).then(() => navigate('/admin/empresas'));
+          Notifier.error('Empresa no encontrada')
+          .then(() => navigate('/admin/empresas'));
         }
       } catch (error) {
         console.error("Error al cargar los detalles de la empresa:", error);
-        Swal.fire({
-          title: 'Error',
-          text: 'Hubo un problema al cargar los detalles de la empresa.',
-          icon: 'error',
-          confirmButtonColor: '#d33'
-        }).then(() => navigate('/admin/empresas'));
+        Notifier.error('Hubo un problema al cargar los detalles de la empresa.')
+       .then(() => navigate('/admin/empresas'));
       } finally {
         setLoadingCompany(false); // Finaliza la carga
       }

@@ -53,6 +53,7 @@ import MovementView from '../components/inventory/movements/MovementView';
 import ProductView from '../components/inventory/products/ProductView';
 import DesableProductView from '../components/inventory/products/DesableProductView';
 import MovementListView from '../components/inventory/movements/MovementListView';
+import DetailedSalesView from '../components/accountsreceivable/DetailedSalesView';
 
 export default function Rutas() {
   return (
@@ -188,6 +189,7 @@ export default function Rutas() {
                   <Route path="/cuentas/cobros" element={<AccountsReceivable />} />
                   <Route path="/cuentas/reportes" element={<AccountsReceivableReport />} />
                   <Route path="/cuentas/estado_cuenta" element={<AccountsReceivableAccount />} />
+                  <Route path="/cuentas/visualizar_ventas" element={<DetailedSalesView/>} />
                   {/* Rutas extras que necesites en CXC */}
 
         
