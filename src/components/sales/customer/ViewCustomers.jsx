@@ -7,10 +7,12 @@ import { useCustomerService } from "../../../services/sales/customerService";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Notifier } from "../../../utils/alertUtils"; 
 import { IMaskInput } from 'react-imask';
-import SubMenu from "../SubMenu"; 
+import SubMenu from "../../shared/SubMenu"; 
 import ViewContainer from "../../shared/ViewContainer"; 
 import CreditNoteIcon from "../../../assets/icons/credit-note.svg?react";
 import CreateSaleIcon from "../../../assets/icons/create-sale.svg?react";
+import { salesSubMenuLinks } from '../../../config/menuConfig';
+
 const ViewCustomers = () => {
   // --- LÓGICA NUEVA ---
   const { searchCustomers, desactivateCustomer } = useCustomerService();
@@ -86,7 +88,7 @@ const ViewCustomers = () => {
   return (
    
     <div>
-      <SubMenu />
+      <SubMenu links={salesSubMenuLinks} />
 
       <ViewContainer title="Gestión de Clientes">
       

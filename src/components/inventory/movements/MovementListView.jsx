@@ -11,7 +11,8 @@ import SearchCardMovement from '../inventoryelements/SearchCardMovement'; // Usa
 import { formatDate } from '../../../utils/dateFormatter'; // Reutilizamos el formateador
 import { useAuth } from '../../../context/AuthContext'; // ¡IMPORTAMOS EL HOOK DE AUTENTICACIÓN!
 import { useCompany } from '../../../context/CompanyContext'; // ¡IMPORTAMOS EL HOOK DE EMPRESA!
-import SubMenu from "../SubMenu";
+import SubMenu from "../../shared/SubMenu";
+import { inventorySubMenuLinks } from '../../../config/menuConfig';
 
 const MovementListView = () => {
   // --- 1. Obtenemos la lógica y los datos del hook compartido ---
@@ -84,7 +85,7 @@ const MovementListView = () => {
 
   return (
     <>
-      <SubMenu />
+     <SubMenu links={inventorySubMenuLinks} />
       <div>
         <h2>Reporte de Movimientos de Inventario</h2>
         {/* Reutilizamos el mismo SearchCard con las mismas props */}
