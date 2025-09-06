@@ -220,7 +220,7 @@ const handleDelete = async (id) => {
 
       <div className={styles.tableWrapper}>
         <table className="table table-hover align-middle">
-          <thead>
+          <thead className={styles.salesTableHeader}>
             <tr>
               {/* Cabeceras dinámicas basadas en la configuración */}
               {columns.map((col) => <th key={col.header} style={col.style || {}} className={col.className || styles.textAlignCenter}>{col.header}</th>)}

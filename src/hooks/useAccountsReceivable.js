@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import Swal from 'sweetalert2';
 import { Notifier } from '../utils/alertUtils';
 
 // Contexts
@@ -10,7 +9,7 @@ import { useAuth } from "../context/AuthContext";
 import { 
     fetchCollections,fetchSalesSummary, 
    // fetchAccountsByDate as apiFetchByDate 
-} from '../services/accountsReceivableServices';
+} from '../services/accountsreceivable/accountsReceivableServices';
 import { getCollectionDetailById as apiGetDetailById } from '../services/accountsreceivable/getCollectionDetailById';
 import { getCollectionEntryById as apiGetEntryById } from '../services/accountsreceivable/getCollectionEntryById';
 import { deleteCollectionDetail as apiDeleteDetail } from '../services/accountsreceivable/deleteByCollectionDetails';
@@ -69,7 +68,7 @@ const processSalesSummary = (response) => {
             montoTotal: sale.totalAmount ? `$${sale.totalAmount.toFixed(2)}` : '$0.00',
             diasCredito: sale.creditDay ?? 0,
             // Agregamos una descripción por defecto si no existe
-            descripcion: item.description || 'Resumen de venta', 
+            descripcion: sale.saleDescription || 'Resumen de venta', 
         };
     });
 };
@@ -162,7 +161,7 @@ export const useAccountsReceivable = (viewType) => {
   }, []);
 
   const deleteItem = useCallback(async (id) => {
-    const result = await Swal.fire({
+    const result = await Notifier.confirm({
       title: '¿Estás seguro?',
       text: 'Esta acción eliminará el registro permanentemente.',
       icon: 'warning',
@@ -183,7 +182,7 @@ export const useAccountsReceivable = (viewType) => {
   }, [fetchData]);
 
     const applyItem = useCallback(async (id) => {
-        const confirm = await Swal.fire({
+        const confirm = await Notifier.confirm({
             title: '¿Deseas aplicar esta partida contable?',
             icon: 'question',
             showCancelButton: true,
@@ -204,7 +203,7 @@ export const useAccountsReceivable = (viewType) => {
 
 
     const cancelItem = useCallback(async (id) => {
-        const confirm = await Swal.fire({
+        const confirm = await Notifier.confirm({
             title: '¿Estás seguro?',
             text: 'Esta acción anulará la liquidación contable.',
             icon: 'warning',

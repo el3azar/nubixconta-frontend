@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import Swal from 'sweetalert2';
 import { useCompany } from './CompanyDataContext'; 
 import { IMaskInput } from 'react-imask';
 import formStyles from '../../../styles/sales/CustomerForm.module.css';
 import { Notifier } from "../../../utils/alertUtils";
-
-  const EditCompanyView = () => {
+import Swal from 'sweetalert2';
+import { uploadImageToCloudinary } from '../../../services/administration/company/uploadImageService';
+  
+const EditCompanyView = () => {
   const navigate = useNavigate();
   const { id } = useParams(); 
   const location = useLocation();
-  const empresaFromState = location.state?.company;
+  const empresaFromState = location.state?.company; // Podrías no necesitar esto si siempre cargas desde la API
   const { getCompanyById, updateCompany } = useCompany(); 
 
   // Estado del formulario
@@ -25,32 +26,43 @@ const [form, setForm] = useState({
   });
 
   const [errors, setErrors] = useState({});
+ const [imageFile, setImageFile] = useState(null);
+ const [imagePreviewUrl, setImagePreviewUrl] = useState(null); // URL para la previsualización
 
-useEffect(() => {
+ useEffect(() => {
   const fetchCompany = async () => {
     try {
       const company = await getCompanyById(id);
       if (!company) {
-  console.error('Empresa no encontrada');
-   navigate('/admin/empresas');
-  return;
-}
-     setForm({
-  nombre: company.nombre || '',
-  giro: company.giro || '',
-  nit: company.nit || '',
-  dui: company.dui || '',
-  direccion: company.direccion || '',
-  nrc: company.nrc || '',
-  tipo: company.tipo || 'juridica',
-});
+        console.error('Empresa no encontrada');
+        navigate('/admin/empresas');
+        return;
+      }
+      setForm({
+        nombre: company.nombre || '',
+        giro: company.giro || '',
+        nit: company.nit || '',
+        dui: company.dui || '',
+        direccion: company.direccion || '',
+        nrc: company.nrc || '',
+        tipo: company.tipo || 'juridica',
+      });
+
+      // **Aquí es donde se establece la imagen anterior para previsualizar**
+      if (company.imageUrl) {
+        setImagePreviewUrl(company.imageUrl);
+        console.log("URL de imagen anterior cargada:", company.imageUrl); // Para depuración
+      } else {
+        setImagePreviewUrl(null); // Asegúrate de que no haya una URL de previsualización si no hay imagen
+        console.log("No se encontró URL de imagen anterior."); // Para depuración
+      }
     } catch (error) {
-      console.error('Error al cargar la empresa:', error);
+      Notifier.error('Error al cargar la empresa:', error);
     }
   };
 
   fetchCompany();
-}, [id,getCompanyById]);
+}, [id, getCompanyById, navigate]); // Añade 'navigate' a las dependencias si se usa dentro de useEffect
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -60,6 +72,20 @@ useEffect(() => {
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
+   const handleImageChange = (e) => {
+   const file = e.target.files[0];
+       if (file) {
+      setImageFile(file);
+      setImagePreviewUrl(URL.createObjectURL(file)); // Crea una URL temporal para previsualizar el nuevo archivo
+     } else {
+       setImageFile(null);
+       // Si el usuario borra la selección de archivo, podrías querer volver a la imagen anterior
+       // Para ello, podrías necesitar una referencia a la `company.imageUrl` original.
+       // Por ahora, si no selecciona, la preview se mantendrá como la última establecida (ya sea la original o una nueva previa).
+       // O podrías resetear a null si quieres que no se vea nada si eligen "cancelar" la selección.
+       // Para este escenario, lo dejaremos como está, que es mantener la última URL.
+    }
+   };
 
 const handleUpdate = async () => {
     const newErrors = {};
@@ -81,26 +107,42 @@ const handleUpdate = async () => {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      Swal.fire({
-        title: 'Advertencia',
-        text: 'Revise que los datos estén correctos',
-        icon: 'error',
-        confirmButtonColor: '#d33',
-      });
+      Notifier.error('Hubo un problema al actualizar los datos de la empresa');
       return;
     }
 
     try {
-      const success = await updateCompany({
-        id: parseInt(id),
+     Swal.fire({
+       title: 'Actualizando...',  
+       text: 'Por favor, espere mientras se actualiza la información y la imagen.',
+       allowOutsideClick: false,
+       didOpen: () => {
+         Swal.showLoading();
+         }
+     });
+
+       let imageUrlToSend = imagePreviewUrl; // Por defecto, usa la URL que está en la previsualización
+       if (imageFile) {
+         // Si se ha seleccionado un nuevo archivo, súbelo y usa la URL resultante
+         imageUrlToSend = await uploadImageToCloudinary(imageFile);
+       } 
+       // Si no hay imageFile y no hay imagePreviewUrl, imageUrlToSend seguirá siendo null.
+       // Si no hay imageFile pero sí imagePreviewUrl (significa que es la imagen original),
+       // entonces imageUrlToSend mantendrá esa URL. Esto está correcto.
+
+       const companyData = {
+         id: parseInt(id),
         companyName: form.nombre,
         turnCompany: form.giro,
-        companyNit: form.tipo === 'juridica' ? form.nit : null, // Si es jurídica, usa nit; si no, null
-        companyDui: form.tipo === 'natural' ? form.dui : null,// Si es natural, usa dui; si no, null
+        companyNit: form.tipo === 'juridica' ? form.nit : null,
+        companyDui: form.tipo === 'natural' ? form.dui : null,
         address: form.direccion,
         companyNrc: form.nrc,
-      });
+        imageUrl: imageUrlToSend, // Agregamos la URL de la imagen al objeto de datos
+      };
 
+      const success = await updateCompany(companyData);
+      Swal.close();
       if (success) {
         Notifier.success('Empresa actualizada correctamente')
           setErrors({});
@@ -217,7 +259,27 @@ const handleUpdate = async () => {
           />
           {errors.nrc && <div className="form-text text-danger">{errors.nrc}</div>}
         </div>
-
+         {/* Campo para subir la imagen */}
+         <div>
+           <label className="form-label text-dark fw-semibold">Logo de la Empresa:</label>
+           <input
+           type="file"
+           name="logo"
+           className="form-control shadow-sm rounded-3 border-2"
+           accept="image/*"
+           onChange={handleImageChange}
+          />
+         </div>
+   {/* Vista previa de la imagen */}
+         {imagePreviewUrl && (
+           <div className="text-center mt-2">
+             <img
+               src={imagePreviewUrl}
+               alt="Vista previa del logo"
+             style={{ maxWidth: '150px', maxHeight: '150px', objectFit: 'cover', border: '1px solid #ccc' }}
+           />
+         </div>
+         )}        
         {/* Botones */}
         <div className="d-flex justify-content-between mt-3">
           <button type="button" className={formStyles.registrar}  onClick={handleUpdate}>

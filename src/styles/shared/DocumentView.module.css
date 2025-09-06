@@ -148,8 +148,8 @@
 
 .exportButton {
   /* --- Diseño Base (Outline) --- */
-  background-color: transparent;
-  color: var(--color-dark); /* Usa tu color primario morado */
+  background-color: var(--color-dark);
+  color: #fff; /* Usa tu color primario morado */
   border: 2px solid var(--color-dark);
   
   /* --- Consistencia con .actionButton --- */
@@ -171,8 +171,8 @@
 
 /* --- Efecto Hover (Inversión de colores) --- */
 .exportButton:hover {
-  background-color: var(--color-dark);
-  color: #fff; /* Texto blanco al pasar el ratón */
+  background-color: transparent;
+  color: var(--color-dark); /* Texto blanco al pasar el ratón */
 }
 
 /* --- Estilo para el Estado Deshabilitado --- */
@@ -189,6 +189,23 @@
   font-size: 1.3rem;    /* Tamaño del ícono */
   margin-top: -1px; 
 } 
+
+/* 1. Definimos la clase específica para el encabezado de las tablas. */
+.salesTableHeader {
+  background-color: #2e2c50; /* ¡Tu color personalizado! */
+  color: #ffffff; /* Letras blancas para un buen contraste */
+  position: sticky; /* Mantiene la cabecera visible al hacer scroll vertical */
+  top: 0;           /* Lo pega en la parte superior del contenedor de scroll */
+  z-index: 1;       /* Asegura que esté por encima del contenido del cuerpo de la tabla */
+}
+
+/* 2. Aseguramos que los 'th' dentro de este encabezado hereden los estilos correctos. */
+.salesTableHeader th {
+  background-color: inherit; /* Hereda el color del padre (thead) */
+  color: inherit;            /* Hereda el color de texto del padre */
+  font-weight: 600;          /* Un poco más de peso a la fuente */
+  border-color: #4a4a6b;     /* Un borde ligeramente más claro que el fondo para una separación sutil */
+}
 
 /*
  ==================================================================
