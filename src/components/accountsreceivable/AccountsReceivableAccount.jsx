@@ -257,12 +257,13 @@ const AccountStatement = () => {
             Ver cuentas
           </button>
           <div className={styles.exportaciones}>
+            <p>Guardar como:</p>
             <button
               className={styles.exportBtn}
               onClick={generateAccountPDF} // <-- Llamada a la función sin parámetros
             >
               <FaFilePdf />
-              Exportar en PDF
+              PDF
             </button>
             <button
               className={styles.exportBtn}
@@ -275,7 +276,7 @@ const AccountStatement = () => {
               }
             >
               <FaFileExcel />
-              Exportar en Excel
+              Excel
             </button>
 
           </div>

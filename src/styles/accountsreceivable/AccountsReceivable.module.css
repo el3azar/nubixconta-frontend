@@ -22,7 +22,7 @@ label{
   align-items: center;
   background-color: #8581B0;
   padding: 1.2rem;
-  border-radius: 10px;
+  border-radius: 15px;
   margin-bottom: 1rem;
   flex-wrap: wrap;
   gap: 1rem;
@@ -43,7 +43,7 @@ label{
 .filtroGrupo input[type="date"] {
   padding: 0.6rem;
   border: none;
-  border-radius: 6px;
+  border-radius: 15px;
   font-size: 1rem;
 }
 
@@ -53,7 +53,7 @@ label{
   padding: 0.7rem 1.2rem;
   font-size: 1rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 15px;
   cursor: pointer;
   font-weight: bold;
 }
