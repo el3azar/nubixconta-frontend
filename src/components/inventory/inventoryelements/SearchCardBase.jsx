@@ -63,9 +63,9 @@ function SearchCardBase({
           </div>
         </div>
       </div>
-      <div className="card-footer text-end">
-        <Boton color="morado" forma="pastilla" onClick={onBuscar}>
-          <i className="bi bi-search me-2"></i>
+      <div className="card-footer text-center">
+        <Boton color="morado" forma="pastilla" className="mb-2" onClick={onBuscar}>
+          <i className="bi bi-search me-2 mb"></i>
           Buscar
         </Boton>
         <Boton color="blanco" forma="pastilla" className="ms-2" onClick={onLimpiar}>
