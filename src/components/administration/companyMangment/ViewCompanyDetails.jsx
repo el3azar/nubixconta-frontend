@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
 import { Notifier } from "../../../utils/alertUtils";
 import { useCompany } from './CompanyDataContext';
 import styles from "../../../styles/sales/ViewCustomers.module.css";
@@ -59,7 +58,18 @@ const ViewCompanyDetails = () => {
   return (
     <div className="container py-4" style={{ maxWidth: '600px' }}>
       <h5 className="text-center fw-bold mb-4">Información de la empresa</h5>
-
+   {/* Sección para mostrar el logo de la empresa */}
+      {empresa.imageUrl && (
+        <div className="text-center mb-4">
+          <img
+            src={empresa.imageUrl}
+            alt={`Logo de ${empresa.nombre}`}
+            style={{ maxWidth: '150px', maxHeight: '150px', objectFit: 'contain', border: '1px solid #ddd', padding: '5px', borderRadius: '8px' }}
+          />
+        </div>
+      )}
+      {/* Fin de la sección del logo */}
+      
       {/* Nombre de persona jurídica o Natural */}
       <div className="mb-3">
         <label className="form-label fw-semibold text-dark">Nombre de persona Jurídica o Natural:</label>

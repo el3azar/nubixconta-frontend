@@ -3,7 +3,6 @@ import CompanyActions from './CompanyActions';
 import '../../../styles/administration/CompanyRowAdministration.module.css';
 import { getUsersByAssistant } from '../../../services/administration/company/usersByAssistanService';
 import { assignUserToCompany } from '../../../services/administration/company/assignUserToCompanyService';
-import Swal from "sweetalert2";
 import { Notifier } from "../../../utils/alertUtils";
 const CompanyRow = ({
   company,
@@ -55,7 +54,7 @@ const handleAssistantChange = async (value) => {
 
   setSelectedAssistant(value);
 
-const confirm = await Swal.fire({
+const confirm = await Notifier.confirm({
     title: "¿Deseas asignar  esta  empresa?",
     text: `¿Está seguro que desea asignar la contabilidad de la empresa "${company.nombre}" al usuario "${nombreUsuario}"?`,
     icon: "question",

@@ -5,7 +5,6 @@ import { getCompaniesInactive } from '../../../services/administration/company/c
 import { getCompaniesActive } from '../../../services/administration/company/companiesViewServices';
 import { getUsersByAssistant } from '../../../services/administration/company/usersByAssistanService';
 
-
 const CompanyDataContext = createContext();
 
 export const useCompany = () => useContext(CompanyDataContext);
@@ -101,6 +100,7 @@ const updateCompany = async (company) => {
       companyNrc: company.companyNrc,
       activeStatus:company.activeStatus,
       userId: company.userId || null,
+      imageUrl: company.imageUrl, 
     });
 
     // Actualiza localmente en el estado del contexto
@@ -157,6 +157,7 @@ const getCompanyById = async (id) => {
     activeStatus:response.activeStatus,
     assignedAssistantName: assignedAssistantName,
     userId: response.userId || null,
+    imageUrl: response.imageUrl,
 };
   } catch (error) {
     console.error("Error al obtener empresa por ID:", error);

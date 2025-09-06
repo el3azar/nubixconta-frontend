@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
 import { useCompany } from './CompanyDataContext';
 import CompanySearchBar from './CompanySearchBar';
 import CompanyTable from './CompanyTable';
@@ -59,7 +58,7 @@ const handleAssign = (empresa, userId) => {
  const handleToggleCompanyStatus = async (empresa, newActiveStatus) => {
     // Si newActiveStatus es 'false', significa que queremos desactivar la empresa
     if (newActiveStatus === false) {
-      const result = await Swal.fire({
+      const result = await Notifier.confirm({
         title: 'Confirmación',
         text: `¿Está seguro que desea desactivar la empresa "${empresa.nombre}"?`,
         icon: 'warning',
