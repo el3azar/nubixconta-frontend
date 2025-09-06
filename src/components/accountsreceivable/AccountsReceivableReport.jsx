@@ -9,7 +9,8 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { useCompany } from "../../context/CompanyContext";
 import { useAuth } from "../../context/AuthContext";
-
+import SubMenu from "../shared/SubMenu"; 
+import {AccountReceivableSubMenuLinks } from '../../config/menuConfig';
 // Función para cargar una imagen como Base64
 const loadImageAsBase64 = (url) => {
   return new Promise((resolve, reject) => {
@@ -172,7 +173,9 @@ const AccountsReceivableReport = () => {
   };
 
   return (
-    <div className={styles.container}>
+    <>
+    <SubMenu links={AccountReceivableSubMenuLinks} />
+        <div className={styles.container}>
      <div className={styles.reportHeader}>
         <h2>REPORTE DE CUENTAS POR COBRAR</h2>
       </div>
@@ -228,6 +231,7 @@ const AccountsReceivableReport = () => {
         </table>
       </div>
     </div>
+    </>
   );
 };
 

@@ -10,7 +10,8 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { useCompany } from "../../context/CompanyContext";
 import { useAuth } from "../../context/AuthContext";
-
+import SubMenu from "../shared/SubMenu"; 
+import {AccountReceivableSubMenuLinks } from '../../config/menuConfig';
 // Función para cargar una imagen como Base64 (reutilizada del otro reporte)
 const loadImageAsBase64 = (url) => {
   return new Promise((resolve, reject) => {
@@ -219,6 +220,8 @@ const AccountStatement = () => {
   };
 
   return (
+    <>
+         <SubMenu links={AccountReceivableSubMenuLinks} />
     <section className={styles.container}>
       <h2 className={styles.titulo}>ESTADO DE CUENTA POR CLIENTE</h2>
 
@@ -314,6 +317,7 @@ const AccountStatement = () => {
         accounts={accounts}
       />
     </section>
+    </>
   );
 };
 

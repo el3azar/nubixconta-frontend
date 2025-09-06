@@ -10,7 +10,7 @@ import { useAuth } from "../context/AuthContext";
 import { 
     fetchCollections,fetchSalesSummary, 
    // fetchAccountsByDate as apiFetchByDate 
-} from '../services/accountsReceivableServices';
+} from '../services/accountsreceivable/accountsReceivableServices';
 import { getCollectionDetailById as apiGetDetailById } from '../services/accountsreceivable/getCollectionDetailById';
 import { getCollectionEntryById as apiGetEntryById } from '../services/accountsreceivable/getCollectionEntryById';
 import { deleteCollectionDetail as apiDeleteDetail } from '../services/accountsreceivable/deleteByCollectionDetails';
@@ -69,7 +69,7 @@ const processSalesSummary = (response) => {
             montoTotal: sale.totalAmount ? `$${sale.totalAmount.toFixed(2)}` : '$0.00',
             diasCredito: sale.creditDay ?? 0,
             // Agregamos una descripción por defecto si no existe
-            descripcion: item.description || 'Resumen de venta', 
+            descripcion: sale.saleDescription || 'Resumen de venta', 
         };
     });
 };
