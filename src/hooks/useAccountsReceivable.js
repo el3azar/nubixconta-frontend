@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import Swal from 'sweetalert2';
 import { Notifier } from '../utils/alertUtils';
 
 // Contexts
@@ -162,7 +161,7 @@ export const useAccountsReceivable = (viewType) => {
   }, []);
 
   const deleteItem = useCallback(async (id) => {
-    const result = await Swal.fire({
+    const result = await Notifier.confirm({
       title: '¿Estás seguro?',
       text: 'Esta acción eliminará el registro permanentemente.',
       icon: 'warning',
@@ -183,7 +182,7 @@ export const useAccountsReceivable = (viewType) => {
   }, [fetchData]);
 
     const applyItem = useCallback(async (id) => {
-        const confirm = await Swal.fire({
+        const confirm = await Notifier.confirm({
             title: '¿Deseas aplicar esta partida contable?',
             icon: 'question',
             showCancelButton: true,
@@ -204,7 +203,7 @@ export const useAccountsReceivable = (viewType) => {
 
 
     const cancelItem = useCallback(async (id) => {
-        const confirm = await Swal.fire({
+        const confirm = await Notifier.confirm({
             title: '¿Estás seguro?',
             text: 'Esta acción anulará la liquidación contable.',
             icon: 'warning',

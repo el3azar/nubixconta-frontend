@@ -1,4 +1,3 @@
-import Swal from 'sweetalert2';
 import { Notifier } from "../../../utils/alertUtils";
 /**
  * Llama a este método cuando el usuario intente activar o desactivar una empresa.
@@ -7,7 +6,7 @@ import { Notifier } from "../../../utils/alertUtils";
  * @param {function} onConfirm - función a ejecutar si el usuario confirma
  */
 export const showToggleCompanyStatusModal = (nuevoEstado, onConfirm) => {
-  Swal.fire({
+  Notifier.confirm({
     title: `¿Está seguro de que desea ${nuevoEstado ? 'activar' : 'desactivar'} la empresa?`,
     icon: 'question',
     showCancelButton: true,

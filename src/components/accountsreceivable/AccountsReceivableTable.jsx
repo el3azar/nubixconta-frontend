@@ -64,7 +64,6 @@ const AccountsReceivableTable = ({ data, actions }) => {
             <th>Monto</th>
             <th>Monto total</th>
             <th>Descripción</th>
-            <th>Días de crédito</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -80,7 +79,6 @@ const AccountsReceivableTable = ({ data, actions }) => {
               <td>{fila.monto}</td>
               <td>{fila.montoTotal}</td>
               <DescriptionCell text={fila.descripcion} />
-              <td>{fila.diasCredito}</td>
               <td>
                 <TableRowActions 
                     row={fila}

@@ -81,12 +81,7 @@ const RegisterCompanyView = () => {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      Swal.fire({
-        title: 'Advertencia',
-        text: 'Revise que los datos estén correctos',
-        icon: 'error',
-        confirmButtonColor: '#d33'
-      });
+      Notifier.error('Revise que los datos estén correctos');
       return;
     }
 
