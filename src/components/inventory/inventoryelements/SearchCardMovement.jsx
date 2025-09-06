@@ -127,8 +127,8 @@ function SearchCardMovement({
           </div>
         </div>
       </div>
-      <div className="card-footer text-end">
-        <Boton color="morado" forma="pastilla" onClick={onBuscar}>
+      <div className="card-footer text-center">
+        <Boton color="morado" forma="pastilla" className="mb-2" onClick={onBuscar}>
           <i className="bi bi-search me-2"></i>
           Buscar Movimiento
         </Boton>
