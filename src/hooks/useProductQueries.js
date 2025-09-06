@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useProductService } from "../services/inventory/productService";
 import { useCompany } from "../context/CompanyContext";
-
+import { Notifier } from "../utils/alertUtils";
 /**
  * Hook central para todas las operaciones de React Query relacionadas con Productos.
  */
@@ -80,7 +80,9 @@ export const useCreateProduct = () => {
       // de "products" están obsoletos. Esto hará que se vuelvan a pedir.
       queryClient.invalidateQueries({ queryKey: ["products"] });
     },
-    // Podrías añadir lógica onError aquí para mostrar notificaciones de error.
+    onError: (error) => {
+      Notifier.error("Error al crear el producto");
+    }
   });
 };
 
