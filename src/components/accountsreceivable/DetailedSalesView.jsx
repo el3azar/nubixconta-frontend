@@ -10,7 +10,8 @@ import RegisterReceivableLiquidacion from "./RegisterReceivableLiquidacion";
 import EditReceivableLiquidation from "./EditReceivableLiquidation";
 import AccountingEntryModal from "../shared/AccountingEntryModal";
 import { Notifier } from "../../utils/alertUtils";
-
+import SubMenu from "../shared/SubMenu"; 
+import {AccountReceivableSubMenuLinks } from '../../config/menuConfig';
 // Styles
 import styles from "../../styles/accountsreceivable/AccountsReceivable.module.css";
 
@@ -83,6 +84,8 @@ const DetailedSalesView = () => {
   };
 
   return (
+    <>
+  <SubMenu links={AccountReceivableSubMenuLinks}></SubMenu>
     <section className={styles.container}>
       {/* Puedes cambiar el título si lo deseas */}
       <h2 className={styles.titulo}>GESTIÓN DETALLADA DE VENTAS</h2>
@@ -126,6 +129,7 @@ const DetailedSalesView = () => {
         error={accountingEntry?.error}
       />
     </section>
+    </>
   );
 };
 

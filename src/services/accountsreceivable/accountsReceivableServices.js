@@ -28,14 +28,3 @@ export const fetchSalesSummary = async () => {
         throw error;
     }
 };
-/*
-export const fetchAccountsByDate = async (startDate, endDate) => {
-  const token = sessionStorage.getItem('nubix_token');
-  const url = `${BASE_URL}/filter-by-date?startDate=${startDate}&endDate=${endDate}`;
-  const response = await axios.get(url, {
-    headers: { Authorization: `Bearer ${token}` },
-    withCredentials: true
-  });
-  return response.data;
-};
-*/

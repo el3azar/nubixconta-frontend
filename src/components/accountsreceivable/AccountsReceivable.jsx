@@ -1,6 +1,5 @@
 // src/pages/AccountsReceivable.js
 import React, { useState } from "react";
-import { FaPlus } from "react-icons/fa";
 
 // Hooks
 import { useAccountsReceivable } from "../../hooks/useAccountsReceivable";
@@ -9,15 +8,15 @@ import { useAccountsReceivable } from "../../hooks/useAccountsReceivable";
 import RegisterReceivableLiquidacion from "./RegisterReceivableLiquidacion";
 import EditReceivableLiquidation from "./EditReceivableLiquidation";
 import DateRangeFilter from "../../components/accountsreceivable/DateRangeFilter";
-
-import { DefaultFilterComponent, SortActionsComponent } from '../shared/DocumentViewDefaults';
+import SubMenu from "../shared/SubMenu"; 
+import {AccountReceivableSubMenuLinks } from '../../config/menuConfig';
+import {  SortActionsComponent } from '../shared/DocumentViewDefaults';
 import AccountsReceivableTable from "../../components/accountsreceivable/AccountsReceivableTable";
 import AccountingEntryModal from "../shared/AccountingEntryModal";
 import { Notifier } from "../../utils/alertUtils";
 
 // Styles
 import styles from "../../styles/accountsreceivable/AccountsReceivable.module.css";
-import DetailedSalesView from "./DetailedSalesView";
 import stylesCustomers from "../../styles/sales/ViewCustomers.module.css";
 
 const AccountsReceivable = () => {
@@ -97,7 +96,11 @@ const AccountsReceivable = () => {
     };
 
   return (
+
+    <>
+     <SubMenu links={AccountReceivableSubMenuLinks} />
     <section className={styles.container}>
+      
       <DateRangeFilter
         startDate={startDate}
         endDate={endDate}
@@ -144,6 +147,7 @@ const AccountsReceivable = () => {
         error={accountingEntry?.error}
       />
     </section>
+    </>
   );
 };
 
