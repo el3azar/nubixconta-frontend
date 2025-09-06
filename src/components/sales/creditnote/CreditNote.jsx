@@ -2,11 +2,12 @@
 
 import React from 'react';
 import { DocumentListView } from '../../shared/DocumentListView';
-import SubMenu from "../SubMenu";
+import SubMenu from "../../shared/SubMenu"; 
 import { CreditNoteService } from '../../../services/sales/CreditNoteService';
 import { DefaultFilterComponent, DefaultActionsComponent } from '../../shared/DocumentViewDefaults';
 import { formatDate } from '../../../utils/dateFormatter';
 import viewStyles from '../../../styles/shared/DocumentView.module.css';
+import { salesSubMenuLinks } from '../../../config/menuConfig';
 
 // Configuración de columnas específica para Notas de Crédito
 const creditNoteColumns = [
@@ -45,7 +46,7 @@ export default function CreditNote() {
 
   return (
     <>
-      <SubMenu />
+      <SubMenu links={salesSubMenuLinks} />
       <DocumentListView
         pageTitle="Filtrar Notas de Crédito"
         listTitle="Notas de Crédito"

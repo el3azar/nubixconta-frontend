@@ -134,19 +134,3 @@ export const useReactivateProduct = () => {
         },
     });
 }
-
-/**
- * Proporciona una función para ELIMINAR un producto.
- * Al tener éxito, refresca la lista de productos.
- */
-export const useDeleteProduct = () => {
-    const queryClient = useQueryClient();
-    const { deleteProduct } = useProductService();
-
-    return useMutation({
-        mutationFn: deleteProduct, // Espera el ID del producto
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["products"] });
-        },
-    });
-}

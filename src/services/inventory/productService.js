@@ -76,19 +76,17 @@ export const useProductService = () => {
 
   // Desactivar un producto (un caso específico de update)
   const deactivateProduct = async (id) => {
-    return updateProduct({ id, payload: { productStatus: false } });
+   // La petición POST no necesita un cuerpo, la acción está en la URL.
+    const res = await axios.post(`${API_URL}/${id}/deactivate`, null, getAuthHeader());
+    return res.data; // El backend devuelve el producto actualizado.
   };
   
   // Reactivar un producto (un caso específico de update, para consistencia con customerService)
   const reactivateProduct = async (id) => {
-    return updateProduct({ id, payload: { productStatus: true } });
+    const res = await axios.post(`${API_URL}/${id}/activate`, null, getAuthHeader());
+    return res.data; // El backend devuelve el producto actualizado.
   };
 
-  // Eliminar un producto físicamente de la base de datos
-  const deleteProduct = async (id) => {
-    const res = await axios.delete(`${API_URL}/${id}`, getAuthHeader());
-    return res.data; // O res.status si el backend devuelve un 204 No Content
-  };
 
 
   // Objeto que devuelve el hook con todas las funciones listas para usar
@@ -103,6 +101,5 @@ export const useProductService = () => {
     updateProduct,
     deactivateProduct,
     reactivateProduct,
-    deleteProduct
   };
 };

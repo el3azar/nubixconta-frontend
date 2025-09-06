@@ -6,7 +6,8 @@ import { Notifier } from '../../../utils/alertUtils';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCustomerService } from '../../../services/sales/customerService';
 import { useNavigate } from 'react-router-dom';
-import SubMenu from "../SubMenu"; 
+import SubMenu from "../../shared/SubMenu"; 
+import { salesSubMenuLinks } from '../../../config/menuConfig';
 import { useCompany } from '../../../context/CompanyContext';
 import ViewContainer from '../../shared/ViewContainer';
 
@@ -62,7 +63,7 @@ const DesactivatedCustomer = () => {
 
   return (
     <>
-    <SubMenu />
+    <SubMenu links={salesSubMenuLinks} />
     <ViewContainer>
         <section className={styles.wrapper}>
           <h2 className={styles.heading}>Clientes Desactivados:</h2>

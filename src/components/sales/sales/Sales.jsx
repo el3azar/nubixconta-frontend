@@ -3,11 +3,12 @@
 import React from 'react';
 import { DocumentListView } from '../../shared/DocumentListView';
 import { SaleService } from '../../../services/sales/SaleService';
-import SubMenu from "../SubMenu";
+import SubMenu from "../../shared/SubMenu"; 
 import { DefaultFilterComponent, DefaultActionsComponent } from '../../shared/DocumentViewDefaults';
 import { formatDate } from '../../../utils/dateFormatter';
 import viewStyles from '../../../styles/shared/DocumentView.module.css';
 import ViewContainer from '../../shared/ViewContainer';
+import { salesSubMenuLinks } from '../../../config/menuConfig';
 // Definimos la configuración de las columnas aquí, fuera del componente.
 const salesColumns = [
   { header: 'Correlativo', accessor: 'saleId', style: { minWidth: '100px' }  },
@@ -40,7 +41,7 @@ export default function Sales() {
 
   return (
  <div> {/* Usamos un div simple como contenedor raíz */}
-      <SubMenu />
+      <SubMenu links={salesSubMenuLinks} />
       {/* --- 2. ENVOLVEMOS LA VISTA CON VIEWCONTAINER --- */}
       <ViewContainer>
         <DocumentListView

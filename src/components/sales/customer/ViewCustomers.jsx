@@ -7,8 +7,11 @@ import { useCustomerService } from "../../../services/sales/customerService";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Notifier } from "../../../utils/alertUtils"; 
 import { IMaskInput } from 'react-imask';
-import SubMenu from "../SubMenu"; 
+import SubMenu from "../../shared/SubMenu"; 
 import ViewContainer from "../../shared/ViewContainer"; 
+import CreditNoteIcon from "../../../assets/icons/credit-note.svg?react";
+import CreateSaleIcon from "../../../assets/icons/create-sale.svg?react";
+import { salesSubMenuLinks } from '../../../config/menuConfig';
 
 const ViewCustomers = () => {
   // --- LÓGICA NUEVA ---
@@ -85,7 +88,7 @@ const ViewCustomers = () => {
   return (
    
     <div>
-      <SubMenu />
+      <SubMenu links={salesSubMenuLinks} />
 
       <ViewContainer title="Gestión de Clientes">
       
@@ -225,10 +228,10 @@ const ViewCustomers = () => {
                                 <i className="bi bi-eye-slash" />
                               </button>
                               <button className={styles.iconBtn} title="Crear Venta" onClick={() => navigate(`/ventas/nueva/${cliente.clientId}`)}>
-                                <i className="bi bi-receipt" />
+                                <CreateSaleIcon />
                               </button>
                               <button className={styles.iconBtn} title="Crear Nota de Crédito" onClick={() => navigate(`/ventas/nueva-nota-credito/${cliente.clientId}`)}>
-                                <i className="bi bi-file-earmark-text" /> 
+                                <CreditNoteIcon /> 
                               </button>
                             </div>
                         </td>

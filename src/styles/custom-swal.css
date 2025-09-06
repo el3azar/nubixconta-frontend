@@ -1,0 +1,133 @@
+/*
+ * ==================================================================
+ * == Estilos personalizados para SweetAlert2 - Tema NubixConta (Light)
+ * ==================================================================
+ */
+:root {
+  /* Tu paleta de colores, la usaremos como referencia */
+  --bg-dark: #10031C;
+  --bg-mid: #1B043B;
+  --bg-purple: #49207B;
+  --accent: #7D49CC;
+  --muted: #8581B0;
+  --gray: #ABAABC;
+}
+
+/* 
+ * 1. CONTENEDOR PRINCIPAL DEL MODAL (POPUP)
+ * Usamos tu color 'gray' para un fondo claro, suave y neutro.
+ */
+.swal-popup-custom {
+  background: #b49cd7 !important;
+  border-radius: 1rem !important;
+  border: none !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* 
+ * 2. TÍTULO DEL MODAL
+ * Texto oscuro para máxima legibilidad sobre el fondo claro.
+ */
+.swal-title-custom {
+  color: var(--bg-dark) !important;
+  font-weight: 700 !important;
+}
+
+/* 
+ * 3. CONTENIDO/TEXTO DEL MODAL
+ * Un color ligeramente más suave que el título para crear jerarquía.
+ */
+.swal-html-container-custom {
+  color: var(--bg-mid) !important; /* Un gris oscuro estándar */
+}
+
+/*
+ * 4. ICONOS PERSONALIZADOS
+ * Colores fuertes que destacan sobre el fondo claro.
+ */
+
+/* Icono de ÉXITO */
+.swal-icon-custom.swal2-success .swal2-success-line-tip,
+.swal-icon-custom.swal2-success .swal2-success-line-long {
+  background-color: #28a745 !important; /* Un verde de éxito estándar */
+}
+.swal-icon-custom.swal2-success-ring {
+  border-color: rgba(40, 167, 69, 0.3) !important;
+}
+
+/* Icono de ERROR */
+.swal-icon-custom.swal2-error {
+  border-color: #dc3545 !important; /* Un rojo de error estándar */
+}
+.swal-icon-custom.swal2-error .swal2-x-mark-line-left,
+.swal-icon-custom.swal2-error .swal2-x-mark-line-right {
+  background-color: #dc3545 !important;
+}
+
+/* Icono de ADVERTENCIA (Confirmación) */
+.swal-icon-custom.swal2-warning {
+  color: var(--bg-purple) !important;      /* El '!' usa tu morado fuerte */
+  border-color: var(--bg-purple) !important; /* El círculo también */
+}
+
+/* 
+ * 5. BOTONES PERSONALIZADOS
+ * Botón principal con morado fuerte, secundario como "ghost button".
+ */
+
+/* Botón de CONFIRMACIÓN (acción principal) */
+.swal-button-confirm-custom {
+  background-color: var(--bg-dark) !important; /* <<<--- CAMBIO: Morado fuerte */
+  color: #FFFFFF !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  padding: 0.65rem 1.5rem !important;
+  border: none !important;
+  box-shadow: none !important;
+  transition: filter 0.2s;
+}
+.swal-button-confirm-custom:hover {
+  background-color: transparent !important;
+  color: var(--bg-dark) !important;
+  border: 2px solid var(--bg-dark) !important;
+  filter: brightness(1.15);
+}
+
+/* Botón de CANCELACIÓN (acción secundaria) */
+.swal-button-cancel-custom {
+  background-color: transparent !important;
+  border: 2px solid var(--bg-dark) !important;
+  color: var(--bg-dark) !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  padding: 0.65rem 1.5rem !important;
+  box-shadow: none !important;
+  transition: background-color 0.2s, color 0.2s;
+}
+.swal-button-cancel-custom:hover {
+  background-color: var(--bg-dark) !important;
+  color: #FFFFFF !important;
+}
+ 
+/*
+ * 6. CAMPO DE TEXTO (INPUT) PERSONALIZADO
+ * Diseño claro y limpio para encajar con el nuevo fondo.
+ */
+.swal-input-custom {
+  width: 90% !important;
+  margin: 1.5em auto 0 !important;
+  
+  /* Estilos visuales para el tema claro */
+  background-color: #FFFFFF !important;
+  color: var(--bg-dark) !important;
+  border: 1px solid #ced4da !important;
+  border-radius: 8px !important;
+  font-size: 1rem !important;
+  height: auto !important;
+  padding: 0.75rem 1rem !important;
+  box-shadow: none !important;
+}
+.swal-input-custom:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px rgba(125, 73, 204, 0.25) !important;
+}

@@ -1,5 +1,6 @@
 // src/pages/VentasDashboard.jsx
-import { FaUsers, FaChartLine, FaFileInvoiceDollar, FaUserCheck } from "react-icons/fa";
+import { FaUsers, FaChartLine, FaFileInvoiceDollar, FaClipboardList } from "react-icons/fa";
+
 import DashboardCards from "../DashboardCards";
 import layoutStyles from "../../styles/mainLayout.module.css"
 
@@ -8,7 +9,7 @@ const ventasItems = [
   { label: "Clientes", icon: FaUsers, to: "/ventas/clientes" },
   { label: "Ventas", icon: FaChartLine, to: "/ventas/ventas" },
   { label: "Nota de Credito", icon: FaFileInvoiceDollar, to: "/ventas/notas-credito" },
-  { label: "Reportes", icon: FaUserCheck, to: "/ventas/reportes" }
+  { label: "Reportes", icon: FaClipboardList, to: "/ventas/reportes" }
 ];
 
 const DashBoardSales = () => (

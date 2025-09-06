@@ -5,7 +5,7 @@ import { FaSearch, FaFilePdf, FaFileExcel } from 'react-icons/fa';
 import { DocumentListView } from '../../shared/DocumentListView';
 import { SaleService } from '../../../services/sales/SaleService';
 import { formatDate } from '../../../utils/dateFormatter';
-import SubMenu from "../SubMenu";
+import SubMenu from "../../shared/SubMenu"; 
 import styles from '../../../styles/shared/DocumentView.module.css';
 import { useAuth } from '../../../context/AuthContext';
 import { useCompany } from '../../../context/CompanyContext'; 
@@ -16,6 +16,7 @@ import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import ViewContainer from '../../shared/ViewContainer';
 import { Notifier } from '../../../utils/alertUtils';
+import { salesSubMenuLinks } from '../../../config/menuConfig';
 
 // --- INICIO DE LA CORRECCIÓN ---
 // Usamos el mismo método robusto para obtener la fecha local de hoy.
@@ -278,10 +279,10 @@ return (
             <div className="d-flex align-items-center justify-content-center flex-wrap gap-3">
                 <span className="fw-bold">Guardar como:</span>
                 <button type="button" className={styles.exportButton} onClick={handleExportPDF} title="Exportar a PDF" disabled={!documents || documents.length === 0}>
-                    <FaFilePdf size="1.5em" />
+                   <FaFilePdf className="me-2" /> PDF
                 </button>
                 <button type="button" className={styles.exportButton} onClick={handleExportExcel} title="Exportar a Excel" disabled={!documents || documents.length === 0}>
-                    <FaFileExcel size="1.5em" />
+                    <FaFileExcel className="me-2" /> Excel
                 </button>
             </div>
         </div>
@@ -307,7 +308,7 @@ export default function SalesReport() {
 
   return (
     <div>
-      <SubMenu />
+      <SubMenu links={salesSubMenuLinks} />
       <ViewContainer>
       <DocumentListView
         pageTitle="Reporte de Ventas"
