@@ -59,11 +59,7 @@ const DetailedSalesTable = ({ data, actions }) => {
               <td>
                 {/* 3. Botones de acción fijos, sin lógica condicional */}
                 <span style={{ display: 'flex', gap: '0.8rem', justifyContent: 'center' }}>
-                  <FaEye 
-                    title="Ver Partida Contable" 
-                    className={styles.icono} 
-                    onClick={() => actions.onView(fila.id)} 
-                  />
+               
                   <FaFileInvoiceDollar 
                     title="Liquidar" 
                     className={styles.icono} 

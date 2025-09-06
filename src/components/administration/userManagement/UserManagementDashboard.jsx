@@ -126,7 +126,7 @@ const showSuccess = (msg) =>
 
   // Función para activar/desactivar un usuario
   const handleToggleActive = (user) => {
-    Swal.fire({
+    Notifier.confirm({
       title: "Confirmar acción",
       text: `¿Estás seguro de que deseas ${
         user.status ? "desactivar" : "activar" // Texto dinámico según el estado actual
