@@ -25,3 +25,32 @@
     background-color: #f8d7da !important; /* Un rojo Bootstrap estándar */
     color: #842029 !important;
 }
+
+/* Colores suaves para los estados de la tabla */
+
+.row-aplicada td {
+  background-color: #d4edda !important; /* Verde pastel suave */
+  color: #0f5132; /* Color de texto para contraste */
+}
+
+.row-anulada td{
+  background-color: #f8d7da !important; /* Rojo suave y tenue */
+  color: #842029; /* Color de texto para contraste */
+}
+
+.row-pendiente td {
+  background-color: #b5b6b8bd !important; /* Gris muy claro */
+}
+
+/* Este contenedor es un estilo genérico, mantenlo como está.
+   No tiene que ver con la coloración de las filas.
+*/
+.contenedor-movimientos {
+  background-color: #AEA9E2;
+  border-radius: 15px;
+  max-width: 1500px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2rem;
+  margin-top: 2rem;
+}

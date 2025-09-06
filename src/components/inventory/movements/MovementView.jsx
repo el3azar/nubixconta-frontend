@@ -242,10 +242,20 @@ const MovementView = () => {
                 </Boton>
             </div>
         </div>
-        <TableComponent columns={columns} data={movimientos} withPagination={true} rowProps={(row) => ({
-            className:
-                row.original.status === 'APLICADA'? 'table-success': row.original.status === 'ANULADA'? 'table-danger' : ''
-          })}
+        <TableComponent columns={columns} data={movimientos} withPagination={true} rowProps={(row) => {
+              let className = '';
+              const status = row.original.status;
+
+              if (status === 'APLICADA') {
+                  className = styles['row-aplicada']; // Usamos un nombre de clase simple
+              } else if (status === 'ANULADA') {
+                  className = styles['row-anulada']; // Usamos un nombre de clase simple
+              } else if (status === 'PENDIENTE') {
+                  className = styles['row-pendiente']; // Usamos un nombre de clase simple
+              }
+
+              return { className };
+          }}
         />
         
         {/* ¡EL NUEVO MODAL UNIFICADO EN ACCIÓN! */}
