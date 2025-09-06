@@ -293,7 +293,7 @@ return (
 // --- AC02: Columnas de la tabla en pantalla ---
 const reportColumns = [
     { header: 'Fecha', cell: (doc) => formatDate(doc.issueDate), style: { minWidth: '150px' }  },
-    { header: 'N° de Documento', accessor: 'documentNumber', style: { minWidth: '130px' } },
+    { header: 'N° Doc.', accessor: 'documentNumber', style: { minWidth: '130px' } },
     { header: 'Cliente', cell: (doc) => `${doc.customer?.customerName || ''} ${doc.customer?.customerLastName || ''}`.trim(), style: { minWidth: '250px' }, className: styles.textAlignLeft },
     { header: 'Subtotal', cell: (doc) => `$${doc.subtotalAmount?.toFixed(2)}`, style: { minWidth: '150px' }, className: styles.textAlignRight },
     { header: 'IVA', cell: (doc) => `$${doc.vatAmount?.toFixed(2)}`, style: { minWidth: '150px' }, className: styles.textAlignRight },

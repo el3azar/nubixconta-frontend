@@ -190,7 +190,7 @@ const ViewCustomers = () => {
 
             <div className={styles.tableResponsiveWrapper}>
               <table className="table table-bordered align-middle w-100">
-                <thead>
+                <thead className={styles.salesTableHeader}>
                 <tr>
                   <th className={styles.colNombre}>Nombre</th>
                   <th className={styles.colApellido}>Apellido</th>
