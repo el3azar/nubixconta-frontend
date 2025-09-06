@@ -149,7 +149,7 @@ const ProductView = () => {
             handleCerrarModal();
             // Usamos el toast verde de inventario para el éxito
             const message = esEdicion ? 'Producto actualizado con éxito.' : 'Producto creado con éxito.';
-            Notifier.successInventory(message);
+            Notifier.success(message);
         },
         onError: (error) => {
             // Usamos el modal de error bloqueante, ya que el modal de formulario está abierto

@@ -148,3 +148,21 @@ tbody tr:hover {
   border-color: #6366f1;
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
 }
+
+/*
+  Estilos de las filas.
+  Apuntamos a los `td` para asegurar que el color se aplique correctamente.
+*/
+.row-aplicada td {
+  background-color: #d4edda; /* Verde pastel suave */
+  color: #0f5132; /* Color de texto para contraste */
+}
+
+.row-anulada td {
+  background-color: #f8d7da; /* Rojo suave y tenue */
+  color: #842029; /* Color de texto para contraste */
+}
+
+.row-pendiente td {
+  background-color: #f8f9fa; /* Gris muy claro */
+}
