@@ -1,13 +1,16 @@
 import axios from 'axios';
 
 const ACCESS_API = 'http://localhost:8080/api/v1/access-logs';
-const USERS_API  = 'http://localhost:8080/api/v1/users';
-const token = sessionStorage.getItem('nubix_token');
+const USERS_API = 'http://localhost:8080/api/v1/users';
 
-export const getAllUsers = () =>
-   axios.get(USERS_API, {
+const getToken = () => sessionStorage.getItem('nubix_token');
+
+export const getAllUsers = () => {
+  const token = getToken();
+  return axios.get(USERS_API, {
     headers: { Authorization: `Bearer ${token}` }
- });
+  });
+};
 
 /**
  * Obtiene la bitácora de accesos con filtros opcionales.
@@ -18,6 +21,7 @@ export const getAllUsers = () =>
  * @param {string} filters.endDate La fecha de fin en formato YYYY-MM-DD.
  */
 export const getAccessLogs = (filters = {}) => {
+  const token = getToken();
   return axios.get(ACCESS_API, {
     headers: { Authorization: `Bearer ${token}` },
     params: filters

@@ -18,6 +18,14 @@ export const inventorySubMenuLinks = [
   { to: '/inventario/movimientosproductos', label: 'Reportes' },
 ];
 
+
+export const AccountReceivableSubMenuLinks = [
+  { to: '/cuentas/cobros', label: 'cobros' },
+  {to:'/cuentas/visualizar_ventas', label: 'Visualizacion de ventas'},
+  { to: '/cuentas/reportes', label: 'Reporte' },
+  { to: '/cuentas/estado_cuenta', label: 'Estado de cuenta' },
+  
+];
 // En el futuro, cuando añadas más módulos, simplemente los agregas aquí:
 /*
 export const purchasesSubMenuLinks = [

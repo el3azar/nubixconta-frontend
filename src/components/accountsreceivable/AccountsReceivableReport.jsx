@@ -9,7 +9,8 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { useCompany } from "../../context/CompanyContext";
 import { useAuth } from "../../context/AuthContext";
-
+import SubMenu from "../shared/SubMenu"; 
+import {AccountReceivableSubMenuLinks } from '../../config/menuConfig';
 // Función para cargar una imagen como Base64
 const loadImageAsBase64 = (url) => {
   return new Promise((resolve, reject) => {
@@ -172,7 +173,9 @@ const AccountsReceivableReport = () => {
   };
 
   return (
-    <div className={styles.container}>
+    <>
+    <SubMenu links={AccountReceivableSubMenuLinks} />
+        <div className={styles.container}>
      <div className={styles.reportHeader}>
         <h2>REPORTE DE CUENTAS POR COBRAR</h2>
       </div>
@@ -184,14 +187,15 @@ const AccountsReceivableReport = () => {
         onSearch={() => console.log("Buscar entre:", startDate, endDate)}
       />
 
-      <section className={styles.exportButtons}>
+      <section className={styles.exportButtons}>   
+         <p >Guardar como</p>
         <button className={styles.exportLink} onClick={exportToPDF}>
           <FaFilePdf size={20} />
-          <span>Exportar en PDF</span>
+          <span> PDF</span>
         </button>
         <button className={styles.exportLink} onClick={exportToExcel}>
           <FaFileExcel size={20} />
-          <span>Exportar como Excel</span>
+          <span>Excel</span>
         </button>
       </section>
 
@@ -227,6 +231,7 @@ const AccountsReceivableReport = () => {
         </table>
       </div>
     </div>
+    </>
   );
 };
 
