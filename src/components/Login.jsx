@@ -6,8 +6,8 @@ import { FaArrowRightToBracket } from 'react-icons/fa6';
 import { FaInfoCircle } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext'; 
 import { authService } from '../services/authServices';
-import { showErrorAlert, showSuccessToast } from '../utils/alertUtils';
-import { toast } from 'react-hot-toast';
+// 1. Importamos el objeto 'Notifier' en lugar de las funciones individuales.
+import { Notifier } from '../utils/alertUtils';
 
 export default function Login() {
     const { register, handleSubmit, formState: { errors } } = useForm();
@@ -19,7 +19,7 @@ export default function Login() {
 
   const handleLoginSubmit = async (data) => {
     setIsSubmitting(true);
-    const loadingToastId = toast.loading('Iniciando sesión...');
+    const loadingToastId = Notifier.loading('Iniciando sesión...');
 
     try {
       const payload = {
@@ -31,8 +31,8 @@ export default function Login() {
 
       login(response.token, response.role, response.accessLogId);
 
-      toast.dismiss(loadingToastId);
-      showSuccessToast(`¡Bienvenido a NubixConta, ${data.userName}!`);
+      Notifier.dismiss(loadingToastId);
+      Notifier.success(`¡Bienvenido a NubixConta, ${data.userName}!`);
 
       if (response.role === true || response.role === 'true') {
         navigate("/admin");
@@ -40,11 +40,11 @@ export default function Login() {
         navigate("/empresas");
       }
     } catch (error) {
-      toast.dismiss(loadingToastId);
-      
+      Notifier.dismiss(loadingToastId);
+
       const errorMessage = error.response?.data || 'No se pudo conectar con el servidor.';
 
-      showErrorAlert('No se pudo iniciar sesión', errorMessage);
+      Notifier.showError('No se pudo iniciar sesión', errorMessage);
 
     } finally {
       setIsSubmitting(false);

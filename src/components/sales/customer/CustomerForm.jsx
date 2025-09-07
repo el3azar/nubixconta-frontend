@@ -3,7 +3,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 import { IMaskInput } from 'react-imask';
-
+import { Notifier } from '../../../utils/alertUtils';
 import { customerSchema } from '../../../schemas/customerSchema';
 import formStyles from '../../../styles/sales/CustomerForm.module.css';
 
@@ -60,25 +60,44 @@ export const CustomerForm = ({ onFormSubmit, defaultValues, isSubmitting = false
     else { setValue('customerDui', '', { shouldValidate: true }); setValue('customerLastName', '', { shouldValidate: true }); }
   };
 
-  const onSubmit = (data) => {
-    // La función 'data' contiene todos los campos validados del formulario.
+  // --- ¡CAMBIO IMPORTANTE! ---
+  // 2. Hacemos la función onSubmit asíncrona para poder usar 'await'.
+  const onSubmit = async (data) => {
+    // 3. MOSTRAMOS EL DIÁLOGO DE CONFIRMACIÓN
+    const result = await Notifier.confirm({
+      title: isEditMode ? '¿Actualizar Cliente?' : '¿Registrar Cliente?',
+      text: "La información será guardada en el sistema.",
+      confirmButtonText: isEditMode ? 'Sí, actualizar' : 'Sí, registrar'
+    });
+
+    // 4. Si el usuario hace clic en "Cancelar", detenemos todo.
+    if (!result.isConfirmed) {
+      return;
+    }
+
+    // --- El resto de la lógica se mantiene igual ---
     if (isEditMode) {
-      // 1. En modo edición, simplemente tomamos todos los datos del formulario.
       const payload = data;
-
-      // 2. Por seguridad y para cumplir la regla de negocio, eliminamos `personType`
-      //    del objeto que enviaremos al backend. El backend ya no lo espera en el DTO de actualización.
       delete payload.personType;
-
-      // 3. Llamamos a la función de submit con el payload.
-      //    Esto garantiza que LA PETICIÓN DE RED SIEMPRE SE HAGA.
       onFormSubmit(payload);
-
     } else {
-      // La lógica de creación se mantiene igual.
       onFormSubmit(data);
     }
   };
+
+  // --- ¡NUEVA FUNCIÓN PARA EL BOTÓN CANCELAR! ---
+  const handleCancel = async () => {
+    const result = await Notifier.confirm({
+      title: '¿Descartar Cambios?',
+      text: 'Si cancelas, perderás toda la información que has ingresado. ¿Deseas continuar?',
+      confirmButtonText: 'Sí, descartar'
+    });
+
+    if (result.isConfirmed) {
+      navigate("/ventas/clientes");
+    }
+  };
+
    return (
     // CAMBIO CLAVE: Usamos formWrapper como el contenedor principal con el fondo gris
     <div className={formStyles.formWrapper}>
@@ -155,7 +174,7 @@ export const CustomerForm = ({ onFormSubmit, defaultValues, isSubmitting = false
           )}
           
           {/* El resto de campos siguen la misma estructura simple */}
-          <div className={formStyles.formGroup}><label htmlFor="ncr" className={formStyles.formLabel}>NRC</label><input id="ncr" type="text" className={formStyles.formControl} {...register("ncr")} />{errors.ncr && <p className={formStyles.errorMessage}>{errors.ncr.message}</p>}</div>
+          <div className={formStyles.formGroup}><label htmlFor="ncr" className={formStyles.formLabel}>NRC</label><input id="ncr" type="text" className={formStyles.formControl} {...register("ncr")} maxLength={14}/>{errors.ncr && <p className={formStyles.errorMessage}>{errors.ncr.message}</p>}</div>
           <div className={formStyles.formGroup}><label htmlFor="address" className={formStyles.formLabel}>Dirección</label><input id="address" type="text" className={formStyles.formControl} {...register("address")} />{errors.address && <p className={formStyles.errorMessage}>{errors.address.message}</p>}</div>
           <div className={formStyles.formGroup}><label htmlFor="email" className={formStyles.formLabel}>Correo</label><input id="email" type="email" placeholder="ejemplo@correo.com" className={formStyles.formControl} {...register("email")} />{errors.email && <p className={formStyles.errorMessage}>{errors.email.message}</p>}</div>
           
@@ -198,7 +217,7 @@ export const CustomerForm = ({ onFormSubmit, defaultValues, isSubmitting = false
           <button type="submit" className={formStyles.registrar} disabled={isSubmitting}>
             {isSubmitting ? 'Guardando...' : (isEditMode ? 'Actualizar' : 'Registrar')}
           </button>
-          <button type="button" onClick={() => navigate("/ventas/clientes")} className={formStyles.cancelar} disabled={isSubmitting}>
+          <button type="button" onClick={handleCancel} className={formStyles.cancelar} disabled={isSubmitting}>
             Cancelar
           </button>
         </div>

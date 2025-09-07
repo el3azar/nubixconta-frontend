@@ -1,17 +1,29 @@
-// src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { authService } from "../services/authServices"; 
+import { authService } from "../services/authServices";
+import { jwtDecode } from 'jwt-decode';
 
-// Claves para sessionStorage (puedes cambiarlas si quieres)
 const TOKEN_KEY = "nubix_token";
 const ROLE_KEY = "nubix_role";
-// Es una buena práctica tener la clave del accessLogId como constante también
 const ACCESS_LOG_ID_KEY = "nubix_access_log_id";
+
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  // Estado inicial: lee de sessionStorage si existe
   const [token, setToken] = useState(() => sessionStorage.getItem(TOKEN_KEY) || null);
+
+   // --- CAMBIO: Estado para el objeto de usuario decodificado ---
+  const [user, setUser] = useState(() => {
+    const storedToken = sessionStorage.getItem(TOKEN_KEY);
+    try {
+      return storedToken ? jwtDecode(storedToken) : null;
+    } catch (error) {
+      console.error("Token inválido en sessionStorage al iniciar:", error);
+      return null;
+    }
+  });
+
+
+
   const [role, setRole] = useState(() => {
     const stored = sessionStorage.getItem(ROLE_KEY);
     if (stored === "true") return true;
@@ -21,6 +33,16 @@ export function AuthProvider({ children }) {
 
   // Método para guardar token y rol al hacer login
   const login = (jwt, roleValue, accessLogId) => {
+    try {
+      // --- CAMBIO: Al hacer login, decodifica el nuevo token ---
+      const decodedUser = jwtDecode(jwt);
+       // DEBUG: Para ver qué contiene tu token
+      console.log("Token decodificado:", decodedUser); 
+      setUser(decodedUser);
+    } catch (error) {
+      console.error("Error al decodificar el token en login:", error);
+      setUser(null);
+    }
     setToken(jwt);
     setRole(roleValue);
     sessionStorage.setItem(TOKEN_KEY, jwt);
@@ -53,28 +75,34 @@ export function AuthProvider({ children }) {
       // 2. Limpiar todo en el frontend, sin importar el resultado de la API.
       setToken(null);
       setRole(null);
+      setUser(null);
       sessionStorage.removeItem(TOKEN_KEY);
       sessionStorage.removeItem(ROLE_KEY);
       sessionStorage.removeItem("empresaActiva");
       sessionStorage.removeItem(ACCESS_LOG_ID_KEY); // Limpiamos también el log ID
     }
   };
-
+  
   // Sincroniza el contexto si el storage cambia en otras pestañas/ventanas
   useEffect(() => {
     const syncLogout = () => {
       if (!sessionStorage.getItem(TOKEN_KEY)) {
         setToken(null);
         setRole(null);
-
+        setUser(null); // Sincroniza también el estado del usuario
       }
     };
     window.addEventListener("storage", syncLogout);
     return () => window.removeEventListener("storage", syncLogout);
   }, []);
 
+
+
+   // Exponer el 'user' en el valor del contexto ---
+  const contextValue = { token, role, user, login, logout };
+
   return (
-    <AuthContext.Provider value={{ token, role, login, logout }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

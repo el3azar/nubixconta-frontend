@@ -36,21 +36,43 @@
   align-items: center;
   gap: 1.5rem;
 }
-
-/* NUEVO: grid compacto de 3 col */
+/* --- ESTA ES LA SECCIÓN CLAVE PARA LA RESPONSIVIDAD (SIN CAMBIOS DE COLOR) --- */
 .formGrid {
   display: grid;
+  /* Por defecto (escritorio), 3 columnas */
   grid-template-columns: repeat(3, 1fr);
   gap: 0.8rem 1.2rem;
 }
 
-@media (max-width: 900px) {
-  .formGrid { grid-template-columns: 1fr 1fr; }
-}
-@media (max-width: 600px) {
-  .formGrid { grid-template-columns: 1fr; }
+/* BREAKPOINT PARA TABLETS */
+@media (max-width: 920px) {
+  .formGrid {
+    /* En tablets, cambiamos a 2 columnas */
+    grid-template-columns: 1fr 1fr;
+  }
+  .formWrapper {
+    max-width: 90%; /* Aprovecha mejor el espacio en tablets */
+  }
 }
 
+/* BREAKPOINT PARA MÓVILES */
+@media (max-width: 700px) {
+  .formGrid {
+    /* En móviles, apilamos todo en 1 sola columna */
+    grid-template-columns: 1fr;
+    gap: 1rem; /* Espacio vertical entre campos */
+  }
+  .formWrapper {
+    max-width: 100%; /* Ocupa todo el ancho disponible */
+    margin: 1rem auto;
+    padding: 1rem;
+  }
+  .personTypeBox {
+    flex-direction: column; /* Apila los radios verticalmente */
+    gap: 0.5rem;
+  }
+}
+/* --- FIN DE LA SECCIÓN DE RESPONSIVIDAD --- */
 .formGroup {
   margin-bottom: 0;
   display: flex;

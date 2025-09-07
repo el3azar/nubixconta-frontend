@@ -7,7 +7,7 @@ const CompanyCard = ({ company }) => {
   const cardStyle = company.activeStatus ? {} : { backgroundColor: "#ffcccc" }; // Estilo para empresas inactivas
 
   return (
-    <div className="col-md-4 mb-3">
+    <div className="col">
       <div className="card shadow-sm h-100" style={cardStyle}>
         {company.imageUrl && (
           <img

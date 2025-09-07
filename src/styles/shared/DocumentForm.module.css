@@ -53,6 +53,11 @@
   border-radius: 0.5rem;
   overflow: hidden;
   background: #fff;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.detailsTable table {
+  min-width: 800px; /* Ancho mínimo para forzar el scroll */
 }
 
 .detailsTable th {
@@ -89,7 +94,8 @@
 .totalsRow {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  flex-wrap: wrap; /* Permite que los totales se apilen si no caben */
+  gap: 1rem 1.5rem; /* Espacio vertical y horizontal */
   font-size: 1.2rem;
   font-weight: 500;
   color: var(--color-dark);
@@ -103,7 +109,8 @@
 /* Nueva clase para el contenedor de los botones de acción */
 .actionButtonsContainer {
   display: flex;
-  gap: 1rem; /* <-- ¡MODIFICA ESTE VALOR! */
+  gap: 1rem;
+  flex-wrap: wrap; /* Permite que los botones se apilen */
 }
 
 /* Botones de acción principales (Guardar/Cancelar) */
@@ -147,7 +154,22 @@
   max-width: 120px;
   text-align: right;
 }
+/* Estilo para filas inválidas (productos desactivados) */
+.invalidRow {
+  background-color: #ffdddd !important; /* Un rojo pálido para llamar la atención */
+  color: #d8000c; /* Texto oscuro para contraste */
+  text-decoration: line-through; /* Tachar el texto para indicar que no es válido */
+}
 
+.invalidRow td {
+  font-style: italic;
+}
+
+/* Opcional: Cambiar la opacidad del botón deshabilitado para que sea más obvio */
+.iconBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
 /* Checkbox personalizado (tomado de NewCreditNote.module.css) */
 .customCheckboxContainer { display: inline-block; position: relative; cursor: pointer; width: 22px; height: 22px; user-select: none; }
 .customCheckboxContainer input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
@@ -156,3 +178,76 @@
 .checkmark:after { content: ""; position: absolute; display: none; }
 .customCheckboxContainer input:checked ~ .checkmark:after { display: block; }
 .customCheckboxContainer .checkmark:after { left: 7px; top: 3px; width: 6px; height: 12px; border: solid white; border-width: 0 3px 3px 0; transform: rotate(45deg); }
+
+/*
+ ==================================================================
+ == INICIO: MEDIA QUERIES ESPECÍFICAS Y CORREGIDAS
+ ==================================================================
+*/
+
+/* --- BREAKPOINT 1: Laptops (768px a 1200px) --- */
+/* Esta regla se aplica a tablets y laptops, pero no a móviles ni a escritorios grandes */
+@media (min-width: 768px) and (max-width: 1199.98px) {
+  /* Hacemos que la sección de Totales sea más compacta */
+  .totalsRow {
+    gap: 0.5rem 1rem;
+    font-size: 1.1rem;
+  }
+}
+
+
+/* --- BREAKPOINT 2: TABLETS y MÓVILES (< 992px) --- */
+/* Aquí es donde empieza el apilamiento principal */
+@media (max-width: 991.98px) {
+  .footerActions {
+    flex-direction: column;
+    justify-content: center;
+    gap: 2rem;
+  }
+
+  .totalsRow,
+  .actionButtonsContainer {
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+
+/* --- BREAKPOINT 3: MÓVILES (< 768px) --- */
+/* Aquí ajustamos los detalles finos para la vista de teléfono */
+@media (max-width: 767.98px) {
+ /* En tu JSX, el botón "Añadir" tiene un mt-4 (margen superior de 1.5rem).
+     Esto puede crear demasiado espacio en móvil. Esta regla lo reduce. */
+  .card .row > [class*="col-"] .mt-4 {
+    margin-top: 1rem !important;
+  }
+  
+  /* Hacemos que el botón "Añadir" ocupe un ancho más cómodo en móvil */
+  .card .actionButton {
+    width: 100%;
+    max-width: 300px; /* Evita que sea excesivamente ancho */
+  }
+
+  /* Centramos el checkbox de impuesto y el botón en su propia fila */
+  .lineItemEditor .d-flex.justify-content-center {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+}
+
+
+/* --- BREAKPOINT 4: MÓVILES PEQUEÑOS (< 480px) --- */
+/* Apilamiento final para las pantallas más pequeñas */
+@media (max-width: 479.98px) {
+  .totalsRow {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+  }
+  
+  .actionButtonsContainer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

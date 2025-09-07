@@ -13,7 +13,7 @@ import { Building,Search } from "lucide-react"
 import AssignCompanyModal from "./AssignCompanyModal"
 import { useNavigate } from "react-router-dom";
 import ChangePasswordModal from "./ChangePasswordModal"; 
-
+import { Notifier } from "../../../utils/alertUtils";
 
 
 const UserManagementDashboard = () => {
@@ -48,7 +48,7 @@ const showSuccess = (msg) =>
   const fetchUsers = () =>
     getAllUsers()
     .then((res) => setUsers(res.data))
-    .catch((err) => showError("Error al obtener usuarios"));
+    .catch((err) => Notifier.error("Error al obtener usuarios"));
 
     useEffect(() => {
     fetchUsers();
@@ -96,12 +96,12 @@ const showSuccess = (msg) =>
 
     promise
       .then(() => {
-        showSuccess("Usuario guardado correctamente");
+        Notifier.success("Usuario guardado correctamente");
         setSelectedUser(null);
         fetchUsers();
       })
       .catch((err) =>
-        showError(err.response?.data?.message || err.message)
+        Notifier.error(err.response?.data?.message || err.message)
       );
   };
    const handleAssignCompany = (user) => {
@@ -119,22 +119,20 @@ const showSuccess = (msg) =>
     console.log(`Asignando empresas al usuario ${userId}:`, companies);
     // Llama a tu servicio para guardar los cambios
     // Por ejemplo: assignCompaniesToUser(userId, companies.map(c => c.id))
-    showSuccess("Empresas asignadas correctamente");
+    Notifier.success("Empresas asignadas correctamente");
   };
 
 
 
   // Función para activar/desactivar un usuario
   const handleToggleActive = (user) => {
-    Swal.fire({
+    Notifier.confirm({
       title: "Confirmar acción",
       text: `¿Estás seguro de que deseas ${
         user.status ? "desactivar" : "activar" // Texto dinámico según el estado actual
       } este usuario?`,
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
       confirmButtonText: user.status ? "Desactivar" : "Activar", // Texto del botón de confirmación
       cancelButtonText: "Cancelar",
     }).then((result) => {
@@ -154,13 +152,13 @@ const showSuccess = (msg) =>
       // Llama a la función updateUser del servicio para enviar los cambios al backend
       updateUser(user.id, updatedUser)
         .then(() => {
-          showSuccess(
+          Notifier.success(
             `Usuario ${!user.status ? "activado" : "desactivado"} correctamente`
           );
           fetchUsers(); // Vuelve a cargar la lista de usuarios para reflejar el cambio
         })
         .catch((err) =>
-          showError(err.response?.data?.message || err.message)
+          Notifier.error(err.response?.data?.message || err.message)
         );
     });
   };
@@ -194,7 +192,7 @@ const showSuccess = (msg) =>
 
       <div className="row">
         {filteredUsers.map((u) => (
-          <div className="col-md-4 mb-3" key={u.id}>
+          <div className="col-lg-4 col-md-6 col-sm-12 mb-3" key={u.id}>
             <div className="card shadow-sm h-100" style={cardStyle(u.status)}>
               <div className="card-body">
                 <h5 className="card-title">

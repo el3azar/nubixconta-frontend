@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
+import { Notifier } from "../../../utils/alertUtils";
 import { registerCompany } from '../../../services/administration/company/registerCompanyService';
 import { useNavigate } from 'react-router-dom';
 import { useCompany } from '../companyMangment/CompanyDataContext'; 
@@ -80,12 +81,7 @@ const RegisterCompanyView = () => {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      Swal.fire({
-        title: 'Advertencia',
-        text: 'Revise que los datos estén correctos',
-        icon: 'error',
-        confirmButtonColor: '#d33'
-      });
+      Notifier.error('Revise que los datos estén correctos');
       return;
     }
 
@@ -135,15 +131,9 @@ const RegisterCompanyView = () => {
 };
 
       addCompany(adaptedCompany);
-      Swal.fire({
-      title: 'Empresa registrada exitosamente',
-      icon: 'success',
-      confirmButtonColor: '#28a745'
-    }).then((result) => {
-      if (result.isConfirmed) {
+      Notifier.success('Empresa registrada exitosamente')
         navigate('/admin/empresas');
-      }
-    });
+        
       // Limpia el formulario después del registro
       setForm({ nombre: '',giro:'',direccion:'', nit: '', dui: '', nrc: '' });
       setPersonType('juridica');
@@ -151,12 +141,7 @@ const RegisterCompanyView = () => {
       setImageFile(null);
       setImagePreviewUrl(null);
     } catch (error) {
-      Swal.fire({
-        title: 'Error',
-        text: error.message,
-        icon: 'error',
-        confirmButtonColor: '#d33'
-      });
+       Notifier.error('Error al registrar la empresa');
     }
   };
 

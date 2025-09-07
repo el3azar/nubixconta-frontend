@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { saleSchema } from '../schemas/saleSchema';
-import Swal from 'sweetalert2';
+import { Notifier } from '../utils/alertUtils';
 
 const IVA_RATE = 0.13;
 
@@ -75,6 +75,14 @@ export const useSaleForm = () => { // Ya no necesita initialData como argumento
   // 4. MANEJADORES DE ACCIONES (Añadir, Editar, Eliminar Línea)
   // =================================================================
   const handleAddLine = () => {
+
+     // --- CAMBIO #2: ¡AÑADIMOS LA VALIDACIÓN DE LÍMITE DE LÍNEAS! ---
+    if (fields.length >= 15) {
+      // Usamos un toast de advertencia no bloqueante.
+      Notifier.warning('No se pueden agregar más de 15 líneas a una venta.');
+      return; // Detenemos la función.
+    }
+    // --- FIN DE LA NUEVA VALIDACIÓN ---
     const quantity = Number(editorCantidad) || 0;
     const unitPrice = Number(editorPrecio) || 0;
     let detailToAdd;
@@ -107,21 +115,21 @@ export const useSaleForm = () => { // Ya no necesita initialData como argumento
       append(detailToAdd);
       resetLineEditor();
     } else {
-      Swal.fire('Datos Incompletos', 'Por favor, completa los datos del producto/servicio, precio y cantidad.', 'warning');
+      Notifier.warning('Por favor, completa los datos del producto/servicio, precio y cantidad.');
     }
   };
 
-  const handleDeleteLine = (index) => {
-    Swal.fire({
+  const handleDeleteLine = async (index) => {
+    // --- CAMBIO #4: Reemplazamos Swal.fire con nuestro Notifier.confirm ---
+    const result = await Notifier.confirm({
       title: '¿Eliminar esta línea?',
       text: 'Esta acción no se puede deshacer.',
-      icon: 'warning',
-      showCancelButton: true,
       confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'No, conservar',
-    }).then(result => {
-      if (result.isConfirmed) remove(index);
     });
+    
+    if (result.isConfirmed) {
+      remove(index);
+    }
   };
 
   const handleEditLine = (index, productOptions) => {

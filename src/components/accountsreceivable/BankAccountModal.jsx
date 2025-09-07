@@ -1,4 +1,3 @@
-import React from "react";
 import styles from "../../styles/accountsreceivable/BankAccountModal.module.css";
 
 const BankAccountModal = ({ isOpen, onClose, accounts }) => {
@@ -8,6 +7,7 @@ const BankAccountModal = ({ isOpen, onClose, accounts }) => {
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
         <h3>Cuentas bancarias</h3>
+          <div className={styles.tableWrapper}>
         <table className={styles.table}>
           <thead>
             <tr>
@@ -24,6 +24,7 @@ const BankAccountModal = ({ isOpen, onClose, accounts }) => {
             ))}
           </tbody>
         </table>
+        </div>
         <button className={styles.acceptButton} onClick={onClose}>
           Aceptar
         </button>

@@ -3,10 +3,12 @@
 import React from 'react';
 import { DocumentListView } from '../../shared/DocumentListView';
 import { SaleService } from '../../../services/sales/SaleService';
-import SubMenu from "../SubMenu";
+import SubMenu from "../../shared/SubMenu"; 
 import { DefaultFilterComponent, DefaultActionsComponent } from '../../shared/DocumentViewDefaults';
 import { formatDate } from '../../../utils/dateFormatter';
 import viewStyles from '../../../styles/shared/DocumentView.module.css';
+import ViewContainer from '../../shared/ViewContainer';
+import { salesSubMenuLinks } from '../../../config/menuConfig';
 // Definimos la configuración de las columnas aquí, fuera del componente.
 const salesColumns = [
   { header: 'Correlativo', accessor: 'saleId', style: { minWidth: '100px' }  },
@@ -34,24 +36,26 @@ export default function Sales() {
   const routePaths = {
     new: '/ventas/clientes',
     edit: '/ventas/editar',
-    view: '/ventas/ver',
+    view: '/ventas/asiento-contable',
   };
 
   return (
-    <>
-      <SubMenu />
-      <DocumentListView
-        pageTitle="Filtrar Ventas"
-        listTitle="Ventas"
-        queryKey="sales"
-        documentService={serviceAdapter}
-        routePaths={routePaths}
-        newDocumentMessage="Redirigiendo para seleccionar un cliente"
-        // --- PROPS NUEVAS ---
-        columns={salesColumns}
-        FilterComponent={DefaultFilterComponent}
-        ActionsComponent={DefaultActionsComponent}
-      />
-    </>
+ <div> {/* Usamos un div simple como contenedor raíz */}
+      <SubMenu links={salesSubMenuLinks} />
+      {/* --- 2. ENVOLVEMOS LA VISTA CON VIEWCONTAINER --- */}
+      <ViewContainer>
+        <DocumentListView
+          pageTitle="Filtrar Ventas"
+          listTitle="Ventas"
+          queryKey="sales"
+          documentService={serviceAdapter}
+          routePaths={routePaths}
+          newDocumentMessage="Redirigiendo para seleccionar un cliente"
+          columns={salesColumns}
+          FilterComponent={DefaultFilterComponent}
+          ActionsComponent={DefaultActionsComponent}
+        />
+      </ViewContainer>
+    </div>
   );
 }

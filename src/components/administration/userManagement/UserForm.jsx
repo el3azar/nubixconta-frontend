@@ -93,13 +93,17 @@ export default function UserForm({ user, onSubmit, onOpenPasswordModal }){
            </div>
          )}
          </div>
-       <button 
-           type="submit" 
-         className={`btn w-100 ${styles.actionButton}`}
-         disabled={isUserAdmin} // <--- Deshabilita el botón si es administrador
-       >
-         Guardar
-       </button>
+       
+ <div className="d-flex justify-content-center">
+  <button 
+    type="submit" 
+    className={`btn btn-primary w-30 ${styles.actionButton}`}
+    disabled={isUserAdmin}
+  >
+    Guardar
+  </button>
+</div>
+
      </form>
   );
 }

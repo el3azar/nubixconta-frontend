@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCustomerService } from '../../../services/sales/customerService';
 import { CustomerForm } from './CustomerForm';
-import Swal from 'sweetalert2';
+import { Notifier } from '../../../utils/alertUtils';
 
 const EditCustomer = () => {
   const { id } = useParams();
@@ -20,14 +20,14 @@ const EditCustomer = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: (payload) => updateCustomer({ id, payload }),
     onSuccess: () => {
-      Swal.fire('¡Éxito!', 'Cliente actualizado correctamente.', 'success');
+      Notifier.success('Cliente actualizado correctamente.');
       queryClient.invalidateQueries({ queryKey: ['customers'] });
       queryClient.invalidateQueries({ queryKey: ['customer', id] });
       navigate('/ventas/clientes');
     },
     onError: (error) => {
       const message = error.response?.data?.message || 'No se pudo actualizar el cliente.';
-      Swal.fire('Error', message, 'error');
+       Notifier.showError('Error al Actualizar', message);
     },
   });
 
