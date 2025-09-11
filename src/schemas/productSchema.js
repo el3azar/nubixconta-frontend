@@ -5,15 +5,15 @@ export const productSchema = z.object({
   productCode: z
     .string()
     .min(1, 'El código es obligatorio')
-    .max(10, 'El código no puede tener más de 10 caracteres'),
+    .max(100, 'El código no puede tener más de 100 caracteres'),
   productName: z
     .string()
     .min(1, 'El nombre es obligatorio')
-    .max(50, 'El nombre no puede tener más de 50 caracteres'),
+    .max(256, 'El nombre no puede tener más de 256 caracteres'),
   unit: z
     .string()
     .min(1, 'La unidad es obligatoria')
-    .max(20, 'La unidad no puede tener más de 20 caracteres'),
+    .max(50, 'La unidad no puede tener más de 50 caracteres'),
     
   // Para la cantidad inicial, solo la hacemos obligatoria si estamos en modo "Crear".
   // En modo edición, no estará presente en el formulario para ser editada.
