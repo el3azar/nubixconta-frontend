@@ -83,13 +83,13 @@ const ProductFormModal = ({ show, onSave, onClose, initialData = null }) => {
                 <div className="col-md-3">
                     <label>Código de producto</label>
                     <input type="text" {...register("productCode")} className={`form-control rounded-pill ${errors.productCode ? 'is-invalid' : ''}`}
-                  maxLength={10}/>
+                  maxLength={100}/>
                     {errors.productCode && <div className="invalid-feedback">{errors.productCode.message}</div>}
                 </div>
                 <div className="col-md-7">
                     <label>Nombre de producto</label>
                     <input type="text" {...register("productName")} className={`form-control rounded-pill ${errors.productName ? 'is-invalid' : ''}`}
-                  maxLength={50}/>
+                  maxLength={256}/>
                     {errors.productName && <div className="invalid-feedback">{errors.productName.message}</div>}
                 </div>
             </div>
@@ -98,7 +98,7 @@ const ProductFormModal = ({ show, onSave, onClose, initialData = null }) => {
                 <div className="col-md-5">
                   <label>Unidad de Representacion</label>
                   <input type="text" {...register("unit")} className={`form-control rounded-pill ${errors.unit ? 'is-invalid' : ''}`}
-                  maxLength={20} />
+                  maxLength={50} />
                   {errors.unit && <div className="invalid-feedback">{errors.unit.message}</div>}
                 </div>
                 {/* El campo de cantidad solo se muestra en modo CREACIÓN */}

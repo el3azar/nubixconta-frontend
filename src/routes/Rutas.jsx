@@ -214,6 +214,17 @@ export default function Rutas() {
                   {/* Rutas extras que necesites en Inventario*/}
                   <Route path="/inventario/productos" element={<ProductView />} />
                   <Route path="/inventario/movimientosproductos" element={<MovementListView />} />
+
+
+                   {/* --- AÑADE LAS NUEVAS RUTAS AQUÍ --- */}
+                  <Route path="/compras" element={<div>Dashboard de Compras</div>} />
+                  <Route path="/cuentas-por-pagar" element={<div>Dashboard de Cuentas por Pagar</div>} />
+                  <Route path="/bancos" element={<div>Dashboard de Bancos</div>} />
+                  <Route path="/contabilidad" element={<div>Dashboard de Contabilidad</div>} />
+                  {/* --- FIN DE LAS NUEVAS RUTAS --- */}
+
+
+
                   {/* Ruta comodín: muestra Dashboard general (puedes personalizar para un 404) */}
                   <Route path="*" element={<Login />} />
                 </Route>
