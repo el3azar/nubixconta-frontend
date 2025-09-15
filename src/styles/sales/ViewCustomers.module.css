@@ -14,9 +14,7 @@
   border-radius: 1rem;
   padding: 1.5rem;
   width: 100%;
-  max-width: 1200px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  margin: 0 auto; /* Centra el contenedor en pantallas grandes */
 }
 
 /* Navegación superior del módulo (Clientes, Ventas...) */
@@ -104,12 +102,30 @@
   padding-top: 1.5rem;
 }
 
-/* Wrapper DIRECTO de la tabla para un scroll limpio y contenido */
 .tableResponsiveWrapper {
-  overflow-x: auto;
+  overflow-x: auto; /* Permite el scroll horizontal */
   width: 100%;
   border: 1px solid #dee2e6;
   border-radius: 0.5rem;
+  
+  /* --- Propiedades añadidas para mejorar la experiencia táctil --- */
+  /* Hace que el scroll sea más suave en iOS */
+  -webkit-overflow-scrolling: touch; 
+  /* Muestra una barra de scroll sutil en navegadores Webkit (Chrome, Safari) */
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #aaa;
+  }
 }
 
 .table {
@@ -117,6 +133,30 @@
   min-width: 1000px; /* o incluso 950px según columnas */
   border-collapse: separate;
   border-spacing: 0;
+}
+/* En ViewCustomers.module.css */
+
+/* ... (tus estilos existentes) ... */
+
+/* --- INICIO: NUEVOS ESTILOS PARA EL ENCABEZADO DE LA TABLA DE VENTAS --- */
+
+/* 1. Definimos una clase específica para el encabezado de las tablas de ventas. */
+.salesTableHeader {
+  background-color: #2e2c50; /* ¡Tu color personalizado! */
+  color: #ffffff; /* Letras blancas para un buen contraste */
+  position: sticky; /* Mantiene la cabecera visible al hacer scroll vertical */
+  text-align: center;
+  top: 0;           /* Lo pega en la parte superior del contenedor de scroll */
+  z-index: 1;       /* Asegura que esté por encima del contenido del cuerpo de la tabla */
+}
+
+/* 2. Aseguramos que los 'th' dentro de este encabezado hereden los estilos correctos. */
+/* Esta regla es importante para que el fondo se aplique correctamente a cada celda. */
+.salesTableHeader th {
+  background-color: inherit; /* Hereda el color del padre (thead) */
+  color: inherit;            /* Hereda el color de texto del padre */
+  font-weight: 600;          /* Un poco más de peso a la fuente */
+  border-color: #4a4a6b;     /* Un borde ligeramente más claro que el fondo para una separación sutil */
 }
 
 /* Cabecera de la tabla */
@@ -181,12 +221,19 @@
   max-width: 100px;
 }
 .colAcciones {
-  min-width: 130px;
-  max-width: 160px;
+  min-width: 180px;
+  max-width: 200px;
   white-space: nowrap;
   text-align: center;
 }
-
+/* 2. AÑADIMOS UNA NUEVA CLASE PARA EL CONTENEDOR DE BOTONES */
+.actionsContainer {
+  /* Le decimos al div que se comporte como un elemento de texto (inline)
+     pero que mantenga las propiedades de flexbox para sus hijos (los botones). */
+  display: inline-flex; 
+  gap: 0.5rem; /* Usamos gap para un espaciado consistente (equivale a gap-2) */
+  align-items: center;
+}
 
 .table tbody {
   background-color: white;
@@ -207,4 +254,17 @@
   background-color: var(--muted);
   color: #fff;
   border-color: var(--bg-purple);
+}
+
+/* En ViewCustomers.module.css */
+.iconBtn svg {
+  width: 16px;  /* Ajusta el tamaño como necesites */
+  height: 16px;
+  fill: #4a4a4a; /* Color por defecto del ícono */
+  transition: fill 0.2s ease-in-out;
+}
+
+.iconBtn:hover svg {
+  fill: #6d28d9; /* Color morado al hacer hover, ¡combina con tu marca! */
+  
 }

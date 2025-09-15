@@ -1,166 +1,198 @@
 /* AssignCompanyModal.module.css */
 
 .modalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
 .modalContent {
-  background-color: #f0f2f5;
-  padding: 24px;
-  border-radius: 8px;
-  width: 700px;
-  max-width: 90%;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  font-family: Arial, sans-serif;
-  display: flex;
-  flex-direction: column;
+    background-color: #f0f2f5;
+    padding: 24px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 700px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    margin-left: 3.5rem;
 }
 
 .modalHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 16px;
-  margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
 }
 
 .modalHeader h3 {
-  margin: 0;
-  font-size: 20px;
-  color: #333;
+    margin: 0;
+    font-size: 20px;
+    color: #333;
 }
 
 .closeButton {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #666;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
 }
 
 .modalBody {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
+
 .tableContainer {
-  flex-grow: 1;
-  overflow-y: auto;
-  max-height: 400px; 
-  border: 1px solid #ddd;
-  border-radius: 4px;
+    flex-grow: 1;
+    overflow-y: auto;
+    overflow-x: auto;
+    max-height: 400px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }
 
 .searchSection {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
 }
 
 .searchInputGroup {
-  position: relative;
-  flex: 2;
+    position: relative;
+    flex: 2;
 }
 
 .searchIcon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #999;
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
 }
 
 .searchInput {
-  width: 100%;
-  padding: 8px 12px 8px 40px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+    width: 100%;
+    padding: 8px 12px 8px 40px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
 .statusDropdown {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
 }
 
 .statusSelect {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: white;
-  width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+    width: 100%;
 }
 
 .companyTable {
-  width: 100%;
-  border-collapse: collapse;
+    min-width: 500px;
+    width: 100%;
+    border-collapse: collapse;
 }
 
 .companyTable th,
 .companyTable td {
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    white-space: nowrap;
 }
 
 .companyTable th {
-  background-color: #e9ebee;
-  font-weight: bold;
-  position: sticky;
-  top:0;
-  z-index: 1;
+    background-color: #2C1A47;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    color: #fff;
 }
 
 .selectedRow {
-  background-color: #e0f0ff;
+    background-color: #e0f0ff;
 }
 
-/* Nuevo estilo para centrar el contenido de la columna "Acciones" */
 .centerActions {
-  text-align: center;
+    text-align: center;
 }
 
-/* Estilos del ícono de acción */
 .actionIcon {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #212529; /* Establecemos el color por defecto a negro */
-  font-size: 1.25rem;
-  padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #212529;
+    font-size: 1.25rem;
+    padding: 0;
 }
 
 .modalFooter {
-  display: flex;
-  /* Centrar el contenido a la izquierda */
-  justify-content: flex-start;
-  gap: 16px;
-  border-top: 1px solid #ccc;
-  padding-top: 16px;
-  margin-top: 16px;
+    display: flex;
+    justify-content: flex-start;
+    gap: 16px;
+    border-top: 1px solid #ccc;
+    padding-top: 16px;
+    margin-top: 16px;
 }
 
 .cancelButton {
-  background-color: #6c757d;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
-  cursor: pointer;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
 }
 .title{
-    
     font-weight: bold;
+}
+
+/* Estilos para tabletas y dispositivos móviles */
+@media (max-width: 768px) {
+    .modalContent {
+        width: 80%;
+        padding: 16px;
+     
+    }
+
+    .searchSection {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    .statusDropdown {
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .modalFooter {
+        justify-content: center;
+    }
+    
+    .companyTable th,
+    .companyTable td {
+      padding: 8px;
+      font-size: 14px;
+    }
 }

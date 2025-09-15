@@ -1,4 +1,3 @@
-// components/BaseTable.jsx
 import {
   useReactTable,          // Reemplaza useTable de v7
   getCoreRowModel,        // Modelo básico para manejar filas
@@ -6,7 +5,7 @@ import {
   getPaginationRowModel,  // Modelo para paginación
   flexRender             // Nuevo sistema de renderizado
 } from '@tanstack/react-table';
-import './StyleTable.css';
+import styles from '../../../styles/inventory/StyleTable.module.css';
 
 const BaseTable = ({
   columns,               // Array de definiciones de columnas
@@ -14,7 +13,8 @@ const BaseTable = ({
   globalFilter,         // Filtro global aplicado
   onGlobalFilterChange, // Handler para cambios en filtro global
   withPagination = true, // Flag para mostrar/ocultar paginación
-  pageSize = 5 // <-- Nueva prop con valor por defecto
+  pageSize = 10,// <-- Nueva prop con valor por defecto
+  rowProps = () => ({}),
 }) => {
   /**
    * Configuración principal de la tabla
@@ -38,27 +38,17 @@ const BaseTable = ({
   });
 
   return (
-    <div className="table-container">
-      {/* Filtro Global - Ahora manejado directamente por la tabla */}
-      {/* 
-      <input
-        type="text"
-        value={globalFilter ?? ''}  // Manejo seguro de valores null/undefined
-        onChange={e => onGlobalFilterChange(e.target.value)}
-        placeholder="Buscar..."
-        className="global-filter"
-      />
-      */}
+    <div className={styles.tableContainer}>
 
       {/* Tabla - Notar que ya no usa getTableProps() */}
-      <table>
+      <table className={styles.table}>
         <thead>
           {/* Mapeo de grupos de encabezados */}
           {table.getHeaderGroups().map(headerGroup => (
             <tr key={headerGroup.id}>
               {/* Mapeo de columnas dentro del grupo */}
               {headerGroup.headers.map(header => (
-                <th key={header.id} className='text-center'>
+                <th key={header.id} className={styles.th}>
                   {/* flexRender reemplaza el renderizado directo */}
                   {flexRender(
                     header.column.columnDef.header, // Contenido del header
@@ -71,30 +61,41 @@ const BaseTable = ({
         </thead>
         
         <tbody>
-          {/* Mapeo de filas - ahora usa getRowModel() */}
-          {table.getRowModel().rows.map(row => (
-            <tr key={row.id} className='text-center'>
-              {/* Mapeo de celdas por fila */}
+
+          
+          {table.getRowModel().rows.map(row => {
+          // --- ESTA ES LA CORRECCIÓN CLAVE ---
+          
+          // 1. Obtenemos las props dinámicas para la fila
+          const FilaProps = rowProps(row);
+          
+          // 2. Combinamos la clase base con la clase dinámica
+          const classNames = `text-center ${FilaProps.className || ''}`.trim();
+
+          return (
+            // 3. Aplicamos las props y la clase combinada
+            <tr key={row.id} {...FilaProps} className={classNames}>
               {row.getVisibleCells().map(cell => (
-                <td key={cell.id}>
-                  {/* flexRender para contenido de celdas */}
+                <td key={cell.id} className={styles.td}>
                   {flexRender(
-                    cell.column.columnDef.cell, // Definición de la celda
-                    cell.getContext()           // Contexto de la celda
+                    cell.column.columnDef.cell,
+                    cell.getContext()
                   )}
                 </td>
               ))}
             </tr>
-          ))}
+          );
+        })}
         </tbody>
       </table>
 
       {/* Paginación - Métodos ahora acceden a través de la tabla */}
       {withPagination && (
-        <div className="pagination">
+        <div className={styles.pagination}>
           <button
             onClick={() => table.previousPage()} // Acción ahora en table
             disabled={!table.getCanPreviousPage()} // Verificación cambió
+            className={styles.pageButton}
           >
             Anterior
           </button>
@@ -106,6 +107,7 @@ const BaseTable = ({
           <button
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
+            className={styles.pageButton}
           >
             Siguiente
           </button>

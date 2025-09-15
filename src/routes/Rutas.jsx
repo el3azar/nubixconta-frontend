@@ -46,7 +46,6 @@ import CreditNote from '../components/sales/creditnote/CreditNote';
 import NewCreditNote from '../components/sales/creditnote/NewCreditNote';
 import EditCreditNote from '../components/sales/creditnote/EditCreditNote';
 import SalesReport from '../components/sales/reports/SalesReport';
-import AccountingEntry from '../components/sales/sales/AccountingEntry';
 import UserCompaniesDashboard from '../components/administration/userManagement/UserCompaniesDashboard';
 import AccessLogs from '../components/administration/changeHistory/AccessLogs';
 
@@ -54,9 +53,7 @@ import MovementView from '../components/inventory/movements/MovementView';
 import ProductView from '../components/inventory/products/ProductView';
 import DesableProductView from '../components/inventory/products/DesableProductView';
 import MovementListView from '../components/inventory/movements/MovementListView';
-import PendingInventoryMovements from '../components/inventory/movements/PendingInventoryMovements';
-import AppliedMovementList from '../components/inventory/movements/AppliedMovementList';
-import AnullMovementList from '../components/inventory/movements/AnullMovementList';
+import DetailedSalesView from '../components/accountsreceivable/DetailedSalesView';
 
 export default function Rutas() {
   return (
@@ -108,9 +105,12 @@ export default function Rutas() {
                   {/* ======== SECCIÓN: ADMINISTRACIÓN ======== */}
                   {/* Cada opción principal del panel de administración debe agregarse aquí */}
                     {/* Rutas para el usuario*/}
+
              <Route path="/admin" element={<DashBoardGeneralAdmin />} />
+             <Route path="/admin/empresas-contabilidad" element={<DashBoardEmpresas />} />
              <Route path="/admin/usuarios" element={<UserManagementDashboard />} />
              <Route path="/administration/users/:userId/companies" element={<UserCompaniesDashboard/>} />
+
 
                   {/* Rutas extras que necesites en gestion de usuarios */}
                   <Route path="/admin/empresas" element={
@@ -169,6 +169,8 @@ export default function Rutas() {
                 <Route path="/ventas/notas-credito" element={<CreditNote />} />
                 <Route path="/ventas/nueva-nota-credito/:clientId" element={<NewCreditNote />} />
                 <Route path="/ventas/editar-nota-credito/:creditNoteId" element={<EditCreditNote />} />
+                
+
 
                   <Route path="/ventas/reportes" element={<SalesReport />} />
 
@@ -187,6 +189,7 @@ export default function Rutas() {
                   <Route path="/cuentas/cobros" element={<AccountsReceivable />} />
                   <Route path="/cuentas/reportes" element={<AccountsReceivableReport />} />
                   <Route path="/cuentas/estado_cuenta" element={<AccountsReceivableAccount />} />
+                  <Route path="/cuentas/visualizar_ventas" element={<DetailedSalesView/>} />
                   {/* Rutas extras que necesites en CXC */}
 
         
@@ -203,9 +206,6 @@ export default function Rutas() {
                   <Route path="/inventario/movimientosproductos" element={<MovementListView />} />
                   <Route path="/inventario/moves" element={<MovementView />} />
                   <Route path="/inventario/desactiveprod" element={<DesableProductView />} />
-                  <Route path="/inventario/moves/pending" element={<PendingInventoryMovements />} />
-                  <Route path="/inventario/moves/applied" element={<AppliedMovementList />} />
-                  <Route path="/inventario/moves/anull" element={<AnullMovementList />} />
                   
                   {/* Rutas extras que necesites en ventas*/}
                   <Route path="/cuentas" element={<div>Cuentas por Cobrar</div>} />
@@ -214,6 +214,17 @@ export default function Rutas() {
                   {/* Rutas extras que necesites en Inventario*/}
                   <Route path="/inventario/productos" element={<ProductView />} />
                   <Route path="/inventario/movimientosproductos" element={<MovementListView />} />
+
+
+                   {/* --- AÑADE LAS NUEVAS RUTAS AQUÍ --- */}
+                  <Route path="/compras" element={<div>Dashboard de Compras</div>} />
+                  <Route path="/cuentas-por-pagar" element={<div>Dashboard de Cuentas por Pagar</div>} />
+                  <Route path="/bancos" element={<div>Dashboard de Bancos</div>} />
+                  <Route path="/contabilidad" element={<div>Dashboard de Contabilidad</div>} />
+                  {/* --- FIN DE LAS NUEVAS RUTAS --- */}
+
+
+
                   {/* Ruta comodín: muestra Dashboard general (puedes personalizar para un 404) */}
                   <Route path="*" element={<Login />} />
                 </Route>

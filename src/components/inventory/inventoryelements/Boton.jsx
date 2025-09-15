@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './Boton.module.css'; // Importamos los estilos del módulo
+import styles from '../../../styles/inventory/Boton.module.css'; // Importamos los estilos del módulo
 //import './Boton.css'; // Importamos los estilos del componente
 
 /**
@@ -10,7 +10,7 @@ import styles from './Boton.module.css'; // Importamos los estilos del módulo
  * @param {function} props.onClick - La función a ejecutar cuando se hace clic.
  * @param {React.ReactNode} props.children - El contenido del botón (el texto).
  */
-function Boton({ children, color = 'morado', forma, onClick, className = '', ...otrosProps }) {
+function Boton({ children, color = 'morado', forma, onClick, className = '',size, ...otrosProps }) {
 
   // 1. Construimos la lista de clases dinámicamente
   const clases = ['btn']; // Clase base de Bootstrap
@@ -20,6 +20,10 @@ function Boton({ children, color = 'morado', forma, onClick, className = '', ...
     clases.push(styles.btnCustomMorado);
   } else if (color === 'blanco') {
     clases.push(styles.btnCustomBlanco);
+  } else if (color === 'verde') { // Añadimos soporte para nuevos colores si es necesario
+    clases.push(styles.btnCustomVerde);
+  } else if (color === 'rojo') {
+    clases.push(styles.btnCustomRojo);
   }
 
   // 3. Añadimos la clase de forma de Bootstrap
@@ -28,7 +32,12 @@ function Boton({ children, color = 'morado', forma, onClick, className = '', ...
   } else if (forma === 'grande') {
     clases.push('rounded-4');
   }
-
+ // --- ¡ESTA ES LA LÓGICA NUEVA Y CLAVE! ---
+  // Si la prop 'size' es 'icon', añadimos la clase específica.
+  if (size === 'icon') {
+    clases.push(styles.btnIconOnly);
+  }
+  // --- FIN DE LA LÓGICA NUEVA ---
   // 2. Añade la clase externa a la lista
   if (className) {
     clases.push(className);

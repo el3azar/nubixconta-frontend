@@ -20,7 +20,6 @@
 
 import React from 'react';
 import { FaEye, FaPen, FaTrashAlt, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
-
 export const DocumentActions = ({
   doc,
   id,
@@ -34,22 +33,26 @@ export const DocumentActions = ({
   isDeleting,
   styles
 }) => {
-    const status = doc.creditNoteStatus || doc.saleStatus;
-  // Lógica para decidir qué botones mostrar
+     // 1. Determina propiedades genéricas del documento
+  const status = doc.saleStatus || doc.creditNoteStatus;
+
+  // --- FUNCIÓN HELPER PARA BOTONES REPETITIVOS ---
+  const renderButton = (title, icon, onClick, isDisabled = false) => (
+    <button
+      className={styles.actionIconBtn} // Usaremos una nueva clase para evitar conflictos
+      title={title}
+      onClick={onClick}
+      disabled={isDisabled}
+    >
+      {icon}
+    </button>
+  );
   if (status === 'PENDIENTE') {
     return (
       <div className={styles.actions}>
-        <FaPen title="Editar" onClick={() => onEdit(id)} />
-        <FaTrashAlt
-          title="Eliminar"
-          onClick={() => onDelete(id)}
-          style={{ pointerEvents: isDeleting ? 'none' : 'auto', opacity: isDeleting ? 0.5 : 1 }}
-        />
-        <FaCheckCircle
-          title="Aprobar"
-          onClick={() => onApprove(id)}
-          style={{ pointerEvents: isApproving ? 'none' : 'auto', opacity: isApproving ? 0.5 : 1 }}
-        />
+        {renderButton("Editar", <FaPen />, () => onEdit(id))}
+        {renderButton("Eliminar", <FaTrashAlt />, () => onDelete(id), isDeleting)}
+        {renderButton("Aprobar", <FaCheckCircle />, () => onApprove(id), isApproving)}
       </div>
     );
   }
@@ -57,16 +60,11 @@ export const DocumentActions = ({
   if (status === 'APLICADA') {
     return (
       <div className={styles.actions}>
-        <FaEye title="Ver documento" onClick={() => onView(id)} />
-        <FaTimesCircle
-          title="Anular"
-          onClick={() => onCancel(id)}
-          style={{ pointerEvents: isCancelling ? 'none' : 'auto', opacity: isCancelling ? 0.5 : 1 }}
-        />
+        {renderButton("Ver Asiento Contable", <FaEye />, () => onView(doc))}
+        {renderButton("Anular", <FaTimesCircle />, () => onCancel(id), isCancelling)}
       </div>
     );
   }
-
 
   // Si el estado no es PENDIENTE ni APLICADA, no se renderiza ninguna acción.
   // Esto cubre el caso de 'ANULADA' y cualquier otro estado futuro.

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { showConfirmationDialog } from '../alertsmodalsa';
 import { showSuccess } from '../alertstoast';
-import './SwitchBase.css';
+import styles from '../../../styles/inventory/SwitchBase.module.css'; // Asegúrate de que este archivo exista
+
 
 /**
  * Componente Switch genérico que muestra un diálogo de confirmación.
@@ -49,8 +50,8 @@ const SwitchAction = ({
   };
 
   return (
-    <div className={`switch-container ${isOn ? 'on' : 'off'}`} onClick={handleToggle}>
-      <div className="switch-thumb" />
+    <div className={`${styles['switch-container']} ${isOn ? 'on' : 'off'}`} onClick={handleToggle}>
+      <div className={styles['switch-thumb']} />
     </div>
   );
 };

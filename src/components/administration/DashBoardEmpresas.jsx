@@ -7,35 +7,47 @@ import { useCompany } from "../../context/CompanyContext";
 import { FaBuilding } from "react-icons/fa";
 import DashboardCards from "../DashboardCards"; // Ajusta el path según tu estructura
 import { authService } from "../../services/authServices"; // <-- ¡NUEVO! Usamos el servicio centralizado.
-
 import { toast } from "react-hot-toast"; // Para notificaciones
+import { getCompaniesActiveAndAssigned } from "../../services/administration/company/listCompaniesByActive-assigned";
 
 const DashBoardEmpresas = () => {
   const { token,login,role } = useAuth();
   const { selectCompany } = useCompany();
   const [empresas, setEmpresas] = useState([]);
    const navigate = useNavigate();
+   // Determina el título basándose en el rol del usuario
+  const dashboardTitle = role ? "Empresas" : "Empresas asignadas";
 
   // useEffect para cargar las empresas del usuario cuando el componente se monta.
-  useEffect(() => {
+   useEffect(() => {
     const fetchCompanies = async () => {
       if (token) {
         try {
-          const result = await getUserCompanies(token);
-          setEmpresas(result || []); // Aseguramos que 'empresas' sea siempre un array.
+          let result = [];
+          if (role) { // <-- ¡Lógica principal aquí!
+            // Si es administrador (role es true), trae todas las empresas
+            result = await getCompaniesActiveAndAssigned(token);
+            console.log("Cargando todas las empresas para el administrador:", result);
+          } else {
+            // Si es asistente, trae solo las empresas asignadas
+            result = await getUserCompanies(token);
+            console.log("Cargando empresas asignadas para el usuario:", result);
+          }
+          setEmpresas(result || []);
         } catch (error) {
-          toast.error("No se pudieron cargar las empresas asignadas.");
+          toast.error("No se pudieron cargar las empresas.");
           console.error("Error fetching companies:", error);
         }
       }
     };
     fetchCompanies();
-  }, [token]); // Se ejecuta cada vez que el token cambie.
+  }, [token, role]); // Se ejecuta cuando el token o el rol cambien
 
   // Prepara items para DashboardCards
   const items = empresas.map(emp => ({
     label: emp.companyName,
     icon: FaBuilding,
+    image: emp.imageUrl,
     extraInfo: emp.companyDui
       ? `DUI: ${emp.companyDui}`
       : emp.companyNit
@@ -96,11 +108,11 @@ const DashBoardEmpresas = () => {
       }}
     >
       <DashboardCards
-        title="Empresas asignadas"
+       title={dashboardTitle}
         items={items}
         onCardClick={handleCompanySelect}
-      />
-    </div>
+      />
+    </div>
   );
 };
 

@@ -1,79 +1,136 @@
-/* Sidebar principal */
+/* --- ESTILOS BASE (Móvil Primero) --- */
 .sidebar {
   background-color: #10031C;
   min-height: 100vh;
-  transition: width 0.3s;
-  z-index: 1100;
+  transition: width 0.3s ease-in-out;
   color: white;
   display: flex;
   flex-direction: column;
   position: relative;
+  /* Por defecto, en el tamaño más pequeño (móvil), está colapsado */
+  width: 72px; 
 }
 
-/* Sidebar ancho abierto o colapsado */
-.sidebarOpen {
-  width: 220px;
-}
-.sidebarCollapsed {
-  width: 60px;
-}
-
-/* Encabezado del sidebar */
+/* Encabezado */
 .sidebarHeader {
   display: flex;
   align-items: center;
-  margin-bottom: 1.5rem;
-  margin-left: 1.5rem;
-  height: 56px;
+  justify-content: center; /* Centrado en estado colapsado */
+  height: 60px;
+  flex-shrink: 0;
 }
-
-/* Logo/texto */
 .sidebarLogo {
-  font-size: 1.25rem;
-  font-weight: bold;
-  flex-grow: 1;
-  letter-spacing: 1px;
+  display: none; /* El logo está oculto por defecto */
 }
-
-/* Botón hamburguesa */
 .sidebarToggleBtn {
-  margin-left: 8px;
   color: white;
 }
 
-/* Navegación principal */
+/* Navegación */
 .sidebarNav {
-  flex: 1;
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 0 0.5rem;
 }
 
-.menuLink {
+/* Enlaces del Menú */
+.menuLink, .bottomBtn {
   display: flex;
   align-items: center;
+  justify-content: center; /* Centrado por defecto */
   border-radius: 8px;
-  padding: 0.5rem 1rem;
-  transition: background 0.2s;
+  padding: 0.75rem 0.5rem;
+  margin-bottom: 0.25rem;
   text-decoration: none;
+  overflow: hidden;
+  white-space: nowrap;
 }
-
-/* Estado activo */
+.menuIcon {
+  flex-shrink: 0;
+}
+.menuLabel {
+  display: none; /* El texto está oculto por defecto */
+}
 .active {
   background: #292440 !important;
   color: #fff !important;
 }
-
-/* Overlay móvil/tablet */
-.sidebarOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 1000;
-  background: rgba(0,0,0,0.2);
-  transition: opacity 0.3s;
+/* --- INICIO: NUEVOS ESTILOS PARA EL ENLACE DEL LOGO --- */
+.sidebarLogoLink {
+  text-decoration: none; /* Elimina el subrayado del enlace */
+  color: inherit; /* Hace que el enlace herede el color de texto blanco del sidebar */
+  transition: opacity 0.2s; /* Una pequeña transición para el feedback visual */
 }
 
-/* Oculta el texto cuando el sidebar está colapsado */
-.menuLabelHidden {
-  display: none !important;
+.sidebarLogoLink:hover {
+  color: inherit; /* Mantiene el color blanco al pasar el ratón */
+  opacity: 0.85; /* Reduce ligeramente la opacidad para indicar que es clickeable */
+}
+
+/* --- BREAKPOINT PARA TABLETS (>= 768px) --- */
+@media (min-width: 768px) {
+  /* En tablets y más grandes, el sidebar se expande */
+  .sidebar {
+    width: 220px;
+  }
+  
+  /* Hacemos espacio para el texto */
+  .sidebarHeader {
+    justify-content: space-between;
+    padding: 0 1rem;
+  }
+  .sidebarLogo {
+    display: block; /* Mostramos el logo */
+  }
+
+  /* Justificamos a la izquierda para alinear icono y texto */
+  .menuLink, .bottomBtn {
+    justify-content: flex-start;
+  }
+  
+  .menuIcon {
+    margin-right: 0.75rem; /* Añadimos margen para separar del texto */
+  }
+
+  .menuLabel {
+    display: inline; /* Mostramos el texto */
+  }
+}
+
+/* --- BREAKPOINT PARA ESCRITORIOS GRANDES (>= 1200px) --- */
+/* (Opcional) Si quieres que el sidebar sea aún más ancho en pantallas muy grandes */
+@media (min-width: 1200px) {
+  .sidebar {
+    width: 250px; 
+  }
+}
+
+/* --- CLASES DE ESTADO (Controladas por React) --- */
+/* Estas clases sobreescriben los estilos base cuando React las aplica */
+
+/* Cuando sidebarOpen es true, forzamos el estado abierto */
+.sidebarOpen {
+  width: 220px;
+}
+.sidebarOpen .sidebarHeader { justify-content: space-between; padding: 0 1rem; }
+.sidebarOpen .sidebarLogo { display: block; }
+.sidebarOpen .menuLink, .sidebarOpen .bottomBtn { justify-content: flex-start; }
+.sidebarOpen .menuIcon { margin-right: 0.75rem; }
+.sidebarOpen .menuLabel { display: inline; }
+
+/* Cuando sidebarOpen es false, forzamos el estado colapsado */
+.sidebarCollapsed {
+  width: 72px;
+}
+.sidebarCollapsed .sidebarHeader { justify-content: center; padding: 0; }
+.sidebarCollapsed .sidebarLogo { display: none; }
+.sidebarCollapsed .menuLink, .sidebarCollapsed .bottomBtn { justify-content: center; }
+.sidebarCollapsed .menuIcon { margin-right: 0; }
+.sidebarCollapsed .menuLabel { display: none; }
+
+/* Sobreescribimos para tablets, si React dice que debe estar abierto */
+@media (min-width: 768px) {
+  .sidebarOpen {
+    width: 220px;
+  }
 }

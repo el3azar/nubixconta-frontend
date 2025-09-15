@@ -1,11 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
 import { useCompany } from './CompanyDataContext';
 import CompanySearchBar from './CompanySearchBar';
 import CompanyTable from './CompanyTable';
 import RegisterCompanyButton from './RegisterCompanyButton';
-
+import { Notifier } from "../../../utils/alertUtils";
 const CompanyManagementView = () => {
   const navigate = useNavigate();
  const { companies, toggleCompanyStatus, updateCompany, fetchCompanies,getAssistantOptions, loadingAssistants } = useCompany();
@@ -53,17 +52,13 @@ const handleAssign = (empresa, userId) => {
   // Crea un nuevo objeto empresa actualizado con asignada = true
   const updatedCompany = { ...empresa, asignada: true };
   updateCompany(updatedCompany);
-  Swal.fire({
-    icon: 'success',
-    title: `Empresa ${empresa.nombre} asignada con éxito`,
-    timer: 1500,
-  });
+  Notifier.success(`Empresa ${empresa.nombre} asignada con éxito`);
 };
 
  const handleToggleCompanyStatus = async (empresa, newActiveStatus) => {
     // Si newActiveStatus es 'false', significa que queremos desactivar la empresa
     if (newActiveStatus === false) {
-      const result = await Swal.fire({
+      const result = await Notifier.confirm({
         title: 'Confirmación',
         text: `¿Está seguro que desea desactivar la empresa "${empresa.nombre}"?`,
         icon: 'warning',
@@ -79,14 +74,14 @@ const handleAssign = (empresa, userId) => {
 
           if (success) {
             // Muestra la alerta de éxito después de la actualización en el backend
-            await Swal.fire('¡Éxito!', `La empresa "${empresa.nombre}" ha sido desactivada con éxito.`, 'success');
+             Notifier.success( `La empresa "${empresa.nombre}" ha sido desactivada con éxito.`, 'success');
 
           } else {
-            Swal.fire('Error', `Hubo un problema al desactivar la empresa "${empresa.nombre}".`, 'error');
+            Notifier.error('Error', ` Error, Hubo un problema al desactivar la empresa "${empresa.nombre}".`, 'error');
           }
         } catch (error) {
           console.error("Error al desactivar la empresa:", error);
-          Swal.fire('Error', 'Ocurrió un error inesperado al intentar desactivar la empresa.', 'error');
+          Notifier.error('Error', 'Ocurrió un error inesperado al intentar desactivar la empresa.', 'error');
         }
       }
     }

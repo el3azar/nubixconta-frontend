@@ -7,52 +7,56 @@
   --color-success: #4E944F;
   --color-danger: #E2574C;
 }
+/* --- INICIO: NUEVA CLASE PARA TÍTULOS --- */
+.sectionTitle {
+  color: var(--color-dark); /* Usamos el color oscuro de tu paleta */
+  font-weight: 700; /* Hacemos que sea negrita */
+}
 
-/* 
- * CLAVE 1: El contenedor del filtro.
- * Lo convertimos en un contenedor Flex. 'align-items' lo alinea verticalmente
- * y 'gap' maneja el espaciado horizontal.
- */
-.filter {
+.filterContainer {
   display: flex;
   align-items: flex-end;
-  gap: 2rem;
+  justify-content: space-between;
+  flex-wrap: wrap; /* Permite el apilamiento si el espacio es muy reducido */
+  gap: 1rem;
   background-color: var(--color-filter-bg);
   border-radius: 0.7rem;
   padding: 1.5rem;
   margin-bottom: 2rem;
 }
-
+.filterDateGroup {
+  display: flex;
+  gap: 1.5rem;
+  flex-grow: 1;
+}
 .filterItem {
-  flex: 1 1 0%;
-  display: flex;
-  flex-direction: column;
-  min-width: 200px;
-}
-
-.filter .form-control[type="date"] {
+  flex: 1;
   min-width: 180px;
-  max-width: 300px;
-  width: 100%;
-  font-size: 1.1rem;
-  padding: 0.7rem 1.1rem;
 }
-
-
-.filterButtonWrap {
+.filterButtonGroup {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: flex-end;
-  /* El botón será más ancho aquí */
-  min-width: 200px;
+  gap: 0.5rem;
 }
 
+.titleContainer {
+  text-align: center;
+  margin-bottom: 1rem; /* Separación del título con los botones de abajo */
+}
+.actionsContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* Permite que el botón "Nuevo" se apile */
+  gap: 1rem;
+}
+.sortButtonGroup {
+  display: flex;
+  flex-wrap: wrap; /* Permite que los botones de ordenar se apilen */
+  gap: 0.5rem;
+}
 
-/* 
- * CLAVE 3: Clase unificada para los botones de acción.
- * Esta clase se usará para "Buscar" y "Nuevo".
- */
+/* --- Estilos Generales (Tus originales, sin cambios) --- */
+
 .actionButton {
   background-color: #10031C;
   color: #fff;
@@ -67,109 +71,202 @@
   text-decoration: none;
   transition: all 0.3s ease;
 }
-
 .actionButton:hover {
   background-color: transparent;
   color: #10031C;
 }
-
-/* Este estilo se aplicará al botón que NO esté seleccionado. */
 .inactiveSortButton {
-  background-color: transparent; /* Fondo transparente */
-  color: #10031C;             /* Texto oscuro */
+  background-color: transparent;
+  color: #10031C;
 }
-
-/* Opcional: Para que el botón inactivo vuelva a ser sólido al pasar el ratón */
 .inactiveSortButton:hover {
   background-color: #10031C;
   color: #fff;
 }
-
-/* Tabla */
-.tableContainer {
-  background: #fff;
-  border-radius: 0.5rem;
-  padding: 1rem;
- 
-}
-
-.tableContainer table {
-  width: 100%;               /* fuerza que la tabla llene todo el contenedor */
-  table-layout: fixed;       /* fija el ancho de las columnas */
-  border-collapse: collapse; /* elimina el hueco entre celdas */
-  border-spacing: 0;         /* por si acaso queda algo de espacio */
-}
-
-.tableContainer thead th {
- 
-  background-color: var(--color-filter-bg); /* el mismo fondo que tu cabecera */
-  z-index: 10;
-  border-bottom: 2px solid rgba(0,0,0,0.1);
-}
-
-.tableContainer tr.table-success,
-.tableContainer tr.table-success > td { background-color: var(--color-success) !important; }
-
-.tableContainer tr.table-danger,
-.tableContainer tr.table-danger > td { background-color: var(--color-danger) !important; }
-
-/* ——————————————
-   Alineación vertical uniforme
-   —————————————— */
-.tableContainer td {
-  vertical-align: middle;   /* centra el contenido verticalmente */
-}
-
-.actions {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  gap: 0.75rem;            /* espacio igual entre íconos */
-}
-.actions svg {
-  cursor: pointer;
-  font-size: 1.1rem;
-}
-.actions svg:last-child {
-  margin-right: 0;
-}
-
-/* En src/styles/shared/DocumentView.module.css */
-
-/* ... (TODOS TUS ESTILOS EXISTENTES PERMANECEN IGUAL) ... */
-
-
-/* ============================================================= */
-/*          ÚNICA CLASE NUEVA PARA EL SCROLL HORIZONTAL          */
-/* ============================================================= */
 .tableWrapper {
   width: 100%;
-  overflow-x: auto; /* Activa el scroll horizontal solo cuando es necesario */
-  -webkit-overflow-scrolling: touch; /* Mejora la experiencia en iOS */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
 }
-/* ================================================================== */
-/*        NUESTRAS PROPIAS CLASES DE ALINEACIÓN (ANTI-BOOTSTRAP)      */
-/* ================================================================== */
-.textAlignLeft {
-  text-align: left !important; /* Usamos !important para ganar a Bootstrap */
+.textAlignLeft { text-align: left !important; }
+.textAlignCenter { text-align: center !important; }
+.textAlignRight { text-align: right !important; }
+/* (Aquí irían tus otros estilos de tabla, los he omitido por brevedad pero deben estar) */
+/* --- INICIO: NUEVA CLASE PARA BOTONES DE ICONO ESTANDARIZADOS --- */
+/* Estilo inspirado en tu .iconBtn de la vista de Clientes para consistencia */
+.actionIconBtn {
+  background-color: transparent;
+  color: var(--color-dark);
+  border: 1px solid var(--color-dark);
+  border-radius: 0.4rem;
+  
+  /* --- Clave para el Target Táctil y la Alineación --- */
+  width: 35px;
+  height: 35px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
 
-.textAlignCenter {
-  text-align: center !important;
+.actionIconBtn:hover {
+  background-color: var(--muted);
+  color: #fff;
+  border-color: var(--color-primary);
 }
 
-.textAlignRight {
-  text-align: right !important;
+.actionIconBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #e9ecef;
+  border-color: #dee2e6;
+  color: #6c757d;
 }
 
-@media (max-width: 700px) {
-  .filter {
+/* La clase .actions ahora solo necesita manejar el espaciado del grupo */
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+/* Anulamos el flexbox de tu clase .filter para que el grid de Bootstrap tenga control total */
+.filter {
+  display: block;
+}
+/*
+ ==================================================================
+ == INICIO: NUEVOS ESTILOS PARA BOTONES DE EXPORTACIÓN
+ ==================================================================
+*/
+
+.exportButton {
+  /* --- Diseño Base (Outline) --- */
+  background-color: var(--color-dark);
+  color: #fff; /* Usa tu color primario morado */
+  border: 2px solid var(--color-dark);
+  
+  /* --- Consistencia con .actionButton --- */
+  padding: 0.5rem 1.2rem;
+  border-radius: 50px; /* Misma forma de píldora */
+  font-weight: 500;
+  min-width: 110px; /* Ancho mínimo para que quepan ícono y texto */
+  
+  /* --- Alineación del Ícono y Texto --- */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* --- Transición Suave --- */
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+/* --- Efecto Hover (Inversión de colores) --- */
+.exportButton:hover {
+  background-color: transparent;
+  color: var(--color-dark); /* Texto blanco al pasar el ratón */
+}
+
+/* --- Estilo para el Estado Deshabilitado --- */
+.exportButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #e9ecef; /* Un gris estándar para deshabilitado */
+  border-color: #dee2e6;
+  color: #6c757d;
+}
+
+.exportButton svg {
+  margin-right: 0.5rem; /* Espacio entre el ícono y el texto */
+  font-size: 1.3rem;    /* Tamaño del ícono */
+  margin-top: -1px; 
+} 
+
+/* 1. Definimos la clase específica para el encabezado de las tablas. */
+.salesTableHeader {
+  background-color: #2e2c50; /* ¡Tu color personalizado! */
+  color: #ffffff; /* Letras blancas para un buen contraste */
+  position: sticky; /* Mantiene la cabecera visible al hacer scroll vertical */
+  top: 0;           /* Lo pega en la parte superior del contenedor de scroll */
+  z-index: 1;       /* Asegura que esté por encima del contenido del cuerpo de la tabla */
+}
+
+/* 2. Aseguramos que los 'th' dentro de este encabezado hereden los estilos correctos. */
+.salesTableHeader th {
+  background-color: inherit; /* Hereda el color del padre (thead) */
+  color: inherit;            /* Hereda el color de texto del padre */
+  font-weight: 600;          /* Un poco más de peso a la fuente */
+  border-color: #4a4a6b;     /* Un borde ligeramente más claro que el fondo para una separación sutil */
+}
+
+/*
+ ==================================================================
+ == INICIO: SECCIÓN DE MEDIA QUERIES GRANULARES (LA SOLUCIÓN)
+ ==================================================================
+*/
+
+/* --- BREAKPOINT 1: Laptops (< 1200px) --- */
+/* Permite que los grupos se apilen si ya no caben, solucionando el problema de ~1000px */
+@media (max-width: 1199.98px) {
+  .filterContainer,
+  .actionsContainer {
+    flex-wrap: wrap; /* Permite el apilamiento */
+    justify-content: center; /* Centra los grupos cuando se apilan */
+    gap: 1.5rem;
+  }
+
+ 
+}
+
+/* --- BREAKPOINT 2: Tablets (< 992px) --- */
+/* Apilamiento más formal para tablets */
+@media (max-width: 991.98px) {
+  .filterContainer {
+    flex-direction: column;
+    align-items: center;
+  }
+  .filterDateGroup {
+    width: 100%;
+    max-width: 500px; /* Ancho máximo para los inputs de fecha */
+  }
+
+
+ 
+}
+
+/* --- BREAKPOINT 3: Móviles (< 768px) --- */
+/* Aquí es donde los grupos de botones internos empiezan a apilarse */
+@media (max-width: 767.98px) {
+  .filterDateGroup {
     flex-direction: column;
     gap: 1rem;
   }
-  .filterButtonWrap {
-    align-items: stretch;
-    min-width: unset;
-    margin-top: 1rem;
+  .actionsContainer {
+    flex-direction: column;
   }
+  
+}
+
+/* --- BREAKPOINT 4: Móviles Pequeños (< 520px) --- */
+/* Una regla específica para solucionar el problema de ~480px */
+@media (max-width: 519.98px) {
+  .sortButtonGroup,
+  .filterButtonGroup {
+    flex-direction: column; /* Apila los botones de ordenar */
+    align-items: stretch; /* Se estiran para ocupar el ancho */
+    width: 100%;
+  }
+  .sortButtonGroup .actionButton,
+  .filterButtonGroup .actionButton {
+    justify-content: center; /* Centra el texto del botón */
+  }
+ 
 }

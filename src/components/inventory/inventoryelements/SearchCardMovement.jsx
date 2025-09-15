@@ -2,8 +2,10 @@
 import React from 'react';
 import Boton from './Boton';
 // Asumo que tienes un archivo CSS para el tamaño, si no, puedes eliminar esta línea.
-import './SearchCardBase.module.css';
+import styles from "../../../styles/inventory/SearchCardBase.module.css";
+
 import SelectBase from './SelectBase';
+import { Dropdown } from 'react-bootstrap';
 
 /**
  * Tarjeta de búsqueda controlada. No tiene estado propio.
@@ -11,6 +13,7 @@ import SelectBase from './SelectBase';
  * @param {object} props
  * @param {Array} props.apiDataCodigo - Datos para el buscador de códigos de producto.
  * @param {object|null} props.codigoValue - Opción seleccionada para el código.
+ * @param {function} props.onDateChange - Función para manejar cambios en los inputs de fecha.
  * @param {function} props.onCodigoChange - Función para manejar cambios en el select de código.
  * @param {Array} props.apiDataTipoMovimiento - Datos para el buscador de tipo de movimiento.
  * @param {object|null} props.tipoMovimientoValue - Opción seleccionada para el tipo de movimiento.
@@ -33,15 +36,39 @@ function SearchCardMovement({
   // Props para los botones
   onBuscar,
   onLimpiar,
-  tamano = 'tamano-grande'
+  tamano = 'tamano-grande',
+   // --- ¡NUEVAS PROPS PARA EL FILTRO DE FECHAS! ---
+  dateRange,
+  onDateChange,
 }) {
+
+   // Función helper para manejar el cambio en los inputs de fecha
+  const handleDateInputChange = (e) => {
+    const { name, value } = e.target;
+    // Creamos un nuevo objeto de rango basado en el estado anterior
+    const newRange = { 
+      from: dateRange?.from || null, 
+      to: dateRange?.to || null,
+      [name]: value ? new Date(value + 'T00:00:00') : null // Asegura la fecha correcta
+    };
+    onDateChange(newRange);
+  };
+  
+  // Función para obtener el valor del input en formato YYYY-MM-DD
+  const getInputValue = (date) => {
+    if (!date) return '';
+    // Aseguramos que sea un objeto Date antes de formatear
+    const d = new Date(date);
+    return d.toISOString().split('T')[0];
+  };
+
   return (
-    <div className={`card shadow-sm ${tamano} mb-4`}>
+    <div className={`card shadow-sm ${styles[tamano]} mb-4`}>
       <div className="card-header">
         <h4 className="mb-0">Buscar Movimientos</h4>
       </div>
       <div className="card-body">
-        <div className="row g-3">
+        <div className="row g-3 align-items-end">
           {/* Columna para el buscador de Código de Producto */}
           <div className="col-md-6">
             <label htmlFor="codigo-search" className="form-label">Código del Producto</label>
@@ -55,18 +82,53 @@ function SearchCardMovement({
 
           {/* Columna para el buscador de Tipo de Movimiento */}
           <div className="col-md-6">
-            <label htmlFor="tipo-movimiento-search" className="form-label">Tipo de Movimiento</label>
-            <SelectBase
-              apiData={apiDataTipoMovimiento}
-              value={tipoMovimientoValue}
-              onChange={onTipoMovimientoChange}
-              placeholder="Ej: Entrada, Salida..."
+  <label htmlFor="tipo-movimiento-search" className="form-label">Tipo de Movimiento</label>
+  <select
+    id="tipo-movimiento-search"
+    className="form-select"
+    value={tipoMovimientoValue?.value || ''}
+    onChange={(e) => {
+      const selected = e.target.value
+        ? { value: e.target.value, label: e.target.value }
+        : null;
+      onTipoMovimientoChange(selected);
+    }}
+  >
+    <option value="">Seleccione un tipo...</option>
+    {apiDataTipoMovimiento.map((item) => (
+      <option key={item.value} value={item.value}>
+        {item.label}
+      </option>
+    ))}
+  </select>
+</div>
+
+
+          {/* --- ¡NUEVAS COLUMNAS PARA LAS FECHAS! --- */}
+          <div className="col-md-6">
+            <label className="form-label fw-bold">Fecha Inicio:</label>
+            <input 
+              type="date" 
+              name="from"
+              className="form-control" 
+              value={getInputValue(dateRange?.from)}
+              onChange={handleDateInputChange}
+            />
+          </div>
+          <div className="col-md-6">
+            <label className="form-label fw-bold">Fecha Fin:</label>
+            <input 
+              type="date" 
+              name="to"
+              className="form-control" 
+              value={getInputValue(dateRange?.to)}
+              onChange={handleDateInputChange}
             />
           </div>
         </div>
       </div>
-      <div className="card-footer text-end">
-        <Boton color="morado" forma="pastilla" onClick={onBuscar}>
+      <div className="card-footer text-center">
+        <Boton color="morado" forma="pastilla" className="mb-2" onClick={onBuscar}>
           <i className="bi bi-search me-2"></i>
           Buscar Movimiento
         </Boton>

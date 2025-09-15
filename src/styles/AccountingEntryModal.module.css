@@ -1,0 +1,167 @@
+/*
+ * ==================================================================
+ * == TUS ESTILOS ORIGINALES - 100% SIN MODIFICAR
+ * ==================================================================
+ */
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+}
+
+.modalContent {
+  position: relative;
+  background: #B6B3D0; 
+  border-radius: 10px;
+  max-width: 950px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.modalContent::-webkit-scrollbar {
+  width: 8px;
+}
+.modalContent::-webkit-scrollbar-track {
+  background: #e0e0e0;
+  border-radius: 10px;
+}
+.modalContent::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 10px;
+  border: 2px solid #e0e0e0;
+}
+.modalContent::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+.closeButton {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #555;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+}
+.closeButton:hover {
+  color: #000;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  border-top: 1px solid #9f9cb9;
+}
+
+.registrar, .cancelar {
+  padding: 0.38rem 1.25rem;
+  font-size: 0.97rem;
+  border-radius: 8px;
+  font-weight: 500;
+  border: 2px solid #10031C;
+  transition: 0.18s;
+}
+.registrar { background: #10031C; color: #fff; }
+.registrar:hover { background: transparent; color: #10031C; }
+.cancelar { background: transparent; color: #10031C; }
+.cancelar:hover { background: #10031C; color: #fff; }
+
+.entryTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+.entryTable thead {
+  background-color: #dee2e6;
+}
+.entryTable th, .entryTable td {
+  border: 1px solid #343a40 !important; 
+  padding: 0.8rem;
+  vertical-align: middle;
+}
+.entryTable tfoot {
+  font-weight: bold;
+  background-color: #e9ecef;
+}
+
+
+/*
+ ==================================================================
+ == INICIO: SECCIÓN AÑADIDA PARA RESPONSIVIDAD (NO MODIFICA DISEÑO)
+ ==================================================================
+*/
+
+/* --- BREAKPOINT PARA CUANDO EL SIDEBAR ESTÁ ABIERTO EN ESCRITORIO --- */
+/* A partir de 768px (el punto donde tu sidebar se expande) */
+@media (min-width: 768px) {
+  
+  /* El overlay ahora usa padding para empujar el modal, en lugar de grid. Es menos invasivo. */
+  .modalOverlay {
+    /* Quitamos el centrado por defecto */
+    justify-content: initial;
+    align-items: initial;
+    
+    /* Añadimos padding a la izquierda para compensar el sidebar abierto (220px)
+       y un poco a la derecha para balancear. Y arriba/abajo para centrarlo verticalmente. */
+    padding: 5vh 60px 5vh 280px; /* top/bottom | right | left */
+  }
+
+  .modalContent {
+    /* Hacemos que el modal ocupe todo el espacio de su contenedor con padding */
+    width: 100%;
+    height: 100%;
+    margin: 0; /* Quitamos cualquier margen automático */
+    /* Mantenemos el scroll vertical si el contenido es muy alto */
+    overflow-y: auto;
+  }
+}
+
+/* --- BREAKPOINT PARA CUANDO EL SIDEBAR ESTÁ COLAPSADO EN ESCRITORIO --- */
+/* Pero solo hasta que se convierta en flotante (es decir, en pantallas muy grandes) */
+@media (min-width: 1200px) {
+  .modalOverlay {
+    /* El sidebar es más ancho, así que necesitamos más padding */
+    padding-left: 280px; 
+  }
+}
+
+/* --- BREAKPOINT PARA PANTALLAS MÓVILES --- */
+/* Por debajo de 768px, cuando el sidebar está flotante y oculto */
+@media (max-width: 767.98px) {
+  /* En móvil, volvemos al centrado simple, ya que el sidebar no interfiere */
+  .modalOverlay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0; /* Sin padding */
+  }
+  
+  .modalContent {
+    /* Tus estilos originales para móvil son perfectos y se mantienen */
+    width: 90%;
+    max-height: 90vh;
+  }
+}
+
+/* --- SOLUCIÓN FINAL PARA EL SCROLL INTERNO DEL REPORTE --- */
+/* Esta regla se aplica a todos los tamaños de pantalla */
+.modalContent > div[id="printable-accounting-entry"] {
+  overflow-x: auto; /* Permite scroll horizontal solo al reporte */
+  -webkit-overflow-scrolling: touch; /* Mejora la experiencia táctil */
+}

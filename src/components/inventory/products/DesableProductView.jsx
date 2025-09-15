@@ -2,109 +2,112 @@ import React, { useState, useMemo, useCallback } from 'react';
 import Boton from '../inventoryelements/Boton';
 import { Link } from 'react-router-dom';
 import TableComponent from '../inventoryelements/TableComponent';
-import { showSuccess } from '../alertstoast';
-import { showConfirmationDialog } from '../alertsmodalsa';
+//import { showSuccess } from '../alertstoast';
+//import { showConfirmationDialog } from '../alertsmodalsa';
+import { formatDate } from '../../../utils/dateFormatter';
+import { useQueryClient } from '@tanstack/react-query';
 
-// 2. Define los datos para la tabla
-// En una aplicación real, esto vendría de una llamada a una API.
-const datosDeEjemplo = [
-  { codigo: 'PROD-001', nombre: 'Monitor Curvo 32"', unidad: 'PZA', existencias: 25, fecha: '2025-08-01', activo: false },
-  { codigo: 'PROD-002', nombre: 'Silla Ergonómica', unidad: 'PZA', existencias: 40, fecha: '2025-07-30', activo: false },
-  { codigo: 'PROD-003', nombre: 'Mouse Vertical', unidad: 'PZA', existencias: 110, fecha: '2025-07-28', activo: false },
-];
+// --- NUESTROS HOOKS DE DATOS ---
+import {
+  useInactiveProducts,
+  useReactivateProduct,
+} from '../../../hooks/useProductQueries'; // Ajusta la ruta si es necesario
+
+import { Notifier } from '../../../utils/alertUtils';
 
 const DesableProductView = () => {
-    // Guardamos los datos en un estado para que puedan ser modificables
-  const [data, setData] = useState(datosDeEjemplo);
-  const [filtro, setFiltro] = useState('');
+  const queryClient = useQueryClient(); // Cliente de React Query para invalidaciones
 
-  // Esta es la nueva versión de tu función
-  const handleToggleActivo = async (codigoProducto) => {
-    const producto = data.find(p => p.codigo === codigoProducto);
-    if (!producto) return;
+  // ===================================================================
+  // == 1. OBTENCIÓN DE DATOS REALES DE LA API ==
+  // ===================================================================
+  // Usamos nuestro hook para obtener los productos INACTIVOS.
+  const { data: inactiveProducts = [], isLoading, isError } = useInactiveProducts();
 
-    const isActivo = producto.activo;
+  // ===================================================================
+  // == 2. CONEXIÓN DE LA MUTACIÓN DE REACTIVACIÓN ==
+  // ===================================================================
+  // Hook de mutación para reactivar un producto.
+  const { mutate: reactivateProductMutate } = useReactivateProduct();
 
-    // Define los textos dinámicos para la confirmación
-    const title = isActivo ? '¿Desactivar producto?' : '¿Activar producto?';
-    const confirmButtonText = isActivo ? 'Sí, desactivar' : 'Sí, activar';
-
+  // ===================================================================
+  // == 3. ADAPTACIÓN DE LA LÓGICA EXISTENTE ==
+  // ===================================================================
+  // La función ahora usa la mutación para reactivar.
+  const handleReactivate = async (productId) => {
     // Llama a tu servicio de confirmación
-    const result = await showConfirmationDialog(title, "El estado del producto cambiará.", confirmButtonText, 'Cancelar');
+    const result = await Notifier.confirm({
+      title: '¿Activar producto?',
+      text: "El estado del producto cambiará a ACTIVO.",
+      confirmButtonText: 'Sí, activar',
+      cancelButtonText: 'Cancelar'
+    });
 
-    // La lógica después de la confirmación sigue igual
     if (result.isConfirmed) {
-        showSuccess(isActivo ? '¡Producto desactivado!' : '¡Producto activado!');
-        setData(currentData =>
-            currentData.map(p =>
-            p.codigo === codigoProducto ? { ...p, activo: !isActivo } : p
-        )
-      );
+      // Si el usuario confirma, llamamos a la mutación.
+      reactivateProductMutate(productId, {
+        onSuccess: () => {
+          // El 'onSuccess' de la mutación ya invalida la query, por lo que la lista se
+          // actualizará automáticamente. Mostramos un feedback al usuario.
+          Notifier.success('¡Producto activado con éxito!');
+        },
+        onError: (error) => {
+          // Opcional: Manejo de errores específico aquí si lo necesitas.
+          console.error("Error al reactivar el producto:", error);
+          // Podrías mostrar una alerta de error aquí.
+          Notifier.error(error.response?.data?.message || 'Hubo un error al activar el producto.');
+        }
+      });
     }
   };
   
-  // 3. Define las columnas usando useMemo para optimizar
+  // Las columnas ahora usan los nombres de propiedad del DTO real.
   const columns = useMemo(() => [
-    {
-      header: 'Código',
-      accessorKey: 'codigo', // Coincide con la clave en el objeto de datos
-    },
-    {
-      header: 'Nombre',
-      accessorKey: 'nombre',
-    },
-    {
-      header: 'Unidad',
-      accessorKey: 'unidad',
-    },
-    {
-      header: 'Existencias',
-      accessorKey: 'existencias',
-    },
-    {
-      header: 'Fecha',
-      accessorKey: 'fecha',
-    },
+    { header: 'Código', accessorKey: 'productCode' },
+    { header: 'Nombre', accessorKey: 'productName' },
+    { header: 'Unidad', accessorKey: 'unit' },
+    { header: 'Existencias', accessorKey: 'stockQuantity' },
+    { header: 'Fecha Creación', accessorKey: 'creationDate', cell: ({ row }) => formatDate(row.original.creationDate) },
     {
       header: 'Acciones',
-      id: 'acciones', // ID único para la columna de acciones
+      id: 'acciones',
       cell: ({ row }) => (
-        // Renderizamos un botón para cada fila
         <div className="d-flex justify-content-center">
-          <Boton 
-            color={row.original.activo ? "blanco" : "morado"} 
-            forma="pastilla"
-            onClick={() => handleToggleActivo(row.original.codigo)}
-          >
-            {row.original.activo ? 'Desactivar' : 'Activar'}
+          <Boton color="morado" forma="pastilla"  onClick={() => handleReactivate(row.original.idProduct)}>
+            Activar
           </Boton>
         </div>
       )
     }
-  ], [data]); // El array de dependencias está vacío porque las columnas no cambian
+  ], []); // Las dependencias pueden estar vacías ya que la función de reactivación es estable.
 
-    return (
-        <div>
-            <h2>Lista de Productos Desactivados</h2>
-            <div>
-                <Link to="/inventario/productos">
-                    <Boton color="morado" forma="pastilla" className="mb-4" >
-                        <i class="bi bi-arrow-left-circle-fill me-2"></i>
-                        Regresar
-                    </Boton>
-                </Link>
-            </div>
-             {/* 4. Renderiza tu BaseTable, pasándole las props necesarias */}
-            <TableComponent
-                columns={columns}
-                data={data}
-                globalFilter={filtro}
-                onGlobalFilterChange={setFiltro}
-                withPagination={true}
-            />
-        </div>
-        
-    );
+  // ===================================================================
+  // == 4. RENDERIZADO DEL COMPONENTE ==
+  // ===================================================================
+
+  if (isLoading) return <p className="text-center">Cargando productos desactivados...</p>;
+  if (isError) return <p className="text-center text-danger">Error al cargar los productos.</p>;
+
+  return (
+      <div>
+          <h2>Lista de Productos Desactivados</h2>
+          <div>
+              <Link to="/inventario/productos">
+                  <Boton color="morado" forma="pastilla" className="mb-4">
+                      <i className="bi bi-arrow-left-circle-fill me-2"></i>
+                      Regresar
+                  </Boton>
+              </Link>
+          </div>
+          <TableComponent
+              columns={columns}
+              data={inactiveProducts}
+              withPagination={true}
+              // Ya no necesitamos el filtro global aquí, a menos que quieras implementarlo
+              // con una búsqueda en el servidor para los inactivos también.
+          />
+      </div>
+  );
 };
 
-export default DesableProductView
+export default DesableProductView;

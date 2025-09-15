@@ -3,7 +3,7 @@ import { useCompany } from "../../context/CompanyContext";
 import { useNavigate } from "react-router-dom";
 import DashboardCards from "../DashboardCards";
 // ICONOS (puedes usar los que prefieras de react-icons)
-import { FaChartLine, FaBoxes, FaHandHoldingUsd } from "react-icons/fa";
+import { FaChartLine, FaBoxes, FaHandHoldingUsd,FaShoppingCart,FaFileInvoiceDollar,FaLandmark,FaBook } from "react-icons/fa";
 import layoutStyles from "../../styles/mainLayout.module.css"; 
 
 const DashBoardGeneral = () => {
@@ -16,7 +16,11 @@ const DashBoardGeneral = () => {
   const items = [
     { label: "Ventas", icon: FaChartLine, to: "/ventas" },
     { label: "Inventario", icon: FaBoxes, to: "/inventario" },
-    { label: "Cuentas por Cobrar", icon: FaHandHoldingUsd, to: "/cuentas" }
+    { label: "Cuentas por Cobrar", icon: FaHandHoldingUsd, to: "/cuentas" },
+     { label: "Compras", icon: FaShoppingCart, to: "/compras" },
+    { label: "Cuentas por Pagar", icon: FaFileInvoiceDollar, to: "/cuentas-por-pagar" },
+    { label: "Bancos", icon: FaLandmark, to: "/bancos" },
+    { label: "Contabilidad", icon: FaBook, to: "/contabilidad" }
   ];
 
  return (

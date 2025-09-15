@@ -2,359 +2,273 @@ import React, { useState, useMemo, useCallback } from 'react';
 import Boton from '../inventoryelements/Boton';
 import SearchCardMovement from '../inventoryelements/SearchCardMovement';
 import TableComponent from '../inventoryelements/TableComponent';
-import SwitchAction from '../inventoryelements/SwitchActionMovement';
+//import SwitchAction from '../inventoryelements/SwitchActionMovement';
 import { Link } from 'react-router-dom';
 // 1. IMPORTAMOS LAS FUNCIONES DE ALERTA NECESARIAS
-import { showSuccess, showError } from '../alertstoast';
-import { showConfirmationDialog } from '../alertsmodalsa';
-import './MovementView.css';
-import RegisterMovement from './RegisterMovement';
-import EditMovement from './EditMovement';
+import { Notifier } from '../../../utils/alertUtils';
+import styles from "../../../styles/inventory/MovementView.module.css";
 import ViewDetailsMovement from './ViewDetailsMovement';
-
-// --- DATOS DE EJEMPLO para la tabla de movimientos ---
-const datosDeMovimientos = [
-  { id: 1, codigoProducto: 'SKU-001', fecha: '2025-07-31', tipo: 'Entrada', observacion: 'Compra a proveedor principal', modulo: 'Inventario' },
-  { id: 2, codigoProducto: 'SKU-002', fecha: '2025-07-31', tipo: 'Salida', observacion: 'Venta a cliente final', modulo: 'Ventas' },
-  { id: 3, codigoProducto: 'SKU-001', fecha: '2025-07-30', tipo: 'Ajuste', observacion: 'Corrección de stock por conteo', modulo: 'Inventario' },
-  { id: 4, codigoProducto: 'SKU-004', fecha: '2025-07-29', tipo: 'Entrada', observacion: 'Devolución de cliente', modulo: 'Ventas' },
-];
-// Para el buscador de productos, es mejor tener una lista maestra de productos.
-const datosDeProductos = [
-  { codigo: 'SKU-001', nombre: 'Laptop Gamer Pro' },
-  { codigo: 'SKU-002', nombre: 'Mouse Inalámbrico' },
-  { codigo: 'SKU-003', nombre: 'Teclado Mecánico' },
-  { codigo: 'SKU-004', nombre: 'Monitor 27"' },
-];
+import { formatDate } from '../../../utils/dateFormatter';
+import MovementFormModal from './MovementFormModal'; 
+// --- NUESTRO ÚNICO HOOK DE LÓGICA ---
+import { useMovementLogic } from '../../../hooks/useMovementLogic';
+// --- HOOKS ESPECÍFICOS PARA LAS ACCIONES DE ESTA VISTA ---
+import { useApplyMovement, useCancelMovement, useDeleteManualMovement, useCreateManualMovement, useUpdateManualMovement } from '../../../hooks/useInventoryMovementQueries';
+import SubMenu from "../../shared/SubMenu";
+import { inventorySubMenuLinks } from '../../../config/menuConfig';
 
 const MovementView = () => {
-   // --- CAMBIO 1: Guardamos los datos en el estado del componente ---
-  const [movimientos, setMovimientos] = useState(datosDeMovimientos);
-  // NUEVOS ESTADOS PARA LOS FILTROS
-  const [codigoFilter, setCodigoFilter] = useState(null);
-  const [tipoMovimientoFilter, setTipoMovimientoFilter] = useState(null);
-  // Estado para los filtros (puedes expandirlo como en ProductView)
-  //const [globalFilter, setGlobalFilter] = useState('');
-  // AÑADIMOS ESTADO PARA CONTROLAR EL MODAL
-  const [showRegisterModal, setShowRegisterModal] = useState(false);
-  // 2. AÑADIMOS ESTADOS PARA CONTROLAR EL MODAL DE EDICIÓN
-  const [showEditModal, setShowEditModal] = useState(false);
-  // Este estado guardará el objeto completo del movimiento que se está editando
-  const [movementToEdit, setMovementToEdit] = useState(null);
-  // AÑADIMOS ESTADOS PARA EL MODAL DE DETALLES
-  const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [movementToView, setMovementToView] = useState(null);
-  // PREPARACIÓN DE DATOS PARA LOS SELECTS
-  // Para el buscador de Códigos (usando la lista maestra de productos)
-  const datosParaBusquedaPorCodigo = useMemo(() => datosDeProductos.map(p => ({
-    id: p.codigo,
-    nombre: p.codigo, // Buscamos por el código mismo
-  })), []); // Dependencia vacía si datosDeProductos es constante
+  // ===================================================================
+  // == 1. LÓGICA DE ESTADO Y DATOS (SIMPLIFICADA)
+  // ===================================================================
+  const { movimientos, isLoading, isError, error, searchProps, headerProps } = useMovementLogic();
+  const { sortBy, setSortBy, statusFilter, setStatusFilter } = headerProps;
 
-  // Para el buscador de Tipos de Movimiento (extraemos valores únicos de los movimientos)
-  const datosParaBusquedaPorTipo = useMemo(() => {
-    // Obtenemos todos los tipos: ['Entrada', 'Salida', 'Ajuste', 'Entrada']
-    const todosLosTipos = datosDeMovimientos.map(m => m.tipo);
-    // Filtramos para obtener valores únicos: ['Entrada', 'Salida', 'Ajuste']
-    const tiposUnicos = [...new Set(todosLosTipos)];
-    // Mapeamos al formato que SelectBase necesita
-    return tiposUnicos.map(tipo => ({ id: tipo, nombre: tipo }));
-  }, [movimientos]);
+ // --- ESTADOS DE MODALES SIMPLIFICADOS ---
+    const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+    const [movementToEdit, setMovementToEdit] = useState(null); // Sigue siendo la clave
+    const [movementToView, setMovementToView] = useState(null);
+  // --- Hooks de React Query (sin cambios) ---
+  const { mutate: applyMovementMutate } = useApplyMovement();
+  const { mutate: cancelMovementMutate } = useCancelMovement();
+  const { mutate: deleteManualMovementMutate } = useDeleteManualMovement();
+  const { mutate: createManualMovementMutate } = useCreateManualMovement();
+  const { mutate: updateManualMovementMutate } = useUpdateManualMovement();
 
-  // 1. Define los textos específicos para MOVIMIENTOS y su toggle
-  const configAplicarMovimiento = {
-    title: '¿Aplicar movimiento?',
-    text: 'El movimiento se registrará y afectará el inventario.',
-    confirmButtonText: 'Sí, aplicar',
-    cancelButtonText: 'Cancelar',
-    successMessage: '¡Movimiento aplicado!'
+   // ===================================================================
+  // == 2. HANDLERS Y LÓGICA MEMOIZADA (LIMPIOS)
+  // ===================================================================
+
+  const handleApply = async (movementId) => {
+    // 2. Sustitución de showConfirmationDialog por Notifier.confirm
+    const result = await Notifier.confirm({
+      title: '¿Aplicar Movimiento?',
+      text: 'El stock del producto se verá afectado.',
+      confirmButtonText: 'Sí, aplicar'
+    });
+    if (result.isConfirmed) {
+      applyMovementMutate(movementId, {
+        // 3. Sustitución de showSuccess y showError por Notifier
+        onSuccess: () => Notifier.success('¡Movimiento aplicado con éxito!'),
+        onError: (err) => Notifier.error(err.response?.data?.message || 'Error al aplicar el movimiento.'),
+      });
+    }
   };
 
-  const configMarcarPendiente = {
-    title: '¿Marcar como pendiente?',
-    text: 'El movimiento quedará en espera y no afectará el inventario.',
-    confirmButtonText: 'Sí, marcar',
-    cancelButtonText: 'Cancelar',
-    successMessage: '¡Movimiento pendiente!'
+  const handleCancel = async (movementId) => {
+    // 4. Sustitución de showConfirmationDialog por Notifier.confirm
+    const result = await Notifier.confirm({
+      title: '¿Anular Movimiento?',
+      text: 'Esta acción es irreversible.',
+      confirmButtonText: 'Sí, anular'
+    });
+    if (result.isConfirmed) {
+      cancelMovementMutate(movementId, {
+        // 5. Sustitución de showSuccess y showError por Notifier
+        onSuccess: () => Notifier.success('¡Movimiento anulado con éxito!'),
+        onError: (err) => Notifier.error(err.response?.data?.message || 'Error al anular el movimiento.'),
+      });
+    }
   };
 
-  // 2. CREAMOS LA NUEVA FUNCIÓN PARA ANULAR
-  const handleAnularMovimiento = useCallback(async (movementId) => {
-      const result = await showConfirmationDialog(
-          '¿Anular Movimiento?',
-          'Esta acción es irreversible y el movimiento se marcará como anulado.',
-          'Sí, anular',
-          'Cancelar'
-      );
-
-      if (result.isConfirmed) {
-          try {
-              // Lógica para anular: lo quitamos de la lista principal
-              setMovimientos(current => current.filter(mov => mov.id !== movementId));
-              showSuccess('¡Movimiento anulado correctamente!');
-              // Aquí podrías llamar a una API para actualizar el estado en el backend
-              // await api.post(`/movimientos/${movementId}/anular`);
-          } catch (error) {
-              showError('Error al anular el movimiento.');
-          }
-      }
-  }, []); // useCallback para optimizar
-  // 2. Define la función que manejará el cambio de estado
-  // --- CAMBIO 2: La función ahora actualiza el estado, provocando un re-render ---
-  const handleToggleMovement = (movementId, newState) => {
-    const newStatus = newState ? 'Aplicado' : 'Pendiente';
-
-    setMovimientos(movimientosActuales => 
-      movimientosActuales.map(mov => {
-        if (mov.id === movementId) {
-          // Crea un nuevo objeto con el status actualizado
-          return { ...mov, status: newStatus };
-        }
-        // Devuelve el objeto sin cambios
-        return mov;
-      })
-    );
-    console.log(`Cambiando estado del movimiento ID ${movementId} a: ${newStatus}`);
-    // Aquí iría tu lógica para actualizar el estado en el backend
-    // Por ejemplo: updateMovementStatus(movementId, status);
-  };
-  // 3. NUEVOS HANDLERS PARA EL FLUJO DE EDICIÓN
-  const handleOpenEditModal = (movement) => {
-    setMovementToEdit(movement); // Guardamos el movimiento a editar
-    setShowEditModal(true);      // Abrimos el modal
+  const handleDelete = async (movementId) => {
+    // 6. Sustitución de showConfirmationDialog por Notifier.confirm
+    const result = await Notifier.confirm({
+      title: '¿Eliminar Movimiento?',
+      text: 'El movimiento se eliminará permanentemente.',
+      confirmButtonText: 'Sí, eliminar'
+    });
+    if (result.isConfirmed) {
+      deleteManualMovementMutate(movementId, {
+        // 7. Sustitución de showSuccess y showError por Notifier
+        onSuccess: () => Notifier.success('¡Movimiento eliminado con éxito!'),
+        onError: (err) => Notifier.error(err.response?.data?.message || 'Error al eliminar el movimiento.'),
+      });
+    }
   };
 
-  const handleUpdateFromModal = (updatedMovement) => {
-    // Buscamos el movimiento en nuestra lista y lo reemplazamos por el actualizado
-    setMovimientos(currentMovements =>
-      currentMovements.map(mov =>
-        mov.id === updatedMovement.id ? updatedMovement : mov
-      )
-    );
-    // El modal ya muestra el mensaje de éxito y se cierra solo.
-  };
-  // NUEVAS FUNCIONES PARA EL FLUJO DE DETALLES
+
+// 3. NUEVOS HANDLERS PARA EL FLUJO DE EDICIÓN
+ // --- Handlers de apertura de modales ---
+    const handleOpenCreateModal = () => {
+        setMovementToEdit(null); // Aseguramos modo creación
+        setIsFormModalOpen(true);
+    };
+    const handleOpenEditModal = (movement) => {
+        setMovementToEdit(movement); // Configuramos modo edición
+        setIsFormModalOpen(true);
+    };
+    const handleCloseFormModal = () => {
+        setIsFormModalOpen(false);
+    };
+
     const handleOpenDetailsModal = (movement) => {
-        setMovementToView(movement); // Guardamos el movimiento a visualizar
-        setShowDetailsModal(true);   // Abrimos el modal
+        setMovementToView(movement); // Guarda los datos. ¡Eso es todo!
     };
 
     const handleCloseDetailsModal = () => {
-        setShowDetailsModal(false);
-        setMovementToView(null); // Limpiamos el estado al cerrar
+        setMovementToView(null); // Limpia los datos. ¡Eso es todo!
     };
-  // Definición de las columnas para la tabla de movimientos
+    const handleStatusFilterClick = (status) => {
+        setStatusFilter(prev => prev === status ? null : status);
+      };
+ // --- UN ÚNICO HANDLER DE GUARDADO ---
+  const handleSave = (data) => {
+    const isEditing = !!movementToEdit;
+    const mutationOptions = {
+      onSuccess: () => {
+        // 8. Sustitución de showSuccess por Notifier
+        Notifier.success(`¡Movimiento ${isEditing ? 'actualizado' : 'registrado'}!`);
+        handleCloseFormModal();
+      },
+      // 9. Sustitución de showError por Notifier
+      onError: (err) => Notifier.error(err.response?.data?.message || 'Ocurrió un error'),
+    };
+    if (isEditing) {
+      updateManualMovementMutate(data, mutationOptions);
+    } else {
+      createManualMovementMutate(data, mutationOptions);
+    }
+  };
+
+  // Definición de columnas de la tabla (conectada a datos reales)
   const columns = useMemo(() => [
-    {
-      header: 'Cód. Producto',
-      accessorKey: 'codigoProducto',
+    { header: 'Cód. Producto', accessorKey: 'product.productCode' },
+    { header: 'Nombre Producto', accessorKey: 'product.productName' },
+    { header: 'Fecha', cell: ({ row }) => formatDate(row.original.date) },
+    { header: 'Estado', accessorKey: 'status' },
+    { header: 'Tipo', accessorKey: 'movementType' },
+    { header: 'Cantidad', accessorKey: 'quantity' },
+    { header: 'Stock Resultante', accessorKey: 'stockAfterMovement' },
+    { 
+      header: 'Descripción', 
+      accessorKey: 'description', 
+      size: 400,
+      minSize: 300,
     },
-    {
-      header: 'Fecha',
-      accessorKey: 'fecha',
+    { 
+      header: 'Cliente', 
+      accessorKey: 'customerName',
+      size: 200,
+      minSize: 150,
     },
-    {
-      header: 'Tipo',
-      accessorKey: 'tipo',
-    },
-    {
-      header: 'Observación',
-      accessorKey: 'observacion',
-    },
-    {
-      header: 'Módulo',
-      accessorKey: 'modulo',
-    },
-    
+    { header: 'Módulo Origen', accessorKey: 'originModule' },
     {
       header: 'Acciones',
       id: 'acciones',
-      // La celda de acciones ahora tiene 4 botones
       cell: ({ row }) => {
-        const isAplicado = row.original.status === 'Aplicado';
-        return(
-          <div className="d-flex gap-2 justify-content-center">
-            {/* Botón Editar */}
-            <Boton color="morado" forma="pastilla" title="Editar Movimiento" onClick={() => handleOpenEditModal(row.original)}>
-              <i className="bi bi-pencil-square"></i>
-            </Boton>
-            {/* Botón Ver Detalles */}
-            {/* 4. ACTUALIZAMOS EL ONCLICK DEL BOTÓN "VER DETALLES" */}
-            <Boton color="morado" forma="pastilla" title="Ver Detalles" onClick={() => handleOpenDetailsModal(row.original)}>
-                <i className="bi bi-eye"></i>
-            </Boton>
-            {/* Botón Activar/Desactivar */}
-            
-              
-            
-            {/* 3. Usa el componente SwitchAction con las nuevas props */}
-            <div class="d-flex align-items-center" title={row.original.status === 'Aplicado' ? 'Marcar como Pendiente' : 'Aplicar Movimiento'}>
-              <SwitchAction
-                initialState={row.original.status === 'Aplicado'}
-                onToggle={(nuevoEstado) => handleToggleMovement(row.original.id, nuevoEstado)}
-                configOn={configAplicarMovimiento}   // Textos para activar (Aplicar)
-                configOff={configMarcarPendiente} // Textos para desactivar (Pendiente)
-              />
-            </div>
-            {/* Botón Marcar */}
-            <Boton
-              color="blanco"
-              forma="pastilla"
-              title="Anular"
-              // 3. ACTUALIZAMOS EL ONCLICK DEL BOTÓN
-              onClick={() => handleAnularMovimiento(row.original.id)}
-              disabled={!isAplicado}
-              >
+        const movement = row.original;
+        const isManual = movement.originModule.includes('Manual');
+
+        return (
+          <div className="d-flex gap-2 justify-content-center flex-wrap">
+            {isManual && movement.status === 'PENDIENTE' && (
+              <>
+                <Boton color="morado" title="Editar" onClick={() => handleOpenEditModal(movement)} size="icon">
+                  <i className="bi bi-pencil-square me-2 mb-2 mt-2 ms-2"></i>
+                </Boton>
+                <Boton color="verde" title="Aplicar" onClick={() => handleApply(movement.movementId)} size="icon">
+                  <i className="bi bi-check-circle"></i>
+                </Boton>
+                <Boton color="rojo" title="Eliminar" onClick={() => handleDelete(movement.movementId)} size="icon">
+                  <i className="bi bi-trash"></i>
+                </Boton>
+              </>
+            )}
+
+            {isManual && movement.status === 'APLICADA' && (
+              <Boton color="rojo" title="Anular" onClick={() => handleCancel(movement.movementId)} size="icon">
                 <i className="bi bi-dash-circle"></i>
-            </Boton>
+              </Boton>
+            )}
+
+            {movement.status !== 'ANULADA' && (
+              <Boton color="blanco" title="Ver Detalles" onClick={() => handleOpenDetailsModal(movement)} size="icon">
+                  <i className="bi bi-eye"></i>
+              </Boton>
+            )}
+            
           </div>
         );
       },
     },
-  ], [handleAnularMovimiento]);
+  ], [handleApply, handleCancel, handleDelete]);
 
-  // 4. LÓGICA DE FILTRADO AVANZADA
-  const movimientosFiltrados = useMemo(() => {
-    return movimientos.filter(movimiento => {
-      const filtroCodigo = (codigoFilter?.value || '').toLowerCase();
-      const filtroTipo = (tipoMovimientoFilter?.value || '').toLowerCase();
 
-      const coincideCodigo = movimiento.codigoProducto.toLowerCase().includes(filtroCodigo);
-      const coincideTipo = movimiento.tipo.toLowerCase().includes(filtroTipo);
-      
-      return coincideCodigo && coincideTipo;
-    });
-  }, [movimientos, codigoFilter, tipoMovimientoFilter]);
-  // Lógica de filtrado simple (puedes hacerla más compleja si es necesario)
-  
-  // 5. HANDLERS PARA BUSCAR Y LIMPIAR
-  const handleBuscar = () => {
-    alert(`Buscando con: Código="${codigoFilter?.value || ''}", Tipo="${tipoMovimientoFilter?.value || ''}"`);
-  };
 
-  const handleLimpiar = () => {
-    setCodigoFilter(null);
-    setTipoMovimientoFilter(null);
-  };
-
-  // 3. CREAMOS LA FUNCIÓN QUE RECIBIRÁ LOS DATOS DEL MODAL
-  const handleSaveFromModal = (nuevoMovimientoData) => {
-    console.log("Datos recibidos del modal:", nuevoMovimientoData);
-    
-    const movimientoParaTabla = {
-      ...nuevoMovimientoData,
-      id: Date.now(), // Generamos un ID único para el ejemplo
-      codigoProducto: nuevoMovimientoData.productId, // Ajustamos el nombre de la propiedad
-      tipo: nuevoMovimientoData.movementType,
-      fecha: nuevoMovimientoData.movementDate,
-      observacion: nuevoMovimientoData.observation,
-      modulo: 'Inventario' // Asignamos un módulo por defecto
-    };
-
-    // Añadimos el nuevo movimiento al principio de la lista para que se vea en la tabla
-    setMovimientos(movimientosActuales => [movimientoParaTabla, ...movimientosActuales]);
-    // El modal ya se cierra solo y muestra el mensaje de éxito.
-  };
-
+  if (isLoading) return <p className="text-center">Cargando movimientos...</p>;
+  if (isError) return <p className="text-center text-danger">Error: {error.response?.data?.message || error.message}</p>;
   return (
-    <div>
-      <h2>Gestión de Movimientos de Inventario</h2>
+    <>
+      <SubMenu links={inventorySubMenuLinks} />
       <div>
-          <Link to="/inventario/movimientosproductos">
-              <Boton color="morado" forma="pastilla" className="mb-4" >
-                  <i className="bi bi-arrow-left-circle-fill me-2"></i>
-                  Regresar
-              </Boton>
-          </Link>
-      </div>
+        <h2>Gestión de Movimientos de Inventario</h2>
+        
 
-      {/* Usamos un SearchCardBase genérico para la búsqueda */}
-      {/* 6. IMPLEMENTACIÓN DE SearchCardBase */}
-      <SearchCardMovement
-        tamano='tamano-grande'
-        // Props para el buscador de Código
-        apiDataCodigo={datosParaBusquedaPorCodigo}
-        codigoValue={codigoFilter}
-        onCodigoChange={setCodigoFilter}
-        
-        // Props para el buscador de Tipo de Movimiento
-        apiDataTipoMovimiento={datosParaBusquedaPorTipo}
-        tipoMovimientoValue={tipoMovimientoFilter}
-        onTipoMovimientoChange={setTipoMovimientoFilter}
-        
-        // Props para los botones
-        onBuscar={handleBuscar}
-        onLimpiar={handleLimpiar}
-      />
-      
+     <SearchCardMovement tamano='tamano-grande' {...searchProps} />
       <div className='contenedor-movimientos'>
-        <div className="card-header">
-          <h4 className="mb-0">Movimientos de Inventario</h4>
+        <div className="card-header text-center bg-morado mb-4">
+          <h4 className="mb-4">Movimientos de Inventario</h4>
         </div>
-        <div className="row justify-content-end mt-4">
-          <div className="col-auto">
-            <Boton color="morado" forma="pastilla" className="mb-4" onClick={() => setShowRegisterModal(true)} >
-              <i class="bi bi-plus-circle me-2"></i>
-              Agregar Movimiento
-            </Boton>
-          </div>
-          <div className="col-md-auto">
-            <Link to="/inventario/moves/pending">
-            <Boton color="morado" forma="pastilla" className="mb-4" >
-                <i className="bi bi-eye me-2"></i>
-                Ver Pendientes
-            </Boton>
-            </Link>
-          </div>
-          <div className="col-auto">
-            <Link to="/inventario/moves/anull">
-              <Boton color="morado" forma="pastilla" className="mb-4" >
-                <i className="bi bi-dash-circle me-2"></i>
-                Ver Anulados
-              </Boton>
-            </Link>
-          </div>
-          <div className="col-md-auto">
-            <Link to="/inventario/moves/applied">
-              <Boton color="morado" forma="pastilla" className="mb-4" >
-                <i class="bi bi-check-circle me-2"></i>
-                Aplicar Movimientos
-              </Boton>
-            </Link>
-          </div>
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 mb-3 px-3">
+            {/* --- Lado Izquierdo: Botones de Ordenamiento --- */}
+            <div className="d-flex gap-2 flex-wrap mb-2 mb-md-0">
+                <Boton color={sortBy === 'status' ? "morado" : "blanco"} forma="pastilla" onClick={() => setSortBy('status')}>
+                    Ordenar por Estado
+                </Boton>
+                <Boton color={sortBy === 'date' ? "morado" : "blanco"} forma="pastilla" onClick={() => setSortBy('date')}>
+                    Ordenar por Fecha
+                </Boton>
+            </div>
+
+            {/* --- Lado Derecho: Botones de Acción y Filtro Rápido --- */}
+            <div className="d-flex gap-2 flex-wrap mt-2 mt-md-0">
+                <Boton color="morado" forma="pastilla" onClick={handleOpenCreateModal}>
+                    <i className="bi bi-plus-circle me-2"></i>
+                    Agregar
+                </Boton>
+
+                {/* --- BOTONES DE FILTRO RÁPIDO MEJORADOS --- */}
+                <div className="vr mx-2"></div> {/* Separador visual opcional */}
+
+                <Boton color={statusFilter === 'PENDIENTE' ? 'blanco' : 'morado'}  forma="pastilla" onClick={() => handleStatusFilterClick('PENDIENTE')}>
+                    Pendientes
+                </Boton>
+                <Boton color={statusFilter === 'APLICADA' ? 'verde' : 'morado'} forma="pastilla" onClick={() => handleStatusFilterClick('APLICADA')}>
+                    Aplicados
+                </Boton>
+                <Boton color={statusFilter === 'ANULADA' ? 'rojo' : 'morado'} forma="pastilla" onClick={() => handleStatusFilterClick('ANULADA')}>
+                    Anulados
+                </Boton>
+            </div>
         </div>
-        <TableComponent
-          columns={columns}
-          data={movimientosFiltrados}
-          withPagination={true}
+        <TableComponent columns={columns} data={movimientos} withPagination={true} rowProps={(row) => {
+              let className = '';
+              const status = row.original.status;
+
+              if (status === 'APLICADA') {
+                  className = styles['row-aplicada']; // Usamos un nombre de clase simple
+              } else if (status === 'ANULADA') {
+                  className = styles['row-anulada']; // Usamos un nombre de clase simple
+              } else if (status === 'PENDIENTE') {
+                  className = styles['row-pendiente']; // Usamos un nombre de clase simple
+              }
+
+              return { className };
+          }}
         />
-        {/* 5. RENDERIZAMOS EL MODAL Y LE PASAMOS LAS PROPS */}
-        <RegisterMovement
-          show={showRegisterModal}
-          onClose={() => setShowRegisterModal(false)}
-          onSave={handleSaveFromModal}
-        />
-        {/* 5. RENDERIZAMOS EL MODAL DE EDICIÓN Y LE PASAMOS LAS PROPS */}
-        {/* Es importante renderizarlo solo si hay un movimiento para editar para evitar errores */}
-        {movementToEdit && (
-          <EditMovement
-            show={showEditModal}
-            onClose={() => setShowEditModal(false)}
-            onSave={handleUpdateFromModal}
-            movementToEdit={movementToEdit}
-          />
-        )}
-        {/* 5. RENDERIZAMOS EL NUEVO MODAL DE DETALLES */}
+        
+        {/* ¡EL NUEVO MODAL UNIFICADO EN ACCIÓN! */}
+            <MovementFormModal show={isFormModalOpen} onClose={handleCloseFormModal} onSave={handleSave} initialData={movementToEdit} />
+
         {movementToView && (
-            <ViewDetailsMovement
-                show={showDetailsModal}
-                onClose={handleCloseDetailsModal}
-                movement={movementToView}
-            />
+            <ViewDetailsMovement show={!!movementToView} onClose={handleCloseDetailsModal} movement={movementToView}/>
         )}
       </div>
     </div>
+  </>
   );
 };
+
 
 export default MovementView;
