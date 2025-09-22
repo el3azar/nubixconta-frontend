@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCompany } from '../companyMangment/CompanyDataContext'; 
 import CompanySearchBar from '../companyMangment/CompanySearchBar'; 
 import CompanyTable from '../companyMangment/CompanyTable'; 
-import styles from "../../../styles/sales/ViewCustomers.module.css";
+import styles from "../../../styles/shared/EntityListView.module.css";
 import { Notifier } from "../../../utils/alertUtils";
 const DeactivatedCompaniesView = () => {
   const navigate = useNavigate();

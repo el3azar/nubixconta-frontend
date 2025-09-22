@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Notifier } from "../../../utils/alertUtils";
 import { useCompany } from './CompanyDataContext';
-import styles from "../../../styles/sales/ViewCustomers.module.css";
+import styles from "../../../styles/shared/EntityListView.module.css";
 const ViewCompanyDetails = () => {
   const { id } = useParams(); 
   const navigate = useNavigate();

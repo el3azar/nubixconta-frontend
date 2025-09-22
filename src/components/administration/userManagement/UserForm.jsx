@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import styles from "../../../styles/sales/ViewCustomers.module.css";
+import styles from "../../../styles/shared/EntityForm.module.css";
 import { FaLock } from 'react-icons/fa6';
-import formStyles from '../../../styles/sales/CustomerForm.module.css';
+import formStyles from '../../../styles/shared/EntityListView.module.css';
 
 export default function UserForm({ user, onSubmit, onOpenPasswordModal }){
   const { register, handleSubmit, reset } = useForm();
