@@ -1,6 +1,6 @@
 import { Link} from 'react-router-dom';
 import { FaEyeSlash, FaPlusCircle } from 'react-icons/fa';
-import styles from "../../../styles/sales/ViewCustomers.module.css";
+import styles from "../../../styles/shared/EntityListView.module.css";
 const RegisterCompanyButton = () => {
   return (
    <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap">
