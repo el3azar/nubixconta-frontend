@@ -1,6 +1,6 @@
 // src/components/shared/EntityListView.jsx
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaPlusCircle, FaEyeSlash } from "react-icons/fa";
 import { useForm, Controller } from "react-hook-form";
@@ -10,6 +10,7 @@ import { Notifier } from "../../utils/alertUtils";
 import SubMenu from "./SubMenu";
 import ViewContainer from "./ViewContainer";
 import styles from "../../styles/shared/EntityListView.module.css";
+import { useDebounce } from 'use-debounce';
 
 // Iconos (reutilizamos los de ventas)
 import CreateSaleIcon from "../../assets/icons/create-sale.svg?react";
@@ -33,8 +34,61 @@ const EntityListView = ({ entityType, config, service }) => {
   const [filters, setFilters] = useState({});
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { register, handleSubmit, control, reset } = useForm();
+  const { register, handleSubmit, control, reset,watch,setValue } = useForm();
   const areFiltersActive = Object.keys(filters).length > 0;
+
+  // --- LÓGICA DE SUGERENCIAS FINAL Y ESTABLE ---
+  const [suggestions, setSuggestions] = useState([]);
+  const [isSuggestionsLoading, setIsSuggestionsLoading] = useState(false);
+  const [activeSuggestionField, setActiveSuggestionField] = useState(null);
+
+  // 1. Observamos los 4 campos de forma individual. Esto es estable.
+  const [name, lastName, dui, nit] = watch(['name', 'lastName', 'dui', 'nit']);
+  const [debouncedName] = useDebounce(name, 400);
+  const [debouncedLastName] = useDebounce(lastName, 400);
+  const [debouncedDui] = useDebounce(dui, 400);
+  const [debouncedNit] = useDebounce(nit, 400);
+
+  useEffect(() => {
+    let field = activeSuggestionField;
+    let value = '';
+    
+    // 2. Determinamos qué valor "debounced" usar basado en el campo activo.
+    switch(field) {
+        case 'name': value = debouncedName; break;
+        case 'lastName': value = debouncedLastName; break;
+        case 'dui': value = debouncedDui; break;
+        case 'nit': value = debouncedNit; break;
+        default: field = null; // Si no hay campo activo, no hacemos nada.
+    }
+
+    if (!field || !value || value.length < 2) {
+      setSuggestions([]);
+      return;
+    }
+
+    const fetchSuggestions = async () => {
+      setIsSuggestionsLoading(true);
+      try {
+        const results = await search({ [field]: value });
+        
+        // 3. Lógica robusta para encontrar el accessor
+        const accessor = config[`${field}Field`] || field;
+        
+        const suggestionValues = results.map(item => item[accessor]).filter(Boolean);
+        setSuggestions([...new Set(suggestionValues)]);
+      } catch (error) {
+        console.error("Error al buscar sugerencias:", error);
+        setSuggestions([]);
+      } finally {
+        setIsSuggestionsLoading(false);
+      }
+    };
+    
+    fetchSuggestions();
+  // 4. El useEffect ahora depende de los valores debounced individuales, rompiendo el bucle.
+  }, [debouncedName, debouncedLastName, debouncedDui, debouncedNit, activeSuggestionField, search, config]);
+  // --- FIN DE LA LÓGICA FINAL ---
 
   const { data: entities = [], isLoading, isError, error } = useQuery({
     queryKey: [config.queryKey, filters],
@@ -55,15 +109,19 @@ const EntityListView = ({ entityType, config, service }) => {
     }
   });
 
-  // Manejadores de eventos (sin cambios)
-  const onSearch = (data) => {
+const onSearch = (data) => {
     const activeFilters = Object.fromEntries(Object.entries(data).filter(([_, v]) => v && String(v).trim() !== ''));
     setFilters(activeFilters);
+    setActiveSuggestionField(null);
   };
+
   const handleClearAndShowAll = () => {
     reset({ name: '', lastName: '', dui: '', nit: '' });
     setFilters({});
+    setActiveSuggestionField(null);
   };
+  
+
   const handleDeactivate = async (id, name) => {
     const result = await Notifier.confirm({
       title: `¿Desactivar a ${name}?`,
@@ -75,28 +133,91 @@ const EntityListView = ({ entityType, config, service }) => {
     }
   };
 
-  return (
+  
+  const handleSuggestionClick = (field, value) => {
+    setValue(field, value, { shouldValidate: true, shouldDirty: true });
+    setActiveSuggestionField(null);
+  };
+  
+  const handleInputBlur = () => {
+    setTimeout(() => {
+      setActiveSuggestionField(null);
+    }, 150);
+  };
+
+  const renderSuggestions = (fieldName) => {
+      let valueToCheck;
+      // Comprobamos el valor debounced correcto para decidir si mostrar "No se encontraron coincidencias"
+      switch(fieldName) {
+        case 'name': valueToCheck = debouncedName; break;
+        case 'lastName': valueToCheck = debouncedLastName; break;
+        case 'dui': valueToCheck = debouncedDui; break;
+        case 'nit': valueToCheck = debouncedNit; break;
+        default: valueToCheck = null;
+      }
+
+      return activeSuggestionField === fieldName && (suggestions.length > 0 || isSuggestionsLoading || (valueToCheck && valueToCheck.length >= 2)) && (
+      <ul className={styles.suggestionsList}>
+        {isSuggestionsLoading && <li className={styles.suggestionItemDisabled}>Buscando...</li>}
+        {!isSuggestionsLoading && suggestions.length === 0 && valueToCheck?.length >= 2 && <li className={styles.suggestionItemDisabled}>No se encontraron coincidencias</li>}
+        {suggestions.map((suggestion, index) => (
+          <li key={`${suggestion}-${index}`} className={styles.suggestionItem} onMouseDown={() => handleSuggestionClick(fieldName, suggestion)}>
+            {suggestion}
+          </li>
+        ))}
+      </ul>
+    )
+  };
+
+
+
+   return (
     <div>
       <SubMenu links={config.subMenuLinks} />
       <ViewContainer title={`Gestión de ${config.entityNamePlural}`}>
-        {/* El JSX es una réplica exacta de la estructura de ViewCustomers */}
         <section className={styles.mainWrapper}>
-          <section className={`${styles.searchBox} mb-4`}>
+            <section className={`${styles.searchBox} mb-4`}>
             <h5 className="fw-bold mb-3">Buscar {config.entityName}</h5>
             <form onSubmit={handleSubmit(onSearch)}>
-              {/* Formulario de búsqueda (sin cambios) */}
               <h6 className="fw-bold mb-4">Criterios de Búsqueda:</h6>
               <div className="row mb-3">
-                <div className="col-12 col-md-6 col-lg-6 mb-3"><label className="form-label fw-bold text-black">Nombre:</label><input type="text" className="form-control" {...register("name")} /></div>
-                <div className="col-12 col-md-6 col-lg-6 mb-3"><label className="form-label fw-bold text-black">Apellido:</label><input type="text" className="form-control" {...register("lastName")} /></div>
-                <div className="col-12 col-md-6 col-lg-6 mb-3"><label htmlFor="searchDui" className="form-label fw-bold text-black">DUI:</label><Controller name="dui" control={control} render={({ field }) => ( <IMaskInput {...field} id="searchDui" mask="00000000-0" className="form-control" placeholder="########-#" onAccept={(v) => field.onChange(v)} /> )}/></div>
-                <div className="col-12 col-md-6 col-lg-6 mb-4"><label htmlFor="searchNit" className="form-label fw-bold text-black">NIT:</label><Controller name="nit" control={control} render={({ field }) => ( <IMaskInput {...field} id="searchNit" mask="0000-000000-000-0" className="form-control" placeholder="####-######-###-#" onAccept={(v) => field.onChange(v)} /> )}/></div>
+                
+                {/* --- CAMPOS DE BÚSQUEDA REPLICADOS FIELMENTE DEL ORIGINAL --- */}
+                <div className="col-12 col-md-6 col-lg-6 mb-3" style={{ position: 'relative' }}>
+                  <label className="form-label fw-bold text-black">Nombre:</label>
+                  <input type="text" className="form-control" {...register("name")} autoComplete="off" onFocus={() => setActiveSuggestionField('name')} onBlur={handleInputBlur} />
+                  {renderSuggestions('name')}
+                </div>
+
+                <div className="col-12 col-md-6 col-lg-6 mb-3" style={{ position: 'relative' }}>
+                  <label className="form-label fw-bold text-black">Apellido:</label>
+                  <input type="text" className="form-control" {...register("lastName")} autoComplete="off" onFocus={() => setActiveSuggestionField('lastName')} onBlur={handleInputBlur} />
+                  {renderSuggestions('lastName')}
+                </div>
+
+                <div className="col-12 col-md-6 col-lg-6 mb-3" style={{ position: 'relative' }}>
+                  <label htmlFor="searchDui" className="form-label fw-bold text-black">DUI:</label>
+                  <Controller name="dui" control={control} render={({ field }) => ( 
+                    <IMaskInput {...field} id="searchDui" mask="00000000-0" className="form-control" placeholder="########-#" onAccept={(v) => field.onChange(v)} onFocus={() => setActiveSuggestionField('dui')} onBlur={handleInputBlur} /> 
+                  )}/>
+                  {renderSuggestions('dui')}
+                </div>
+                
+                <div className="col-12 col-md-6 col-lg-6 mb-4" style={{ position: 'relative' }}>
+                  <label htmlFor="searchNit" className="form-label fw-bold text-black">NIT:</label>
+                  <Controller name="nit" control={control} render={({ field }) => ( 
+                    <IMaskInput {...field} id="searchNit" mask="0000-000000-000-0" className="form-control" placeholder="####-######-###-#" onAccept={(v) => field.onChange(v)} onFocus={() => setActiveSuggestionField('nit')} onBlur={handleInputBlur} /> 
+                  )}/>
+                  {renderSuggestions('nit')}
+                </div>
+                {/* --- FIN DE LOS CAMPOS DE BÚSQUEDA --- */}
+
               </div>
               <div className="row">
                 <div className="col-12 d-flex justify-content-center flex-wrap gap-3">
-                  <button type="submit" className={`btn ${styles.searchBtn} px-4 py-2 d-flex align-items-center justify-content-center gap-2`}><i className="bi bi-search" />Buscar</button>
-                  <button type="button" className={`btn ${styles.searchBtn} px-4 py-2`} onClick={handleClearAndShowAll}>Mostrar Todos</button>
-                  {areFiltersActive && (<button type="button" className={`btn ${styles.searchBtn} px-4 py-2 d-flex align-items-center justify-content-center gap-2`} onClick={handleClearAndShowAll}>Limpiar Filtros</button>)}
+                    <button type="submit" className={`btn ${styles.searchBtn} px-4 py-2 d-flex align-items-center justify-content-center gap-2`}><i className="bi bi-search" />Buscar</button>
+                    <button type="button" className={`btn ${styles.searchBtn} px-4 py-2`} onClick={handleClearAndShowAll}>Mostrar Todos</button>
+                    {areFiltersActive && (<button type="button" className={`btn ${styles.searchBtn} px-4 py-2 d-flex align-items-center justify-content-center gap-2`} onClick={handleClearAndShowAll}>Limpiar Filtros</button>)}
                 </div>
               </div>
             </form>
@@ -117,7 +238,6 @@ const EntityListView = ({ entityType, config, service }) => {
               <table className="table table-bordered align-middle w-100">
                 <thead className={styles.salesTableHeader}>
                   <tr>
-                    {/* CORRECCIÓN: Se aplica la clase CSS desde la configuración */}
                     {config.mainViewColumns.map(col => <th key={col.header} className={styles[col.className]}>{col.header}</th>)}
                     <th className={styles.colAcciones}>Acciones</th>
                   </tr>
@@ -125,10 +245,9 @@ const EntityListView = ({ entityType, config, service }) => {
                 <tbody>
                   {isLoading && <tr><td colSpan={config.mainViewColumns.length + 1} className="text-center">Cargando {config.entityNamePlural}...</td></tr>}
                   {isError && <tr><td colSpan={config.mainViewColumns.length + 1} className="text-center text-danger">Error al cargar datos: {error.message}</td></tr>}
-                  {!isLoading && entities.length > 0 ? (
+                  {!isLoading && !isError && entities.length > 0 ? (
                     entities.map((entity) => (
                       <tr key={entity[config.idField]}>
-                        {/* CORRECCIÓN: Se aplica la clase CSS desde la configuración */}
                         {config.mainViewColumns.map(col => (
                           <td key={col.accessor} className={styles[col.className]}>
                             {(formatters[col.format] || formatters.default)(entity[col.accessor] || col.default || '')}
