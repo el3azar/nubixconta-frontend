@@ -17,7 +17,7 @@ import { Notifier } from "../../utils/alertUtils";
 
 // Styles
 import styles from "../../styles/accountsreceivable/AccountsReceivable.module.css";
-import stylesCustomers from "../../styles/sales/ViewCustomers.module.css";
+import stylesCustomers from "../../styles/shared/EntityListView.module.css";
 
 const AccountsReceivable = () => {
   // Hook con la lógica de negocio

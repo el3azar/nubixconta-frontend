@@ -54,6 +54,11 @@ import ProductView from '../components/inventory/products/ProductView';
 import DesableProductView from '../components/inventory/products/DesableProductView';
 import MovementListView from '../components/inventory/movements/MovementListView';
 import DetailedSalesView from '../components/accountsreceivable/DetailedSalesView';
+import DashBoardPurchases from '../components/purchases/DashBoardPurchases'; 
+import ViewSuppliers from '../components/purchases/supplier/ViewSuppliers';
+import NewSupplier from '../components/purchases/supplier/NewSupplier';
+import EditSupplier from '../components/purchases/supplier/EditSupplier';
+import DesactivatedSupplier from '../components/purchases/supplier/DesactivatedSupplier';
 
 export default function Rutas() {
   return (
@@ -217,7 +222,25 @@ export default function Rutas() {
 
 
                    {/* --- AÑADE LAS NUEVAS RUTAS AQUÍ --- */}
-                  <Route path="/compras" element={<div>Dashboard de Compras</div>} />
+                  <Route path="/compras" element={<DashBoardPurchases />} />
+                  <Route path="/compras/proveedores" element={<ViewSuppliers />} />
+                  <Route path="/compras/proveedores/nuevo" element={<NewSupplier />} />
+                  <Route path="/compras/proveedores/editar/:id" element={<EditSupplier />} />
+                  <Route path="/compras/proveedores/desactivados" element={<DesactivatedSupplier />} />
+
+                  
+                  <Route path="/compras/compras" element={<div>Gestión de Compras</div>} />
+                  <Route path="/compras/notas-credito" element={<div>Gestión de Notas de Crédito de Compra</div>} />
+                  <Route path="/compras/isr" element={<div>Impuesto sobre la renta (ISR) </div>} />
+                  <Route path="/compras/reportes" element={<div>Reportes de Compras</div>} />
+
+
+
+
+
+
+
+
                   <Route path="/cuentas-por-pagar" element={<div>Dashboard de Cuentas por Pagar</div>} />
                   <Route path="/bancos" element={<div>Dashboard de Bancos</div>} />
                   <Route path="/contabilidad" element={<div>Dashboard de Contabilidad</div>} />
