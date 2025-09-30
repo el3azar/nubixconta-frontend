@@ -2,8 +2,8 @@ import React from 'react';
 import styles from '../../../styles/shared/DocumentForm.module.css';
 
 /**
- * Componente de tabla genérico y reutilizable para mostrar listas de detalles.
- * Utiliza el patrón "Render Prop" (`renderRow`) para máxima flexibilidad.
+ * Componente de tabla genérico para mostrar detalles.
+ * Ahora recibe la porción exacta del objeto de errores que le corresponde.
  */
 export const DetailsTable = ({ fields, errors, headers, renderRow }) => {
   return (
@@ -11,14 +11,11 @@ export const DetailsTable = ({ fields, errors, headers, renderRow }) => {
       <h5 className="mb-2">Detalle del Documento</h5>
       <div className={`table-responsive ${styles.detailsTable}`}>
         <table className="table table-bordered align-middle mb-0">
-          {/* Cabecera dinámica */}
           <thead>
             <tr>
               {headers.map(header => <th key={header}>{header}</th>)}
             </tr>
           </thead>
-          
-          {/* Cuerpo de la tabla */}
           <tbody>
             {fields.length === 0 ? (
               <tr>
@@ -27,16 +24,15 @@ export const DetailsTable = ({ fields, errors, headers, renderRow }) => {
                 </td>
               </tr>
             ) : (
-              // Delega la renderización de cada fila al componente padre
               fields.map((field, index) => renderRow(field, index))
             )}
           </tbody>
         </table>
         
-        {/* Manejo de errores */}
-        {errors.details && (
+        {/* CAMBIO CLAVE: Lee el mensaje directamente del objeto 'errors' recibido. */}
+        {errors && (
           <p className='text-danger small mt-2'>
-            {errors.details.message || errors.details.root?.message}
+            {errors.message || errors.root?.message}
           </p>
         )}
       </div>

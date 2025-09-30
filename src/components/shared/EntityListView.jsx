@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaPlusCircle, FaEyeSlash } from "react-icons/fa";
+import { FaPlusCircle, FaEyeSlash,FaShoppingCart } from "react-icons/fa";
 import { useForm, Controller } from "react-hook-form";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { IMaskInput } from 'react-imask';
@@ -265,7 +265,7 @@ const onSearch = (data) => {
                             )}
                              {entityType === 'supplier' && (
                               <>
-                                <button className={styles.iconBtn} title="Crear Compra" onClick={() => Notifier.info('Funcionalidad de Crear Compra próximamente.')}><CreateSaleIcon /></button>
+                                <button className={styles.iconBtn} title="Crear Compra" onClick={() => navigate(`/compras/nueva/${entity[config.idField]}`)}><FaShoppingCart /></button>
                                 <button className={styles.iconBtn} title="Crear Nota de Débito" onClick={() => Notifier.info('Funcionalidad de Nota de Débito próximamente.')}><CreditNoteIcon /></button>
                               </>
                             )}

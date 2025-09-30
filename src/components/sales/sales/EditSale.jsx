@@ -16,7 +16,7 @@ export default function EditSale() {
   
   const { updateSale, getSaleById } = SaleService();
   const { data: activeProducts, isLoading: isLoadingProducts } = useActiveProducts();
-  const { getCustomerById } = useCustomerService();
+  const { getById: getCustomerById} = useCustomerService();
 
   const { data: saleToEdit, isLoading: isLoadingSale, isError } = useQuery({
     queryKey: ['sale', saleId],

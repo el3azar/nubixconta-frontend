@@ -20,6 +20,7 @@ export const AccountingService = () => {
   const API_PATHS = {
     'venta': 'sales',
     'nota-credito': 'credit-notes',
+    'compra': 'purchases',
   };
 
   /**
