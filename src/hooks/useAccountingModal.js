@@ -19,13 +19,15 @@ export const useAccountingModal = () => {
 
   // Función que otros componentes llamarán para ABRIR el modal.
   const openAccountingModal = (doc) => {
+    console.log("Documento recibido en el hook:", doc);
     // Determina el tipo y el ID a partir del objeto que se le pasa.
-    const type = doc.saleId ? 'venta' :
-                 doc.idNotaCredit ? 'nota-credito' :
-                 doc.purchaseId ? 'compra' : // Ejemplo para el futuro
-                 'desconocido';
-    
-    const id = doc.saleId || doc.idNotaCredit || doc.purchaseId;
+      // Determina el tipo y el ID a partir del objeto que se le pasa.
+      const type = doc.saleId ? 'venta' :
+                   doc.idNotaCredit ? 'nota-credito' :
+                   doc.idPurchase ? 'compra' : // <-- ESTA LÍNEA AHORA ES CORRECTA
+                   'desconocido';
+      
+      const id = doc.saleId || doc.idNotaCredit || doc.idPurchase; // <-- ESTA LÍNEA AHORA ES CORRECTA
     
     if (type !== 'desconocido') {
       setSelectedDocInfo({ type, id });

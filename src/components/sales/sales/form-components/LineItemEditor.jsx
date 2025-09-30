@@ -27,6 +27,7 @@ export const LineItemEditor = ({
                 onChange={editor.setSelectedProduct}
                 placeholder="Buscar producto..."
                 classNamePrefix="react-select"
+                isClearable
                 isLoading={isLoadingProducts}
                 styles={{ control: base => ({ ...base, borderRadius: '0.5rem', border: '2px solid #49207B', minHeight: 42 })}}
               />
