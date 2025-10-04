@@ -6,8 +6,8 @@ import { formatDate } from '../../utils/dateFormatter';
 
 const DocumentTableRow = ({ doc, columns, actionsProps, styles, showRowActions }) => {
   // La lógica para el estilo de la fila y las acciones aún necesita saber el estado.
-  const status = doc.creditNoteStatus || doc.saleStatus;
-  const id = doc.idNotaCredit || doc.saleId;
+  const status = doc.creditNoteStatus || doc.saleStatus || doc.purchaseStatus;
+  const id = doc.idPurchase || doc.idNotaCredit || doc.saleId;
 
   // Las clases de color se mantienen igual.
  const rowClass = showRowActions
@@ -29,7 +29,7 @@ const DocumentTableRow = ({ doc, columns, actionsProps, styles, showRowActions }
         {/* Solo renderizamos la celda de acciones si 'showRowActions' es true */}
       {showRowActions && (
         <td className="text-center">
-          <DocumentActions doc={doc} id={id} styles={styles} {...actionsProps} />
+          <DocumentActions doc={doc}  styles={styles} {...actionsProps} />
         </td>
       )}
     </tr>
@@ -46,7 +46,7 @@ export const DocumentTable = ({ documents, isLoading, isError, error, actionsPro
 
   return documents.map(doc => (
     <DocumentTableRow
-      key={doc.idNotaCredit || doc.saleId}
+      key={doc.idPurchase || doc.idNotaCredit || doc.saleId}
       doc={doc}
       columns={columns}
       actionsProps={actionsProps}

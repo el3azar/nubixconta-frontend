@@ -60,6 +60,10 @@ import ViewSuppliers from '../components/purchases/supplier/ViewSuppliers';
 import NewSupplier from '../components/purchases/supplier/NewSupplier';
 import EditSupplier from '../components/purchases/supplier/EditSupplier';
 import DesactivatedSupplier from '../components/purchases/supplier/DesactivatedSupplier';
+import Purchases from '../components/purchases/purchases/Purchases';
+import NewPurchase from '../components/purchases/purchases/NewPurchase';
+import EditPurchase from '../components/purchases/purchases/EditPurchase';
+import ScrollToTop from '../components/shared/ScrollToTop';
 import DetailedPayableTable from '../components/accountspayable/DetailedPayableTable';
 import DetailedPayableView from '../components/accountspayable/DetailedPayableView';
 import AccountsPayable from '../components/accountspayable/AccountsPayable';
@@ -70,7 +74,7 @@ import AccountsPayableAccount from '../components/accountspayable/AccountsPayabl
 export default function Rutas() {
   return (
     <BrowserRouter>
-     {/* --- PASO 2: AÑADIR EL COMPONENTE TOASTER AQUÍ --- */}
+      <ScrollToTop />
       {/* Lo configuramos una sola vez con tu paleta de colores. */}
       {/* Estará disponible para toda la aplicación. */}
       <Toaster
@@ -235,8 +239,14 @@ export default function Rutas() {
                   <Route path="/compras/proveedores/editar/:id" element={<EditSupplier />} />
                   <Route path="/compras/proveedores/desactivados" element={<DesactivatedSupplier />} />
 
-                  
-                  <Route path="/compras/compras" element={<div>Gestión de Compras</div>} />
+
+                 {/* Rutas para la gestión de Compras */}
+                  <Route path="/compras/compras" element={<Purchases />} />
+                  <Route path="/compras/nueva/:supplierId" element={<NewPurchase />} />
+                  <Route path="/compras/editar/:purchaseId" element={<EditPurchase />} />
+                 
+
+
                   <Route path="/compras/notas-credito" element={<div>Gestión de Notas de Crédito de Compra</div>} />
                   <Route path="/compras/isr" element={<div>Impuesto sobre la renta (ISR) </div>} />
                   <Route path="/compras/reportes" element={<div>Reportes de Compras</div>} />
