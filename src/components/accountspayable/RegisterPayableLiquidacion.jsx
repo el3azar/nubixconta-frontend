@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
-import AutocompleteSelect from "./AutocompleteSelect";
+import AutocompleteSelect from '../accountsreceivable/AutocompleteSelect';
 import styles from "../../styles/accountsreceivable/RegisterReceivableLiquidacion.module.css";
 import { getBankAcount } from "../../services/accountsreceivable/bankService";
-import { registrarLiquidacionVenta } from "../../services/accountsreceivable/liquidacionVentaServices";
 import { Notifier } from '../../utils/alertUtils';
+import { settlementPayableService, getPurchaseIdByDocumentNumber } from "../../services/accountspayable/settlementPayableService"; // Importa la nueva función
 
-const RegisterReceivableLiquidacion = ({ onClose, selectedSale }) => {
-  const [tipoLiquidacion, setTipoLiquidacion] = useState("VENTA");
+  const RegisterPayableLiquidacion = ({ onClose, selectedPurchase }) => {
+  const [tipoLiquidacion, setTipoLiquidacion] = useState("COMPRA");
   const [cuentas, setCuentas] = useState([]);
   const [documento, setDocumento] = useState("");
-  const [saleId, setSaleId] = useState(null);
-  const [montoTotalVenta, setMontoTotalVenta] = useState(selectedSale ? parseFloat(selectedSale.montoTotal.replace('$', '')) : 0);
-   const [saldoActualVenta, setSaldoActualVenta] = useState(selectedSale ? parseFloat(selectedSale.saldo.replace('$', '')) : 0);
-  const [ventaSeleccionada, setVentaSeleccionada] = useState(null);
+  const [idPurchase, setPurchaseId] = useState(null); // Estado para almacenar el idPurchase del backend
+  const [montoTotalCompra, setMontoTotalCompra] = useState(selectedPurchase ? parseFloat(selectedPurchase.montoTotal.replace('$', '')) : 0);
+  const [saldoActualCompra, setSaldoActualCompra] = useState(selectedPurchase ? parseFloat(selectedPurchase.saldo.replace('$', '')) : 0);
+  const [compraSeleccionada, setCompraSeleccionada] = useState(null);
   const [cuentaSeleccionada, setCuentaSeleccionada] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [referencia, setReferencia] = useState("");
@@ -20,14 +20,26 @@ const RegisterReceivableLiquidacion = ({ onClose, selectedSale }) => {
   const [metodoPago, setMetodoPago] = useState("Transacción");
 
   useEffect(() => {
-    // Si se pasa una venta seleccionada, actualiza los estados
-    if (selectedSale) {
-      setVentaSeleccionada(selectedSale);
-      
-      // El saleId del backend lo obtenemos del 'id' de la fila de la tabla
-      setSaleId(selectedSale.saleId); 
-      // Convertir el monto total de string a número para los cálculos
-      setMontoTotalVenta(parseFloat(selectedSale.montoTotal.replace("$", "")));
+    console.log("selectedPurchase en RegisterPayableLiquidacion:", selectedPurchase);
+    if (selectedPurchase) {
+      setCompraSeleccionada(selectedPurchase);
+      setMontoTotalCompra(parseFloat(selectedPurchase.montoTotal.replace("$", "")));
+      setSaldoActualCompra(parseFloat(selectedPurchase.saldo.replace("$", ""))); // Asegúrate de actualizar el saldo actual
+      setDocumento(selectedPurchase.documento); // Asegúrate de tener el número de documento
+
+      // **** NUEVA LÓGICA: Obtener idPurchase del backend usando el número de documento ****
+      const fetchPurchaseId = async () => {
+        try {
+          const fetchedId = await getPurchaseIdByDocumentNumber(selectedPurchase.documento);
+          setPurchaseId(fetchedId); // Almacenar el ID de la compra del backend
+          console.log("ID de compra obtenido del backend:", fetchedId);
+        } catch (error) {
+          Notifier.error("Error al obtener el ID de la compra por documento.");
+          console.error("Error al obtener ID de compra:", error);
+          setPurchaseId(null); // Asegúrate de resetear si hay error
+        }
+      };
+      fetchPurchaseId();
     }
 
     const fetchCuentas = async () => {
@@ -35,7 +47,7 @@ const RegisterReceivableLiquidacion = ({ onClose, selectedSale }) => {
         const data = await getBankAcount();
         setCuentas(data);
         if (data.length > 0) {
-          setCuentaSeleccionada(data[0].accountName); // Seleccionar la primera cuenta por defecto
+          setCuentaSeleccionada(data[0].accountName);
         }
       } catch (error) {
         Notifier.error("Error al cargar las cuentas bancarias.");
@@ -43,27 +55,22 @@ const RegisterReceivableLiquidacion = ({ onClose, selectedSale }) => {
       }
     };
     fetchCuentas();
-  }, [selectedSale]);
+  }, [selectedPurchase]); // Dependencia clave para que se ejecute cuando cambie selectedPurchase
 
-  // Maneja el cambio de radio button y actualiza el valor del monto si se cambia a "VENTA"
   const handleTipoLiquidacionChange = (e) => {
     const newTipo = e.target.value;
     setTipoLiquidacion(newTipo);
 
-    // Si el usuario selecciona "Liquidar venta" (total),
-    // actualizamos el monto del abono con el saldo actual.
-    if (newTipo === "VENTA") {
-      setMontoAbono(saldoActualVenta.toFixed(2));
+    if (newTipo === "COMPRA") {
+      setMontoAbono(saldoActualCompra.toFixed(2));
     } else {
-      // Si cambia a "Parcial", limpiamos el monto del abono
-      // para que el usuario pueda ingresar uno nuevo.
       setMontoAbono("");
     }
   };
 
-const handleRegistrar = async () => {
- if (!ventaSeleccionada?.saleId) {
-      Notifier.error("No se ha seleccionado una venta para liquidar.");
+  const handleRegistrar = async () => {
+    if (!idPurchase) { // Usamos el idPurchase que obtuvimos del backend
+      Notifier.error("No se pudo obtener el ID de la compra para liquidar.");
       return;
     }
 
@@ -73,24 +80,32 @@ const handleRegistrar = async () => {
       return;
     }
 
-     let montoFinalAPagar;
+    let montoFinalAPagar;
 
-  if (tipoLiquidacion === "PARCIAL") {
-    montoFinalAPagar = parseFloat(montoAbono);
-    
-  } else {
-    montoFinalAPagar = saldoActualVenta;
-  }
+    if (tipoLiquidacion === "PARCIAL") {
+      montoFinalAPagar = parseFloat(montoAbono);
+      if (isNaN(montoFinalAPagar) || montoFinalAPagar <= 0) {
+        Notifier.error("El monto a abonar debe ser un número positivo y válido.");
+        return;
+      }
+       if (montoFinalAPagar > saldoActualCompra) {
+        Notifier.error("El monto a abonar no puede ser mayor al saldo actual.");
+        return;
+      }
+    } else {
+      montoFinalAPagar = saldoActualCompra;
+    }
+
     try {
-      const result = await registrarLiquidacionVenta({
-        saleId: ventaSeleccionada.saleId,
-        accountId: cuentaObj.id, //  Pasamos el ID de la cuenta directamente
+      const result = await settlementPayableService({
+        idPurchase: idPurchase, // Usamos el idPurchase obtenido del backend
+        accountId: cuentaObj.id,
         cuentaNombre: cuentaSeleccionada,
         metodoPago,
         referencia,
         descripcion,
         cuentas,
-       montoAPagar: montoFinalAPagar,
+        montoAPagar: montoFinalAPagar,
       });
 
       if (result.success) {
@@ -117,8 +132,8 @@ const handleRegistrar = async () => {
             <input
               type="radio"
               name="tipo"
-              value="VENTA"
-              checked={tipoLiquidacion === "VENTA"}
+              value="COMPRA"
+              checked={tipoLiquidacion === "COMPRA"}
               onChange={handleTipoLiquidacionChange}
             />
             Liquidación total
@@ -129,33 +144,31 @@ const handleRegistrar = async () => {
               name="tipo"
               value="PARCIAL"
               checked={tipoLiquidacion === "PARCIAL"}
-              onChange={ handleTipoLiquidacionChange}
+              onChange={handleTipoLiquidacionChange}
             />
             Liquidación Parcial
           </label>
         </div>
 
         <div className={styles.formGrid}>
-   <div>
-    <label className={styles.label}>N° De documento</label>
-    <input
-      type="text"
-      className={styles.input}
-      // Usamos el valor de la venta seleccionada
-      value={ventaSeleccionada?.documento || "N/A"}
-      // Deshabilitamos el input para que no se pueda modificar
-      disabled
-    />
-  </div>
-    <div>
-      <label className={styles.label}>Saldo Actual</label>
-        <input
-            type="text"
-            className={styles.input}
-            value={`$${saldoActualVenta.toFixed(2)}`}
-            disabled
-          />
-       </div>
+          <div>
+            <label className={styles.label}>N° De documento</label>
+            <input
+              type="text"
+              className={styles.input}
+              value={documento || "N/A"} // Usa el estado 'documento'
+              disabled
+            />
+          </div>
+          <div>
+            <label className={styles.label}>Saldo Actual</label>
+            <input
+              type="text"
+              className={styles.input}
+              value={`$${saldoActualCompra.toFixed(2)}`}
+              disabled
+            />
+          </div>
           <div>
             <label className={styles.label}>Método de pago</label>
             <select
@@ -207,7 +220,7 @@ const handleRegistrar = async () => {
                 onWheel={(e) => e.target.blur()}
                 value={montoAbono}
                 onChange={(e) => setMontoAbono(e.target.value)}
-                 disabled={tipoLiquidacion === "VENTA"}
+                disabled={tipoLiquidacion === "COMPRA"}
               />
             </div>
           )}
@@ -224,4 +237,4 @@ const handleRegistrar = async () => {
   );
 };
 
-export default RegisterReceivableLiquidacion;
+export default RegisterPayableLiquidacion;

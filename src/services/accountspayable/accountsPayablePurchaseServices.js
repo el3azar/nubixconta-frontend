@@ -1,9 +1,9 @@
 import axios from 'axios';
 //Este enpoint trae todos los registros asociados a accounts-receivable
-const BASE_URL = 'http://localhost:8080/api/v1/accounts-receivable';
+const BASE_URL = 'http://localhost:8080/api/v1/accounts-payable';
 
 // Endpoint para la vista de Liquidaciones (Collections)
-export const fetchCollections = async () => {
+export const fetchPayableDetails = async () => {
     try {
         const token = sessionStorage.getItem('nubix_token');
         const headers = { Authorization: `Bearer ${token}` };
@@ -17,15 +17,15 @@ export const fetchCollections = async () => {
 
 
 // Endpoint para la vista de Ventas Resumidas (Sales Summary)
-export const fetchSalesSummary = async () => {
+export const fetchPurchaseSummary = async () => {
     try {
         const token = sessionStorage.getItem('nubix_token');
         const headers = { Authorization: `Bearer ${token}` };
-        const url = `${BASE_URL}/sales-summary`;
+        const url = `${BASE_URL}/purcharse-summary`;
         const response = await axios.get(url, { headers, withCredentials: true });
         return response.data;
     } catch (error) {
-        console.error('Error al obtener el resumen de ventas:', error);
+        console.error('Error al obtener el resumen de las compras:', error);
         throw error;
     }
 };

@@ -26,6 +26,13 @@ export const AccountReceivableSubMenuLinks = [
   { to: '/cuentas/estado_cuenta', label: 'Estado de Cuenta' },
 
 ];
+export const AccountPayableSubMenuLinks = [
+  { to: '/cuentas/pagos', label: 'Pagos' },
+  { to: '/cuentas/visualizar_pagos', label: 'Visualización de compras' },
+  { to: '/cuentas/pagos/reportes', label: 'Reportes' },
+  { to: '/cuentas/pagos/estado_cuenta', label: 'Estado de Cuenta' },
+
+];
 // En el futuro, cuando añadas más módulos, simplemente los agregas aquí:
 /*
 export const purchasesSubMenuLinks = [
