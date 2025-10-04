@@ -38,6 +38,7 @@ import EditCompanyView from '../components/administration/companyMangment/EditCo
 import ViewCompanyDetails from '../components/administration/companyMangment/ViewCompanyDetails';
 import AccountsReceivable from '../components/accountsreceivable/AccountsReceivable';
 import AccountsReceivableMenu from '../components/accountsreceivable/AccountsReceivableMenu';
+import AccountsPayableMenu from '../components/accountspayable/AccountsPayableMenu';
 import AccountsReceivableReport from '../components/accountsreceivable/AccountsReceivableReport'; 
 import AccountsReceivableAccount from '../components/accountsreceivable/AccountsReceivableAccount'; 
 import DeactivatedCompaniesView from '../components/administration/companyMangment/DeactivatedCompaniesView';
@@ -59,6 +60,12 @@ import ViewSuppliers from '../components/purchases/supplier/ViewSuppliers';
 import NewSupplier from '../components/purchases/supplier/NewSupplier';
 import EditSupplier from '../components/purchases/supplier/EditSupplier';
 import DesactivatedSupplier from '../components/purchases/supplier/DesactivatedSupplier';
+import DetailedPayableTable from '../components/accountspayable/DetailedPayableTable';
+import DetailedPayableView from '../components/accountspayable/DetailedPayableView';
+import AccountsPayable from '../components/accountspayable/AccountsPayable';
+import AccountsPayableReport from '../components/accountspayable/AccountsPayableReport';
+import AccountPayableStatement from '../components/accountspayable/AccountsPayableAccount';
+import AccountsPayableAccount from '../components/accountspayable/AccountsPayableAccount';
 
 export default function Rutas() {
   return (
@@ -237,11 +244,16 @@ export default function Rutas() {
 
 
 
+                     {/* --- Rutas para cuentas por pagar --- */}
+                 
 
 
+                  <Route path="/cuentas-por-pagar" element={<AccountsPayableMenu/>} />
+                  <Route path="/cuentas/visualizar_pagos" element={<DetailedPayableView/>} />
+                  <Route path="/cuentas/pagos" element={<AccountsPayable />} />
+                  <Route path="/cuentas/pagos/reportes" element={<AccountsPayableReport />} />
+                  <Route path="/cuentas/pagos/estado_cuenta" element={<AccountsPayableAccount/>} />
 
-
-                  <Route path="/cuentas-por-pagar" element={<div>Dashboard de Cuentas por Pagar</div>} />
                   <Route path="/bancos" element={<div>Dashboard de Bancos</div>} />
                   <Route path="/contabilidad" element={<div>Dashboard de Contabilidad</div>} />
                   {/* --- FIN DE LAS NUEVAS RUTAS --- */}

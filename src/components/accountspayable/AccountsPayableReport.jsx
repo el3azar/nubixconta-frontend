@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import DateRangeFilter from '../shared/DateRangeFilter';
 import styles from "../../styles/accountsreceivable/AccountsReceivableReport.module.css";
 import { FaFilePdf, FaFileExcel } from "react-icons/fa";
-import { getAccountsReceivable } from "../../services/accountsreceivable/accountsReceivableReportService";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
@@ -10,7 +9,8 @@ import { saveAs } from "file-saver";
 import { useCompany } from "../../context/CompanyContext";
 import { useAuth } from "../../context/AuthContext";
 import SubMenu from "../shared/SubMenu"; 
-import {AccountReceivableSubMenuLinks } from '../../config/menuConfig';
+import {AccountPayableSubMenuLinks} from '../../config/menuConfig';
+import { fetchPayableDetails } from "../../services/accountspayable/accountsPayablePurchaseServices";
 // Función para cargar una imagen como Base64
 const loadImageAsBase64 = (url) => {
   return new Promise((resolve, reject) => {
@@ -30,7 +30,7 @@ const loadImageAsBase64 = (url) => {
 };
 
 
-const AccountsReceivableReport = () => {
+const AccountsPayableReport = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [reportData, setReportData] = useState([]);
@@ -43,10 +43,10 @@ const AccountsReceivableReport = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getAccountsReceivable();
+        const data = await fetchPayableDetails();
         setReportData(data);
       } catch (error) {
-        console.error("Error cargando reporte de cuentas por cobrar:", error);
+        console.error("Error cargando reporte de cuentas por pagar:", error);
       }
     };
     fetchData();
@@ -107,7 +107,7 @@ const AccountsReceivableReport = () => {
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(0, 0, 0);
-    doc.text("Reporte de Cuentas por Cobrar", pageWidth - margin, 18, { align: 'right' });
+    doc.text("Reporte de Cuentas por Pagar", pageWidth - margin, 18, { align: 'right' });
     doc.text(`Generado por: ${usuario}`, pageWidth - margin, 24, { align: 'right' });
     doc.text(`Fecha de generación: ${fecha}`, pageWidth - margin, 30, { align: 'right' });
 
@@ -116,11 +116,11 @@ const AccountsReceivableReport = () => {
     doc.line(margin, 40, pageWidth - margin, 40);
 
     const tableData = reportData.map((item) => [
-      item.sale.documentNumber,
-      item.sale.customerName,
-      formatDate(item.sale.issueDate),
-      getDueDate(item.sale.issueDate, item.sale.creditDay),
-      `$${item.sale.totalAmount.toFixed(2)}`,
+      item.purchase.documentNumber,
+      item.purchase.customerName,
+      formatDate(item.purchase.issueDate),
+      getDueDate(item.purchase.issueDate, item.purchase.creditDay),
+      `$${item.purchase.totalAmount.toFixed(2)}`,
       `$${item.balance.toFixed(2)}`,
     ]);
 
@@ -143,16 +143,16 @@ const AccountsReceivableReport = () => {
     });
 
 
-    doc.save("reporte_cuentas_por_cobrar.pdf");
+    doc.save("reporte_cuentas_por_pagar.pdf");
   };
 
   const exportToExcel = () => {
     const worksheetData = reportData.map((item) => ({
-      "N° de documento": item.sale.documentNumber,
-      Cliente: item.sale.customerName,
-      "Fecha de emisión": formatDate(item.sale.issueDate),
-      "Fecha de vencimiento": getDueDate(item.sale.issueDate, item.sale.creditDay),
-      "Monto total": item.sale.totalAmount,
+      "N° de documento": item.purchase.documentNumber,
+      Proveedor: item.purchase.supplierName,
+      "Fecha de emisión": formatDate(item.purchase.issueDate),
+      "Fecha de vencimiento": getDueDate(item.purchase.issueDate, item.purchase.creditDay),
+      "Monto total": item.purchase.totalAmount,
       Saldo: item.balance,
     }));
 
@@ -169,15 +169,15 @@ const AccountsReceivableReport = () => {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
 
-    saveAs(blob, "reporte_cuentas_por_cobrar.xlsx");
+    saveAs(blob, "reporte_cuentas_por_pagar.xlsx");
   };
 
   return (
     <>
-    <SubMenu links={AccountReceivableSubMenuLinks} />
+    <SubMenu links={AccountPayableSubMenuLinks} />
         <div className={styles.container}>
      <div className={styles.reportHeader}>
-        <h2>REPORTE DE CUENTAS POR COBRAR</h2>
+        <h2>REPORTE DE CUENTAS POR PAGAR</h2>
       </div>
       <DateRangeFilter
         startDate={startDate}
@@ -204,7 +204,7 @@ const AccountsReceivableReport = () => {
           <thead className={styles.table_header}>
             <tr>
               <th>N° de documento</th>
-              <th>Cliente</th>
+              <th>Proveedor</th>
               <th>Fecha de emisión</th>
               <th>Fecha de vencimiento</th>
               <th>Monto total</th>
@@ -214,11 +214,11 @@ const AccountsReceivableReport = () => {
           <tbody>
             {reportData.map((item) => (
               <tr key={item.id}>
-                <td>{item.sale.documentNumber}</td>
-                <td>{item.sale.customerName}</td>
-                <td>{formatDate(item.sale.issueDate)}</td>
-                <td>{getDueDate(item.sale.issueDate, item.sale.creditDay)}</td>
-                <td>${item.sale.totalAmount.toFixed(2)}</td>
+                <td>{item.purchase.documentNumber}</td>
+                <td>{item.purchase.supplierName}</td>
+                <td>{formatDate(item.purchase.issueDate)}</td>
+                <td>{getDueDate(item.purchase.issueDate, item.purchase.creditDay)}</td>
+                <td>${item.purchase.totalAmount.toFixed(2)}</td>
                 <td>${item.balance.toFixed(2)}</td>
               </tr>
             ))}
@@ -234,5 +234,4 @@ const AccountsReceivableReport = () => {
     </>
   );
 };
-
-export default AccountsReceivableReport;
+export default AccountsPayableReport;

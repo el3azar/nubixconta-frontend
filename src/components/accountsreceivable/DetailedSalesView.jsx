@@ -4,7 +4,7 @@ import { FaPlus } from "react-icons/fa";
 // Hooks (Reutilizamos el hook existente)
 import { useAccountsReceivable } from "../../hooks/useAccountsReceivable";
 // Components (Importamos todo lo necesario)
-import DateRangeFilter from "../../components/accountsreceivable/DateRangeFilter";
+import DateRangeFilter from "../shared/DateRangeFilter";
 import DetailedSalesTable from "../../components/accountsreceivable/DetailedSalesTable";
 import RegisterReceivableLiquidacion from "./RegisterReceivableLiquidacion";
 import EditReceivableLiquidation from "./EditReceivableLiquidation";

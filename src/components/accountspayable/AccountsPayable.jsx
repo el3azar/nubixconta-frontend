@@ -1,27 +1,30 @@
-// src/pages/AccountsReceivable.js
+
 import React, { useState } from "react";
 
 // Hooks
-import { useAccountsReceivable } from "../../hooks/useAccountsReceivable";
+import { useAccountsPayable } from "../../hooks/useAccountsPayable";
 
 // Components
-import RegisterReceivableLiquidacion from "./RegisterReceivableLiquidacion";
-import EditReceivableLiquidation from "./EditReceivableLiquidation";
+
+//import EditReceivableLiquidation from "./EditReceivableLiquidation";
 import DateRangeFilter from "../shared/DateRangeFilter";
 import SubMenu from "../shared/SubMenu"; 
-import {AccountReceivableSubMenuLinks } from '../../config/menuConfig';
+import {AccountPayableSubMenuLinks } from '../../config/menuConfig';
 import {  SortActionsComponent } from '../shared/DocumentViewDefaults';
-import AccountsReceivableTable from "../../components/accountsreceivable/AccountsReceivableTable";
 import AccountingEntryModal from "../shared/AccountingEntryModal";
 import { Notifier } from "../../utils/alertUtils";
-
+import RegisterPayableLiquidacion from "./RegisterPayableLiquidacion";
+import AccountsPayableTable from "./AccountsPayableTable";
+import EditPayableLiquidation from "./EditPayableLiquidation";
 // Styles
 import styles from "../../styles/accountsreceivable/AccountsReceivable.module.css";
 import stylesCustomers from "../../styles/shared/EntityListView.module.css";
 
-const AccountsReceivable = () => {
+
+
+const AccountsPayable = () => {
   // Hook con la lógica de negocio
-  const { data, isLoading, error, actions } = useAccountsReceivable('collections');
+  const { data, isLoading, error, actions } = useAccountsPayable('collections');
 
   // Estados locales para la UI (filtros y modales)
   const [startDate, setStartDate] = useState("");
@@ -32,13 +35,13 @@ const AccountsReceivable = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAccountingModalOpen, setIsAccountingModalOpen] = useState(false);
   
-  const [selectedDetail, setSelectedDetail] = useState(null);
+  const [selectedPayable, setSelectedPayable] = useState(null);
   const [accountingEntry, setAccountingEntry] = useState(null);
   const [isAccountingEntryLoading, setIsAccountingEntryLoading] = useState(false);
 
 
   const handleSearch = () => {
-    actions.searchByDate(startDate, endDate);
+    actions.filterByDateRange(startDate, endDate);
     setSortBy(null);
   };
 
@@ -55,7 +58,7 @@ const AccountsReceivable = () => {
     try {
       const detail = await actions.getCollectionDetailById(id);
       detail.documentNumber = documentNumber; // Inyectamos el número de documento
-      setSelectedDetail(detail);
+      setSelectedPayable(detail);
       setIsEditModalOpen(true);
     } catch (error) {
       Notifier.error(error.message);
@@ -70,16 +73,17 @@ const AccountsReceivable = () => {
         const entryData = await actions.getAccountingEntry(id);
         setAccountingEntry(entryData);
     } catch (error) {
-        setAccountingEntry({ error: error.message }); // Pasamos el error al modal
+        setAccountingEntry({ error: error.message }); 
     } finally {
         setIsAccountingEntryLoading(false);
     }
   };
 
+
   const closeModalAndRefetch = () => {
     setIsRegisterModalOpen(false);
     setIsEditModalOpen(false);
-    setSelectedDetail(null);
+    setSelectedPayable(null);
     actions.refetch();
   };
 
@@ -98,7 +102,7 @@ const AccountsReceivable = () => {
   return (
 
     <>
-     <SubMenu links={AccountReceivableSubMenuLinks} />
+     <SubMenu links={AccountPayableSubMenuLinks} />
     <section className={styles.container}>
       
       <DateRangeFilter
@@ -115,25 +119,19 @@ const AccountsReceivable = () => {
       filters={{ startDate, endDate }}
       styles={stylesCustomers}
     />
-      {/*<div className={styles.botonNuevaWrapper}>
-        <button className={styles.btnNueva} onClick={() => setIsRegisterModalOpen(true)}>
-          <FaPlus style={{ marginRight: "0.5rem" }} />
-          Nueva
-        </button>
-      </div>*/}
+ 
 
       {isLoading && <p>Cargando datos...</p>}
       {error && <p style={{ color: 'red' }}>Error: {error}</p>}
-      {!isLoading && !error && <AccountsReceivableTable data={data} actions={tableActions} />}
+      {!isLoading && !error && <AccountsPayableTable data={data} actions={tableActions} />}
 
-      
-      {isRegisterModalOpen && (
-        <RegisterReceivableLiquidacion onClose={closeModalAndRefetch} />
+        {isRegisterModalOpen && (
+        <RegisterPayableLiquidacion onClose={closeModalAndRefetch} />
       )}
 
-      {isEditModalOpen && selectedDetail && (
-        <EditReceivableLiquidation
-          collectionDetail={selectedDetail}
+      {isEditModalOpen && selectedPayable && (
+        <EditPayableLiquidation
+          paymentDetail={selectedPayable}
           onClose={closeModalAndRefetch}
         />
       )}
@@ -146,9 +144,10 @@ const AccountsReceivable = () => {
         isError={!!accountingEntry?.error}
         error={accountingEntry?.error}
       />
+ 
     </section>
     </>
   );
 };
 
-export default AccountsReceivable;
+export default AccountsPayable;
