@@ -48,7 +48,6 @@ import NewCreditNote from '../components/sales/creditnote/NewCreditNote';
 import EditCreditNote from '../components/sales/creditnote/EditCreditNote';
 import SalesReport from '../components/sales/reports/SalesReport';
 import UserCompaniesDashboard from '../components/administration/userManagement/UserCompaniesDashboard';
-import AccessLogs from '../components/administration/changeHistory/AccessLogs';
 
 import MovementView from '../components/inventory/movements/MovementView';
 import ProductView from '../components/inventory/products/ProductView';
