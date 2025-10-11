@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styles from '../styles/Sidebar.module.css'; // Importa el CSS Module
 import { useLocation, Link, useNavigate } from "react-router-dom";
-import { House, PersonLinesFill, PeopleFill, BoxSeam, List, ArrowLeftRight, JournalRichtext } from 'react-bootstrap-icons';
+import { House, PersonLinesFill, PeopleFill, BoxSeam, List, ArrowLeftRight, JournalRichtext, Cart4,CashCoin,Bank2,Calculator} from 'react-bootstrap-icons';
 import { BoxArrowRight } from "react-bootstrap-icons";
 import { useAuth } from "../context/AuthContext";
 
@@ -20,7 +20,11 @@ const moduleLinks = [
   { to: "/ventas", label: "Ventas", icon: House },
   { to: "/cuentas", label: "Cuentas por Cobrar", icon: PersonLinesFill },
   { to: "/inventario", label: "Inventario", icon: BoxSeam },
-  { to: "/admin", label: "Administración", icon: PeopleFill }, // Solo para admin
+  { to: "/compras", label: "Compras", icon: Cart4 },
+  { to: "/cuentas-por-pagar", label: "Cuentas por Pagar", icon: CashCoin },
+  { to: "/bancos", label: "Bancos", icon: Bank2 },
+  { to: "/contabilidad", label: "Contabilidad", icon: Calculator },
+  { to: "/admin", label: "Administración", icon: PeopleFill, adminOnly: true }, // Solo para admin
 ];
 
 const SideBar = ({ sidebarOpen, toggleSidebar }) => {
@@ -28,9 +32,10 @@ const SideBar = ({ sidebarOpen, toggleSidebar }) => {
   const { role, logout } = useAuth(); 
   const navigate = useNavigate();
   const isAdminRoute = pathname.startsWith("/admin");
-  const filteredModuleLinks = role === true
-    ? moduleLinks
-    : moduleLinks.filter(link => link.to !== "/admin");
+  // La lógica de filtrado ahora puede ser más explícita
+  const filteredModuleLinks = role === true 
+    ? moduleLinks 
+    : moduleLinks.filter(link => !link.adminOnly);
   const linksToShow = isAdminRoute ? adminLinks : filteredModuleLinks;
 
   const handleLogout = () => {
@@ -41,7 +46,11 @@ const SideBar = ({ sidebarOpen, toggleSidebar }) => {
 return (
     <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : styles.sidebarCollapsed}`} aria-label="Menú lateral principal">
       <header className={styles.sidebarHeader}>
-        <span className={styles.sidebarLogo}>NUBIXCONTA</span>
+        {/* 1. Envolvemos el span del logo con un componente Link de React Router. */}
+        <Link to="/home" className={styles.sidebarLogoLink}>
+          {/* 2. El span ahora vive dentro del Link. */}
+          <span className={styles.sidebarLogo}>NUBIXCONTA</span>
+        </Link>
         <button className={`btn btn-link btn-sm text-white ${styles.sidebarToggleBtn}`} onClick={toggleSidebar} aria-label="Mostrar/ocultar menú lateral">
           <List size={28} />
         </button>

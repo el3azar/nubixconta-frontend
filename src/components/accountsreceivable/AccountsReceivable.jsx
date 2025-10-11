@@ -7,7 +7,7 @@ import { useAccountsReceivable } from "../../hooks/useAccountsReceivable";
 // Components
 import RegisterReceivableLiquidacion from "./RegisterReceivableLiquidacion";
 import EditReceivableLiquidation from "./EditReceivableLiquidation";
-import DateRangeFilter from "../../components/accountsreceivable/DateRangeFilter";
+import DateRangeFilter from "../shared/DateRangeFilter";
 import SubMenu from "../shared/SubMenu"; 
 import {AccountReceivableSubMenuLinks } from '../../config/menuConfig';
 import {  SortActionsComponent } from '../shared/DocumentViewDefaults';
@@ -17,7 +17,7 @@ import { Notifier } from "../../utils/alertUtils";
 
 // Styles
 import styles from "../../styles/accountsreceivable/AccountsReceivable.module.css";
-import stylesCustomers from "../../styles/sales/ViewCustomers.module.css";
+import stylesCustomers from "../../styles/shared/EntityListView.module.css";
 
 const AccountsReceivable = () => {
   // Hook con la lógica de negocio

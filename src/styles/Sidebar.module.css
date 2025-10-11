@@ -55,7 +55,17 @@
   background: #292440 !important;
   color: #fff !important;
 }
+/* --- INICIO: NUEVOS ESTILOS PARA EL ENLACE DEL LOGO --- */
+.sidebarLogoLink {
+  text-decoration: none; /* Elimina el subrayado del enlace */
+  color: inherit; /* Hace que el enlace herede el color de texto blanco del sidebar */
+  transition: opacity 0.2s; /* Una pequeña transición para el feedback visual */
+}
 
+.sidebarLogoLink:hover {
+  color: inherit; /* Mantiene el color blanco al pasar el ratón */
+  opacity: 0.85; /* Reduce ligeramente la opacidad para indicar que es clickeable */
+}
 
 /* --- BREAKPOINT PARA TABLETS (>= 768px) --- */
 @media (min-width: 768px) {

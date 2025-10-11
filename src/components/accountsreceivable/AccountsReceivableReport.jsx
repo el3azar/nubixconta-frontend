@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import DateRangeFilter from '../../components/accountsreceivable/DateRangeFilter';
+import DateRangeFilter from '../shared/DateRangeFilter';
 import styles from "../../styles/accountsreceivable/AccountsReceivableReport.module.css";
 import { FaFilePdf, FaFileExcel } from "react-icons/fa";
 import { getAccountsReceivable } from "../../services/accountsreceivable/accountsReceivableReportService";

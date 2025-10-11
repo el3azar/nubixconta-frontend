@@ -20,11 +20,18 @@ export const inventorySubMenuLinks = [
 
 
 export const AccountReceivableSubMenuLinks = [
-  { to: '/cuentas/cobros', label: 'cobros' },
-  {to:'/cuentas/visualizar_ventas', label: 'Visualizacion de ventas'},
-  { to: '/cuentas/reportes', label: 'Reporte' },
-  { to: '/cuentas/estado_cuenta', label: 'Estado de cuenta' },
-  
+  { to: '/cuentas/cobros', label: 'Cobros' },
+  { to: '/cuentas/visualizar_ventas', label: 'Visualización de Ventas' },
+  { to: '/cuentas/reportes', label: 'Reportes' },
+  { to: '/cuentas/estado_cuenta', label: 'Estado de Cuenta' },
+
+];
+export const AccountPayableSubMenuLinks = [
+  { to: '/cuentas/pagos', label: 'Pagos' },
+  { to: '/cuentas/visualizar_pagos', label: 'Visualización de compras' },
+  { to: '/cuentas/pagos/reportes', label: 'Reportes' },
+  { to: '/cuentas/pagos/estado_cuenta', label: 'Estado de Cuenta' },
+
 ];
 // En el futuro, cuando añadas más módulos, simplemente los agregas aquí:
 /*
@@ -33,3 +40,15 @@ export const purchasesSubMenuLinks = [
   { to: '/compras/ordenes', label: 'Órdenes de Compra' },
 ];
 */
+
+/**
+ * Enlaces para el submenú de navegación del módulo de Compras.
+ * Se utilizará en los componentes de vista principal de este módulo.
+ */
+export const purchasesSubMenuLinks = [
+  { to: "/compras/proveedores", label: "Proveedores" },
+  { to: "/compras/compras", label: "Compras" },
+  { to: "/compras/notas-credito", label: "Notas de Crédito" },
+  { to: "/compras/isr", label: "Impuesto sobre la Renta" },
+  { to: "/compras/reportes", label: "Reportes" },
+];

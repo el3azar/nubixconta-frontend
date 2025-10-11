@@ -39,6 +39,7 @@ import EditCompanyView from '../components/administration/companyMangment/EditCo
 import ViewCompanyDetails from '../components/administration/companyMangment/ViewCompanyDetails';
 import AccountsReceivable from '../components/accountsreceivable/AccountsReceivable';
 import AccountsReceivableMenu from '../components/accountsreceivable/AccountsReceivableMenu';
+import AccountsPayableMenu from '../components/accountspayable/AccountsPayableMenu';
 import AccountsReceivableReport from '../components/accountsreceivable/AccountsReceivableReport'; 
 import AccountsReceivableAccount from '../components/accountsreceivable/AccountsReceivableAccount'; 
 import DeactivatedCompaniesView from '../components/administration/companyMangment/DeactivatedCompaniesView';
@@ -54,11 +55,26 @@ import ProductView from '../components/inventory/products/ProductView';
 import DesableProductView from '../components/inventory/products/DesableProductView';
 import MovementListView from '../components/inventory/movements/MovementListView';
 import DetailedSalesView from '../components/accountsreceivable/DetailedSalesView';
+import DashBoardPurchases from '../components/purchases/DashBoardPurchases'; 
+import ViewSuppliers from '../components/purchases/supplier/ViewSuppliers';
+import NewSupplier from '../components/purchases/supplier/NewSupplier';
+import EditSupplier from '../components/purchases/supplier/EditSupplier';
+import DesactivatedSupplier from '../components/purchases/supplier/DesactivatedSupplier';
+import Purchases from '../components/purchases/purchases/Purchases';
+import NewPurchase from '../components/purchases/purchases/NewPurchase';
+import EditPurchase from '../components/purchases/purchases/EditPurchase';
+import ScrollToTop from '../components/shared/ScrollToTop';
+import DetailedPayableTable from '../components/accountspayable/DetailedPayableTable';
+import DetailedPayableView from '../components/accountspayable/DetailedPayableView';
+import AccountsPayable from '../components/accountspayable/AccountsPayable';
+import AccountsPayableReport from '../components/accountspayable/AccountsPayableReport';
+import AccountPayableStatement from '../components/accountspayable/AccountsPayableAccount';
+import AccountsPayableAccount from '../components/accountspayable/AccountsPayableAccount';
 
 export default function Rutas() {
   return (
     <BrowserRouter>
-     {/* --- PASO 2: AÑADIR EL COMPONENTE TOASTER AQUÍ --- */}
+      <ScrollToTop />
       {/* Lo configuramos una sola vez con tu paleta de colores. */}
       {/* Estará disponible para toda la aplicación. */}
       <Toaster
@@ -214,6 +230,46 @@ export default function Rutas() {
                   {/* Rutas extras que necesites en Inventario*/}
                   <Route path="/inventario/productos" element={<ProductView />} />
                   <Route path="/inventario/movimientosproductos" element={<MovementListView />} />
+
+
+                   {/* --- AÑADE LAS NUEVAS RUTAS AQUÍ --- */}
+                  <Route path="/compras" element={<DashBoardPurchases />} />
+                  <Route path="/compras/proveedores" element={<ViewSuppliers />} />
+                  <Route path="/compras/proveedores/nuevo" element={<NewSupplier />} />
+                  <Route path="/compras/proveedores/editar/:id" element={<EditSupplier />} />
+                  <Route path="/compras/proveedores/desactivados" element={<DesactivatedSupplier />} />
+
+
+                 {/* Rutas para la gestión de Compras */}
+                  <Route path="/compras/compras" element={<Purchases />} />
+                  <Route path="/compras/nueva/:supplierId" element={<NewPurchase />} />
+                  <Route path="/compras/editar/:purchaseId" element={<EditPurchase />} />
+                 
+
+
+                  <Route path="/compras/notas-credito" element={<div>Gestión de Notas de Crédito de Compra</div>} />
+                  <Route path="/compras/isr" element={<div>Impuesto sobre la renta (ISR) </div>} />
+                  <Route path="/compras/reportes" element={<div>Reportes de Compras</div>} />
+
+
+
+
+                     {/* --- Rutas para cuentas por pagar --- */}
+                 
+
+
+                  <Route path="/cuentas-por-pagar" element={<AccountsPayableMenu/>} />
+                  <Route path="/cuentas/visualizar_pagos" element={<DetailedPayableView/>} />
+                  <Route path="/cuentas/pagos" element={<AccountsPayable />} />
+                  <Route path="/cuentas/pagos/reportes" element={<AccountsPayableReport />} />
+                  <Route path="/cuentas/pagos/estado_cuenta" element={<AccountsPayableAccount/>} />
+
+                  <Route path="/bancos" element={<div>Dashboard de Bancos</div>} />
+                  <Route path="/contabilidad" element={<div>Dashboard de Contabilidad</div>} />
+                  {/* --- FIN DE LAS NUEVAS RUTAS --- */}
+
+
+
                   {/* Ruta comodín: muestra Dashboard general (puedes personalizar para un 404) */}
                   <Route path="*" element={<Login />} />
                 </Route>

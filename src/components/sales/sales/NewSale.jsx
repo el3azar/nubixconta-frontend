@@ -15,14 +15,14 @@ export default function NewSale() {
   
   const { createSale } = SaleService();
   const { data: activeProducts, isLoading: isLoadingProducts } = useActiveProducts();
-  const { getCustomerById } = useCustomerService();
-  
-  const { data: client, isLoading: isLoadingClient } = useQuery({
+  const { getById: getCustomerById} = useCustomerService();
+
+  const { data: client, isLoading: isLoadingClient, isError, error } = useQuery({
     queryKey: ['customer', clientId],
     queryFn: () => getCustomerById(clientId),
     enabled: !!clientId,
+     retry: false, 
   });
-
  const productOptions = React.useMemo(() => {
     if (!activeProducts) return [];
     return activeProducts.map(p => ({ 
@@ -58,8 +58,13 @@ export default function NewSale() {
     submitSale(dto);
   };
 
- 
-
+//Estos logs nos darán la imagen completa de lo que está pasando
+  console.log('ID de Cliente desde URL:', clientId);
+  console.log('¿Está cargando el cliente?:', isLoadingClient);
+  console.log('¿Hubo un error en la consulta?:', isError);
+  console.log('Objeto de error detallado:', error);
+  console.log('Datos del cliente recibidos:', client);
+  // --- FIN DE LOS LOGS DE DEPURACIÓN ---
   return (
     <SaleForm
       title="Nueva Venta"

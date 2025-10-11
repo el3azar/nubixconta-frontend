@@ -1,0 +1,203 @@
+:root {
+  --bg-dark: #10031C;
+  --bg-mid: #1B043B;
+  --bg-purple: #49207B;
+  --accent: #7D49CC;
+  --muted: #8581B0;
+  --gray: #ABAABC;
+}
+
+.formWrapper {
+  background-color: #C9C9CE;
+  padding: 1.2rem 1.2rem 1.7rem 1.2rem;
+  border-radius: 10px;
+  max-width: 75%;    /* MÁS ESTRECHO */
+  margin: 2rem auto 0 auto;
+  box-shadow: 0 2px 10px rgba(52,58,64,0.08);
+  margin: 0 auto; 
+}
+
+.formTitle {
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  color: #10031C;
+  font-size: 1.4rem;
+}
+
+/* PersonType radios (box) */
+.personTypeBox {
+  background-color: #DBDCE0;
+  padding: 0.7rem 1.2rem;
+  border-radius: 8px;
+  margin-bottom: 1.3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+}
+/* --- ESTA ES LA SECCIÓN CLAVE PARA LA RESPONSIVIDAD (SIN CAMBIOS DE COLOR) --- */
+.formGrid {
+  display: grid;
+  /* Por defecto (escritorio), 3 columnas */
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.8rem 1.2rem;
+}
+
+/* BREAKPOINT PARA TABLETS */
+@media (max-width: 920px) {
+  .formGrid {
+    /* En tablets, cambiamos a 2 columnas */
+    grid-template-columns: 1fr 1fr;
+  }
+  .formWrapper {
+    max-width: 90%; /* Aprovecha mejor el espacio en tablets */
+  }
+}
+
+/* BREAKPOINT PARA MÓVILES */
+@media (max-width: 700px) {
+  .formGrid {
+    /* En móviles, apilamos todo en 1 sola columna */
+    grid-template-columns: 1fr;
+    gap: 1rem; /* Espacio vertical entre campos */
+  }
+  .formWrapper {
+    max-width: 100%; /* Ocupa todo el ancho disponible */
+    margin: 1rem auto;
+    padding: 1rem;
+  }
+  .personTypeBox {
+    flex-direction: column; /* Apila los radios verticalmente */
+    gap: 0.5rem;
+  }
+}
+/* --- FIN DE LA SECCIÓN DE RESPONSIVIDAD --- */
+.formGroup {
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.formLabel {
+  font-weight: 500;
+  font-size: 0.92rem;
+  margin-bottom: 0.12rem;
+  color: #343A40;
+}
+
+/* ================================================================== */
+/*        REEMPLAZA TU .formControl CON ESTA REGLA MEJORADA           */
+/* ================================================================== */
+.formControl {
+  /* --- Propiedades Clave de Layout y Caja (LA SOLUCIÓN) --- */
+  display: block; /* CRÍTICO: Asegura que el elemento se comporte como un bloque y respete la altura. */
+  width: 100%;
+  height: 2.4rem; /* ALTURA EXPLÍCITA Y CONSISTENTE (aprox. 38px) */
+  box-sizing: border-box; /* CRÍTICO: El padding y borde van HACIA ADENTRO de la altura. */
+
+  /* --- Propiedades de Espaciado y Fuente --- */
+  padding: 0.375rem 0.75rem; /* Padding estándar y balanceado (como en Bootstrap) */
+  font-size: 0.95rem; /* Manteniendo tu tamaño de fuente */
+  line-height: 1.5; /* Ayuda a centrar el texto verticalmente dentro de la altura definida */
+
+  /* --- Propiedades Visuales --- */
+  color: #212529;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #CED4DA;
+  border-radius: 6px;
+  -webkit-appearance: none; /* Previene estilos por defecto de iOS */
+  -moz-appearance: none;
+  appearance: none;
+  
+  /* --- Transición para un efecto :focus más suave --- */
+  transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+/* Estado de Foco (reutiliza tus variables de color) */
+.formControl:focus {
+  border-color: var(--accent);
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(125, 73, 204, 0.25);
+}
+
+/* Radios de IVA y Retención, en fila compacta */
+.radiosRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.2rem;
+  justify-content: flex-start;
+  margin: 1.1rem 0 0.2rem 0;
+}
+
+@media (max-width: 600px) {
+  .radiosRow { flex-direction: column; gap: 0.3rem; }
+}
+
+/* Botonera centrada y compacta */
+.buttonRow {
+  display: flex;
+  justify-content: center;
+  gap: 1.1rem;
+  margin-top: 1.4rem;
+}
+
+/* Botones: compacto y pro */
+.registrar, .cancelar {
+  padding: 0.38rem 1.25rem;
+  font-size: 0.97rem;
+  border-radius: 8px;
+  font-weight: 500;
+  border: 2px solid #10031C;
+  transition: 0.18s;
+  width: 20%;
+}
+.registrar {
+  background: #10031C;
+  color: #fff;
+}
+.registrar:hover {
+  background: transparent;
+  color: #10031C;
+}
+.cancelar {
+  background: transparent;
+  color: #10031C;
+}
+.cancelar:hover {
+  background: #10031C;
+  color: #fff;
+}
+.registrar:disabled, .cancelar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Error de validación */
+.errorMessage {
+  color: #a94442;
+  font-weight: 500;
+  font-size: 0.81rem;
+  margin-top: 0.15rem;
+}
+
+/* Placeholder más tenue */
+.formControl::placeholder {
+  color: #a2a4b1;
+  opacity: 1;
+}
+
+@media (max-width: 720px) {
+  .buttonRow {
+    flex-direction: column;
+    gap: 0.7rem;
+    align-items: stretch;
+  }
+  .registrar, .cancelar {
+    width: 100%;
+    font-size: 1.1rem;      /* Texto más grande */
+    text-align: center;     /* Centrado horizontal */
+    padding: 0.6rem 1.25rem;/* Más alto para mejor tacto */
+  }
+}

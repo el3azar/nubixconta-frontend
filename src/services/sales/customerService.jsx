@@ -53,14 +53,14 @@ const useCustomerService = () => {
     return res.data;
   };
 
-  return {
-    searchCustomers,
-    getInactiveCustomers,
-    getCustomerById,
-    createCustomer,
-    updateCustomer,
-    desactivateCustomer,
-    reactivateCustomer,
+   return {
+    search: searchCustomers,
+    getInactive: getInactiveCustomers,
+    getById: getCustomerById,
+    create: createCustomer,
+    update: updateCustomer,
+    desactivate: desactivateCustomer,
+    reactivate: reactivateCustomer,
   };
 };
 
