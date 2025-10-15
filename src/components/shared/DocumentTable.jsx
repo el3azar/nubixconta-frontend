@@ -46,7 +46,7 @@ export const DocumentTable = ({ documents, isLoading, isError, error, actionsPro
 
   return documents.map(doc => (
     <DocumentTableRow
-      key={doc.idPurchase || doc.idNotaCredit || doc.saleId}
+      key={doc.idPurchase || doc.idNotaCredit || doc.saleId|| doc.idPurchaseCreditNote}
       doc={doc}
       columns={columns}
       actionsProps={actionsProps}

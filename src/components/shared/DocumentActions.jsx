@@ -33,8 +33,8 @@ export const DocumentActions = ({
   styles
 }) => {
      // 1. Determina propiedades genéricas del documento
-  const status = doc.purchaseStatus || doc.saleStatus || doc.creditNoteStatus;
-  const id = doc.idPurchase || doc.idNotaCredit || doc.saleId;
+  const status = doc.purchaseStatus || doc.saleStatus || doc.creditNoteStatus || doc.idPurchaseCreditNote;
+  const id = doc.idPurchase || doc.idNotaCredit || doc.saleId || doc.idPurchaseCreditNote;
   // --- FUNCIÓN HELPER PARA BOTONES REPETITIVOS ---
   const renderButton = (title, icon, onClick, isDisabled = false) => (
     <button

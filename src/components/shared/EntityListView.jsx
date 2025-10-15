@@ -266,7 +266,7 @@ const onSearch = (data) => {
                              {entityType === 'supplier' && (
                               <>
                                 <button className={styles.iconBtn} title="Crear Compra" onClick={() => navigate(`/compras/nueva/${entity[config.idField]}`)}><FaShoppingCart /></button>
-                                <button className={styles.iconBtn} title="Crear Nota de Débito" onClick={() => Notifier.info('Funcionalidad de Nota de Débito próximamente.')}><CreditNoteIcon /></button>
+                                <button className={styles.iconBtn} title="Crear Nota de Crédito" onClick={() => navigate(`/compras/nueva-nota-credito/${entity[config.idField]}`)}><CreditNoteIcon /></button>
                               </>
                             )}
                           </div>

@@ -18,22 +18,39 @@ export const useAccountingModal = () => {
   });
 
   // Función que otros componentes llamarán para ABRIR el modal.
-  const openAccountingModal = (doc) => {
-    console.log("Documento recibido en el hook:", doc);
-    // Determina el tipo y el ID a partir del objeto que se le pasa.
-      // Determina el tipo y el ID a partir del objeto que se le pasa.
-      const type = doc.saleId ? 'venta' :
-                   doc.idNotaCredit ? 'nota-credito' :
-                   doc.idPurchase ? 'compra' : // <-- ESTA LÍNEA AHORA ES CORRECTA
-                   'desconocido';
-      
-      const id = doc.saleId || doc.idNotaCredit || doc.idPurchase; // <-- ESTA LÍNEA AHORA ES CORRECTA
+ const openAccountingModal = (doc) => {
+    console.log("Documento recibido para asiento contable:", doc);
     
-    if (type !== 'desconocido') {
+    // --- INICIO DE LA CORRECCIÓN: Lógica de detección mejorada ---
+    let type = 'desconocido';
+    let id = null;
+
+    if (doc.saleStatus) {
+      type = 'venta';
+      id = doc.saleId;
+    } else if (doc.purchaseStatus) {
+      type = 'compra';
+      id = doc.idPurchase;
+    } else if (doc.creditNoteStatus && doc.sale) {
+      type = 'nota-credito';
+      id = doc.idNotaCredit;
+    } else if (doc.creditNoteStatus && doc.purchase) {
+      // Esta es la nueva condición que identifica nuestro documento.
+      type = 'nota-credito-compra';
+      id = doc.idPurchaseCreditNote; // Usamos el ID correcto.
+    }
+    // --- FIN DE LA CORRECCIÓN ---
+
+    console.log(`Documento identificado como tipo: ${type}, ID: ${id}`);
+    
+    if (type !== 'desconocido' && id) {
       setSelectedDocInfo({ type, id });
       setIsModalOpen(true);
+    } else {
+      console.error("No se pudo determinar el tipo de documento para el asiento contable.", doc);
     }
   };
+
 
   // Función para CERRAR el modal.
   const closeAccountingModal = () => {
