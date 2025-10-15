@@ -134,6 +134,17 @@ export const usePurchaseService = () => {
     return response.data;
   };
 
+  /**
+   * Obtiene una lista resumida de compras de un proveedor que son elegibles para una NC.
+   * @param {number} supplierId - El ID del proveedor.
+   * @returns {Promise<Array>} Lista de PurchaseForCreditNoteDTO.
+   */
+  const getAvailableForCreditNote = async (supplierId) => {
+    // Este endpoint debe existir en tu PurchaseController.
+    const response = await axios.get(`${API_URL}/available-for-credit-note?supplierId=${supplierId}`, getAuthHeader(token));
+    return response.data;
+  };
+
   // Exponemos todas las funciones para que puedan ser utilizadas en los componentes.
   return {
     getAllPurchases,
@@ -145,5 +156,6 @@ export const usePurchaseService = () => {
     applyPurchase,
     cancelPurchase,
     getPurchaseAccountingEntry,
+    getAvailableForCreditNote,
   };
 };

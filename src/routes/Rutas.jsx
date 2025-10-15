@@ -70,6 +70,9 @@ import AccountsPayable from '../components/accountspayable/AccountsPayable';
 import AccountsPayableReport from '../components/accountspayable/AccountsPayableReport';
 import AccountPayableStatement from '../components/accountspayable/AccountsPayableAccount';
 import AccountsPayableAccount from '../components/accountspayable/AccountsPayableAccount';
+import PurchaseCreditNotes from '../components/purchases/creditnote/PurchaseCreditNotes'; // Asumiendo la ruta
+import NewPurchaseCreditNote from '../components/purchases/creditnote/NewPurchaseCreditNote';
+import EditPurchaseCreditNote from '../components/purchases/creditnote/EditPurchaseCreditNote';
 
 export default function Rutas() {
   return (
@@ -247,7 +250,19 @@ export default function Rutas() {
                  
 
 
-                  <Route path="/compras/notas-credito" element={<div>Gestión de Notas de Crédito de Compra</div>} />
+                  {/* Ruta para la vista principal de la tabla */}
+                <Route path="/compras/notas-credito" element={<PurchaseCreditNotes />} />
+
+                {/* Ruta para el formulario de nueva NC. Recibe el ID del proveedor */}
+                <Route path="/compras/nueva-nota-credito/:supplierId" element={<NewPurchaseCreditNote />} />
+
+                {/* Ruta para el formulario de edición. Recibe el ID de la NC */}
+                <Route path="/compras/editar-nota-credito/:creditNoteId" element={<EditPurchaseCreditNote />} />
+
+
+
+
+
                   <Route path="/compras/isr" element={<div>Impuesto sobre la renta (ISR) </div>} />
                   <Route path="/compras/reportes" element={<div>Reportes de Compras</div>} />
 
