@@ -21,6 +21,7 @@ export const AccountingService = () => {
     'venta': 'sales',
     'nota-credito': 'credit-notes',
     'compra': 'purchases',
+    'nota-credito-compra': 'purchase-credit-notes'
   };
 
   /**
