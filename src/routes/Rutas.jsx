@@ -73,6 +73,9 @@ import AccountsPayableAccount from '../components/accountspayable/AccountsPayabl
 import PurchaseCreditNotes from '../components/purchases/creditnote/PurchaseCreditNotes'; // Asumiendo la ruta
 import NewPurchaseCreditNote from '../components/purchases/creditnote/NewPurchaseCreditNote';
 import EditPurchaseCreditNote from '../components/purchases/creditnote/EditPurchaseCreditNote';
+import DashboardBanks from '../components/banks/DashboardBanks';
+import BankTransactionsView from '../components/banks/BankTransactionsView';
+import BankReportsView from '../components/banks/BankReportsView';
 
 export default function Rutas() {
   return (
@@ -279,7 +282,10 @@ export default function Rutas() {
                   <Route path="/cuentas/pagos/reportes" element={<AccountsPayableReport />} />
                   <Route path="/cuentas/pagos/estado_cuenta" element={<AccountsPayableAccount/>} />
 
-                  <Route path="/bancos" element={<div>Dashboard de Bancos</div>} />
+                  <Route path="/bnks" element={<div>Dashboard de Bancos</div>} />
+                  <Route path="/bancos" element={<DashboardBanks />} />
+                  <Route path="/bancos/transacciones" element={<BankTransactionsView />} />
+                  <Route path="/bancos/reportes" element={<BankReportsView />} />
                   <Route path="/contabilidad" element={<div>Dashboard de Contabilidad</div>} />
                   {/* --- FIN DE LAS NUEVAS RUTAS --- */}
 
