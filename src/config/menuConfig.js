@@ -52,3 +52,12 @@ export const purchasesSubMenuLinks = [
   { to: "/compras/isr", label: "Impuesto sobre la Renta" },
   { to: "/compras/reportes", label: "Reportes" },
 ];
+
+/**
+ * Enlaces para el submenú de navegación del módulo de bancos.
+ * Se utilizará en los componentes de vista principal de este módulo.
+ */
+export const banksSubMenuLinks = [
+  { to: "/bancos/transacciones", label: "Transacciones Bancarias" },
+  { to: "/bancos/reportes", label: "Reportes" },
+];

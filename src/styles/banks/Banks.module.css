@@ -1,0 +1,359 @@
+/* ==================================== */
+/* ESTILOS GENERALES          */
+/* ==================================== */
+
+.container {
+  border-radius: 1rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h2 {
+  text-align: center;
+  color: #2c1a47;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.h2Izq {
+  color: #2c1a47;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: left;
+  margin-bottom: 2rem;
+}
+
+p {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #10031c;
+}
+
+/* ==================================== */
+/* ESTILOS DE FORMA          */
+/* ==================================== */
+
+.tipo {
+  display: flex;
+  gap: 2rem;
+  background: #e0e0e0;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.formGrid label {
+  font-weight: bold;
+  color: #000;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+/* Estilos consolidados para campos de formulario */
+input[type="text"],
+input[type="number"],
+textarea,
+select {
+  width: 100%;
+  padding: 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #aaa;
+  background-color: white;
+  color: #000;
+  font-size: 1rem;
+  box-sizing: border-box; /* Asegura que padding no aumente el ancho */
+}
+
+/* Ocultar flechas en inputs de tipo "number" */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* ==================================== */
+/* ESTILOS MODAL            */
+/* ==================================== */
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal {
+  background: #c4c4c4;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 650px;
+  position: relative;
+  margin-right: -3rem; /* Nota: Esta margen negativa puede ser intencional pero es inusual. */
+  max-height: none;
+  overflow: visible;
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  font-size: 1.5rem;
+  border: none;
+  cursor: pointer;
+}
+
+/* ==================================== */
+/* ESTILOS DE BOTONES          */
+/* ==================================== */
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+
+.cancel {
+  background: transparent;
+  border: 2px solid #10031c;
+  padding: 0.7rem 1.5rem;
+  font-weight: bold;
+  border-radius: 8px;
+}
+.cancel:hover {
+  background: #10031c;
+  color: #fff;
+}
+
+.register {
+  background: #10031c;
+  color: white;
+  padding: 0.7rem 1.5rem;
+  font-weight: bold;
+  border-radius: 8px;
+  border: none;
+}
+.register:hover {
+  background: transparent;
+  color: #10031c;
+  border-color: #10031c;
+  border: 2px solid;
+}
+
+/* Botones de exportación (fuera del modal) */
+.exportButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1.5rem;
+  margin: 1rem 0;
+}
+
+.exportLink {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  background: none;
+  border: none;
+  padding: 0;
+  color: #1b043b;
+  font-weight: 500;
+  cursor: pointer;
+  font-size: 15px;
+  text-decoration: none;
+}
+
+button.exportLink {
+  background-color: #10031c;
+  color: white;
+  padding: 0.7rem 1.2rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.5s ease;
+  width: 10rem;
+  height: 3rem;
+}
+button.exportLink:hover {
+  background: transparent;
+  color: #10031c;
+  border-color: #10031c;
+  border: 2px solid;
+}
+
+/* ==================================== */
+/* ESTILOS DE LA TABLA         */
+/* ==================================== */
+
+.tablaWrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #bbb;
+  background-color: white;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #f9f6fb;
+}
+
+.tabla th,
+.tabla td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Encabezado fijo de la tabla */
+.tabla thead {
+  background-color: #f3f3f3;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.tabla th {
+  background-color: #fff; /* Se sobrescribe por table_header si se usa */
+  color: #3d3d3d;
+}
+
+.table_header {
+  background-color: #2c1a47;
+  color: #fff;
+}
+
+.table-header th {
+  padding: 12px 15px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+/* Filas de la tabla */
+.tabla tr:nth-child(even) {
+  background-color: #ede6f5;
+}
+
+.tabla tr:hover {
+  background-color: #ddd1f1;
+}
+
+/* Nuevo estilo para la tarjeta de búsqueda 
+basado en accountsreceivable/AccountReceivableAccount.module.css
+*/
+.searchCard {
+  /* Fondo y bordes de la tarjeta */
+  background: #bcb7dd; /* Un color púrpura claro similar al de la imagen */
+  padding: 1.5rem 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem; /* Separación de la tabla de resultados debajo */
+}
+
+.fechaGrupo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; 
+}
+
+.fechaGrupo label {
+  font-weight: 500;
+  color: #000;
+}
+
+.fechaGrupo input[type="date"] {
+  padding: 0.8rem 1rem;
+  font-size: 1.05rem;
+  border-radius: 8px;
+  min-width: 200px;
+  height: 48px;
+  border: none;
+}
+.buscador {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: #bcb7dd;
+  padding: 1.2rem;
+  border-radius: 15px;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* ==================================== */
+/* RESPONSIVE MODAL          */
+/* ==================================== */
+
+/* Medios (Tablets) */
+@media (max-width: 768px) {
+  .modal {
+    width: 70%;
+    max-width: 70%;
+    padding: 1.5rem;
+    margin-right: 0; /* Corrección para evitar el margin negativo en móviles */
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .buttons {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .cancel,
+  .register {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Móviles */
+@media (max-width: 480px) {
+  .modal {
+    width: 95%;
+    padding: 1rem;
+  }
+
+  .tipo {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .title {
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  .closeButton {
+    top: 5px;
+    right: 10px;
+    font-size: 1.2rem;
+  }
+}
