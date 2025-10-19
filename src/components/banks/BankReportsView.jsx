@@ -12,7 +12,7 @@ import Boton from '../inventory/inventoryelements/Boton';
 import { DocumentTable } from '../shared/DocumentTable'; // IMPORTAR DocumentTable
 
 // Definición de columnas para BankReportsView
-export const bankReportColumns = [
+export const thisModuleReportColumns = [
     { 
         header: 'Correlativo', 
         accessor: 'correlative', 
@@ -48,6 +48,18 @@ export const bankReportColumns = [
     // No se incluye la columna 'Acciones' porque es un reporte (solo lectura).
 ];
 
+export const otherModulesReportColumns = [
+    { header: 'Correlativo', accessor: 'correlative', style: { width: '80px', textAlign: 'center' } },
+    { header: 'No. de asiento', accessor: 'seatNumber', style: { width: '100px', textAlign: 'center' } },
+    { header: 'Fecha de transacción', accessor: 'transactionDate', cell: (doc) => formatDate(doc.transactionDate), style: { width: '130px' } },
+    { header: 'Modulo de origen', accessor: 'originModule', style: { width: '120px' } }, 
+    { header: 'Cuenta bancaria', accessor: 'bankAccountName', style: { width: '150px' } },
+    { header: 'No. de referencia', accessor: 'referenceNumber', style: { width: '130px', textAlign: 'center' } },
+    { header: 'Descripcion de la transaccion', accessor: 'description', style: { flexGrow: 1 } },
+    { header: 'Cargo', accessor: 'debit', cell: (doc) => `$${doc.debit ? doc.debit.toFixed(2) : '0.00'}`, style: { width: '100px', textAlign: 'right', fontWeight: 'bold' } }, 
+    { header: 'Abono', accessor: 'credit', cell: (doc) => `$${doc.credit ? doc.credit.toFixed(2) : '0.00'}`, style: { width: '100px', textAlign: 'right', fontWeight: 'bold' } }, 
+];
+
 // Recibe las props del selector para buscar la cuenta bancaria y cualquier otra que necesite la vista
 const BankReportsView = ({ apiDataCodigo }) => {
     // 1. Definición de ESTADOS FALTANTES e internos
@@ -57,11 +69,21 @@ const BankReportsView = ({ apiDataCodigo }) => {
     // ...
     // --- 2. ¡NUEVO! Estado para el filtro de tipo de origen (Manual/Automático) ---
     const [originFilter, setOriginFilter] = useState(null); // null = Todos, 'Manual', 'Automatico'
+    // El estado para la vista: Usaremos 'ESTE_MODULO' como valor por defecto
+    const [activeReportMode, setActiveReportMode] = useState('ESTE_MODULO');
     // --- NUEVOS ESTADOS para la Tabla ---
     const [reportData, setReportData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     
+    // LÓGICA DE CONTROL DE VISTA
+    const isEsteModulo = activeReportMode === 'ESTE_MODULO';
+    
+    // Seleccionar las columnas dinámicamente
+    const currentColumns = isEsteModulo ? thisModuleReportColumns : otherModulesReportColumns;
+
+
+
     // --- LÓGICA DE BÚSQUEDA ---
     const handleSearch = async () => {        
         setIsLoading(true);
@@ -70,6 +92,7 @@ const BankReportsView = ({ apiDataCodigo }) => {
         
         try {
             // Ejemplo de llamada a la API con todos los filtros
+            // hacer que sea condicional si las apis son distintas para la tabla
             const query = new URLSearchParams({
                 codigo: codigoValue,
                 start: startDate,
@@ -105,6 +128,13 @@ const BankReportsView = ({ apiDataCodigo }) => {
         setReportData([]); // Limpia la tabla, cuidado con este
     };
 
+    // La función que maneja el cambio de módulo y dispara la búsqueda si ya hay filtros.
+    const handleModuleChange = (moduleKey) => {
+        setActiveReportMode(moduleKey);
+        // Opcional: Si deseas que la tabla se recargue automáticamente al cambiar de módulo, 
+        // puedes llamar a handleSearch() aquí o usar un useEffect como en el componente anterior.
+    };
+
     return (
         // Usamos el Fragmento (<> </>) como contenedor raíz
         <>
@@ -130,12 +160,20 @@ const BankReportsView = ({ apiDataCodigo }) => {
             />
              {/* Los botones de acción son específicos de esta vista */}
             <div className='d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 mb-3'>
-            {/* Lado Izquierdo: Nuevos botones de filtro por origen */}
+            {/* Lado Izquierdo: Botones de filtro por origen */}
             <div className="d-flex gap-2 flex-wrap mb-2 mb-md-0">
-                <Boton color={!originFilter ? 'morado' : 'blanco'} forma="pastilla" onClick={() => setOriginFilter(null)}>
+                <Boton 
+                    color={isEsteModulo ? 'morado' : 'blanco'} 
+                    forma="pastilla" 
+                    onClick={() => handleModuleChange('ESTE_MODULO')}
+                >
                     Este Modulo
                 </Boton>
-                <Boton color={originFilter === 'Manual' ? 'morado' : 'blanco'} forma="pastilla" onClick={() => setOriginFilter('Manual')}>
+                <Boton 
+                    color={!isEsteModulo ? 'morado' : 'blanco'} 
+                    forma="pastilla" 
+                    onClick={() => handleModuleChange('OTROS_MODULOS')}
+                >
                     Otros Modulos
                 </Boton>
             </div>
@@ -152,24 +190,25 @@ const BankReportsView = ({ apiDataCodigo }) => {
                 </Boton>
             </div>
             </div>
-            {/* INTEGRACIÓN DE LA TABLA DE REPORTE */}
+            {/* INTEGRACIÓN DE LA TABLA DE REPORTE (DINÁMICA) */}
             <div className={styles.tablaWrapper}>
                 <table className={styles.tabla}>
                     <thead>
                         <tr className={styles.table_header}> 
-                            {bankReportColumns.map(col => (
+                            {/* Columnas dinámicas */}
+                            {currentColumns.map(col => (
                                 <th key={col.header} style={col.style}>{col.header}</th>
                             ))}
                         </tr>
                     </thead>
                     <tbody>
                         <DocumentTable
-                            documents={reportData} // Datos que vienen de la API/Estado
-                            columns={bankReportColumns}
+                            documents={reportData} 
+                            columns={currentColumns} // Columnas dinámicas
                             isLoading={isLoading}
                             isError={!!error}
                             error={error}
-                            showRowActions={false} // No se muestran acciones para reportes
+                            showRowActions={false} // No se muestran acciones
                             emptyMessage="Presione 'Buscar' para generar el reporte de transacciones."
                         />
                     </tbody>

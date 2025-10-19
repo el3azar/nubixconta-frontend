@@ -9,6 +9,7 @@ import SearchCardBank from './SearchCardBank';
 import { DocumentTable } from '../shared/DocumentTable';
 import Boton from '../inventory/inventoryelements/Boton';
 
+//Columnas de la tabla de este modulo
 export const bankTransactionColumns = [
     { 
         header: 'Correlativo', 
@@ -42,7 +43,18 @@ export const bankTransactionColumns = [
     // NOTA: La columna 'Acciones' no se define aquí. 
     // Se habilita pasando 'showRowActions={true}' al componente DocumentTable.
 ];
-
+//columnas de la tabla de otros modulos
+export const thisModuleColumns = [
+    { header: 'Correlativo', accessor: 'correlative', style: { width: '80px', textAlign: 'center' } },
+    { header: 'No. de asiento', accessor: 'seatNumber', style: { width: '100px', textAlign: 'center' } }, // Asumiendo 'seatNumber'
+    { header: 'Fecha de transacción', accessor: 'transactionDate', cell: (doc) => formatDate(doc.transactionDate), style: { width: '130px' } },
+    { header: 'Modulo de origen', accessor: 'originModule', style: { width: '120px' } }, // Asumiendo 'originModule'
+    { header: 'Cuenta bancaria', accessor: 'bankAccountName', style: { width: '150px' } },
+    { header: 'No. de referencia', accessor: 'referenceNumber', style: { width: '130px', textAlign: 'center' } },
+    { header: 'Descripcion de la transaccion', accessor: 'description', style: { flexGrow: 1 } },
+    { header: 'Cargo', accessor: 'debit', cell: (doc) => `$${doc.debit ? doc.debit.toFixed(2) : '0.00'}`, style: { width: '100px', textAlign: 'right', fontWeight: 'bold' } }, // Asumiendo 'debit'
+    { header: 'Abono', accessor: 'credit', cell: (doc) => `$${doc.credit ? doc.credit.toFixed(2) : '0.00'}`, style: { width: '100px', textAlign: 'right', fontWeight: 'bold' } }, // Asumiendo 'credit'
+];
 // Recibe las props del selector para buscar la cuenta bancaria y cualquier otra que necesite la vista
 const BankTransactionsView = ({ apiDataCodigo }) => {
     // 1. Definición de ESTADOS FALTANTES e internos
@@ -54,9 +66,19 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
     const [transactions, setTransactions] = React.useState([]);
     const [isLoading, setIsLoading] = React.useState(false);
     const [error, setError] = React.useState(null);
+
+    // Define el estado inicial para la tabla
+    const [activeModule, setActiveModule] = React.useState('ESTE_MODULO');
+    
+    // Define las columnas y acciones según el módulo activo
+    const isEsteModulo = activeModule === 'ESTE_MODULO';
+    const currentColumns = isEsteModulo ? bankTransactionColumns : thisModuleColumns;
+    const showActions = isEsteModulo; // Asumo que 'Otros Modulos' (thisModuleColumns) no tiene acciones aquí.
     // ...
 
+
     // 3. Lógica de Búsqueda y API
+    // adaptar con condicional if/else si son dos endpoints diferentes para las tablas
     const handleSearch = async () => {
         setIsLoading(true);
         setError(null);
@@ -87,6 +109,34 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
         setEndDate('');
     };
 
+    // Placeholder de funciones de acción (NECESARIO si showActions es true para la tabla)
+    const actionsProps = {
+        onView: (doc) => console.log('Ver transaccion:', doc.correlative),
+        onDelete: (doc) => console.log('Anular transaccion:', doc.correlative),
+        // Puedes añadir más acciones aquí
+    };
+
+
+    // HANDLERS PARA BOTONES DE ACCIÓN Y ORDENAMIENTO
+    const handleNewTransaction = () => {
+        // Lógica para navegar a la vista de creación de nueva transacción
+        console.log('Navegando a formulario para NUEVA transacción...');
+    };
+    // Handlers para los botones de la derecha (necesitas implementarlos, trabjan con las tablas de acuerdo a cual esta activa)
+    const handleOrderByState = () => console.log('Ordenando por estado...');
+    const handleOrderByDate = () => console.log('Ordenando por fecha...');
+
+    //----------------------------------------------------------------------
+    // 3. EFECTO PARA RECARGAR DATOS AL CAMBIAR DE MÓDULO O FILTRO
+    // ----------------------------------------------------------------------
+    React.useEffect(() => {
+        // Recarga los datos automáticamente solo si el usuario ya ha seleccionado una cuenta
+        if (codigoValue) {
+            handleSearch();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeModule, codigoValue]); // Activa cuando cambian el módulo o la cuenta seleccionada
+
     return (
         // Usamos el Fragmento (<> </>) como contenedor raíz
         <>
@@ -113,49 +163,73 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
             {/* BOTONES DE ACCION PARA LA VISUAIZACION DE TABLAS */}
  {/* Los botones de acción son específicos de esta vista */}
             <div className='d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 mb-3'>
-            {/* Lado Izquierdo: Nuevos botones de filtro por origen */}
-            <div className="d-flex gap-2 flex-wrap">
-                <Boton color="blanco" forma="pastilla" onClick="submit">
-                Este Modulo
-                </Boton>
-                <Boton color="blanco" forma="pastilla" onClick="submit">
-                Otros Modulos
-                </Boton>
-            </div>
-    
-            {/* Lado Derecho: Botones de generación de reportes */}
-            <div className="d-flex gap-2 flex-wrap">
-                <Boton color="morado" forma="pastilla" onClick="submit">
-                Ordenar Por Estado
-                </Boton>
-                <Boton color="morado" forma="pastilla" onClick="submit">
-                Ordenar Por Fecha
-                </Boton>
-            </div>
+                {/* Lado Izquierdo: Botones de filtro por origen */}
+                <div className="d-flex gap-2 flex-wrap">
+                    <Boton 
+                        color={isEsteModulo ? 'morado' : 'blanco'} 
+                        forma="pastilla" 
+                        onClick={() => setActiveModule('ESTE_MODULO')}
+                    >
+                        Este Modulo
+                    </Boton>
+                    <Boton 
+                        color={!isEsteModulo ? 'morado' : 'blanco'} 
+                        forma="pastilla" 
+                        onClick={() => setActiveModule('OTROS_MODULOS')}
+                    >
+                        Otros Modulos
+                    </Boton>
+                </div>
+        
+                {/* Lado Derecho: BOTONES CONDICIONALES */}
+                <div className="d-flex gap-2 flex-wrap">
+                    {/* 1. Botón NUEVA (Solo en 'Este Modulo') */}
+                    {isEsteModulo && (
+                        <Boton color="morado" forma="pastilla" onClick={handleNewTransaction}>
+                            <i className="bi bi-plus-circle me-2"></i>
+                            Nueva
+                        </Boton>
+                    )}
+
+                    {/* 2. Botón ORDENAR POR ESTADO (Solo en 'Este Modulo') */}
+                    {isEsteModulo && (
+                        <Boton color="blanco" forma="pastilla" onClick={handleOrderByState}>
+                            Ordenar Por Estado
+                        </Boton>
+                    )}
+
+                    {/* 3. Botón ORDENAR POR FECHA (En AMBOS módulos) */}
+                    <Boton color="blanco" forma="pastilla" onClick={handleOrderByDate}>
+                        Ordenar Por Fecha
+                    </Boton>
+                </div>
             </div>
             {/* Componente de Tabla (Usando el genérico DocumentTable) */}
+            {/* TABLA: RENDERIZADO DINÁMICO */}
             <div className={styles.tablaWrapper}>
                 <table className={styles.tabla}>
                     <thead>
                         <tr className={styles.table_header}> 
-                            {bankTransactionColumns.map(col => (
+                            {/* Columnas dinámicas */}
+                            {currentColumns.map(col => (
                                 <th key={col.header} style={col.style}>{col.header}</th>
                             ))}
-                            <th>Acciones</th>
+                            {/* Encabezado de Acciones Condicional */}
+                            {showActions && <th>Acciones</th>} 
                         </tr>
                     </thead>
                     <tbody>
                         <DocumentTable
                             documents={transactions}
-                            columns={bankTransactionColumns}
+                            // Columna dinámica
+                            columns={currentColumns} 
                             isLoading={isLoading}
                             isError={!!error}
                             error={error}
-                            // HABILITA LA COLUMNA DE ACCIONES
-                            showRowActions={true} 
+                            // Habilitación dinámica de Acciones
+                            showRowActions={showActions} 
+                            actionsProps={actionsProps} 
                             emptyMessage="Utilice el filtro de arriba para buscar transacciones."
-                            // actionsProps: NECESITARÁS pasar aquí las funciones para cada acción (ver, editar, eliminar, etc.)
-                            // actionsProps={{ onView: handleView, onDelete: handleDelete, ... }}
                         />
                     </tbody>
                 </table>
