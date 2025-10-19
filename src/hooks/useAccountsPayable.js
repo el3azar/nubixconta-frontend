@@ -30,7 +30,7 @@ const processPurchaseSummary = (response) => {
             proveedor: supplierFullName,
             fecha: purchase.issueDate?.substring(0, 10) || '',
             saldo: item.balance ? `$${item.balance.toFixed(2)}` : '$0.00',
-            montoTotal: purchase.totalAmount ? `$${purchase.totalAmount.toFixed(2)}` : '$0.00',
+            montoTotal: item.payableAmount ? `$${item.payableAmount.toFixed(2)}` : '$0.00',
             diasCredito: purchase.creditDay ?? 0,
             // Agregamos una descripción por defecto si no existe
             descripcion: purchase.purchaseDescription || 'Resumen de venta', 
