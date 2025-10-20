@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import SubMenu from "../shared/SubMenu";
 import { banksSubMenuLinks } from '../../config/menuConfig';
 import SCardUtil from './SCardUtil';
+import { DocumentTable } from '../shared/DocumentTable';
+import styles from '../../styles/banks/Banks.module.css';
 
 const NewBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
 
@@ -17,6 +19,13 @@ const NewBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
     const [balance, setBalance] = React.useState('');
     const [type, setType] = React.useState(''); // Valor del SelectBase para el tipo (Cargo/Abono)
     
+    // --- ESTADO CLAVE: DETALLE DE LA TRANSACCIÓN (ASIENTOS) ---
+    // Simulación de los asientos contables (Debe/Haber) que componen el monto total.
+    const [transactionDetails, setTransactionDetails] = React.useState([
+        { id: 1, code: '110.01', accountName: 'Banco 1', debe: 1000.00, haber: 0.00, isMainAccount: true },
+        { id: 2, code: '501.05', accountName: 'Gasto por Servicios', debe: 0.00, haber: 1000.00, isMainAccount: false }
+    ]);
+
     // (Opcional) Estados de control (manteniéndolos por si los necesitas para la lógica de guardado)
     const [isLoading, setIsLoading] = React.useState(false); 
     const [error, setError] = React.useState(null);
@@ -40,6 +49,24 @@ const NewBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
         setBalance('');
         setType('');
     };
+
+    // --- LÓGICA DE LA TABLA ---
+
+    // 1. Definición de las Columnas para el detalle contable
+    const detailColumns = [
+        { header: 'Código', accessor: 'code', className: styles.textAlignCenter },
+        { header: 'Cuenta', accessor: 'accountName' },
+        // Formato para los montos de Debe
+        { header: 'Debe', accessor: 'debe', 
+            cell: (doc) => `$${doc.debe.toFixed(2)}`, 
+            className: styles.textAlignRight
+        },
+        // Formato para los montos de Haber
+        { header: 'Haber', accessor: 'haber', 
+            cell: (doc) => `$${doc.haber.toFixed(2)}`, 
+            className: styles.textAlignRight
+        },
+    ];
 
     // Función para AGREGAR (guardar) la nueva transacción
     const handleAdd = async () => {
@@ -69,6 +96,11 @@ const NewBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
             setIsLoading(false);
         }
     };
+    // 2. Cálculo de la Fila Total
+    const totalDebe = transactionDetails.reduce((sum, item) => sum + item.debe, 0);
+    const totalHaber = transactionDetails.reduce((sum, item) => sum + item.haber, 0);
+    const totalColSpan = detailColumns.length; // Columna de Código + Cuenta
+    const colSpanTotalLabel = 2; // Columna de Código + Cuenta (para el texto "Total")
 
     return (
         <>
@@ -88,7 +120,7 @@ const NewBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
         {error && <div className="alert alert-danger">{error}</div>}
         {isLoading && <div>Cargando...</div>}
 
-        {/* 🛑 3. PASAR LAS NUEVAS PROPS AL SCardUtil */}
+        {/*3. PASAR LAS NUEVAS PROPS AL SCardUtil */}
         <SCardUtil
             // Props de los campos del formulario
             referenceValue={reference} onReferenceChange={setReference}
@@ -108,7 +140,62 @@ const NewBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
             
             // 🛑 NOTA: Se eliminan las props obsoletas: apiDataCodigo, startDate, endDate, handleSearch
         />
-        <h3>Detalle de la Transacción</h3>
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 mb-3">
+            <div className="d-flex gap-2 flex-wrap mb-2 mb-md-0">
+                <h3>Detalle de la Transacción</h3>
+            </div>
+            <div className="d-flex gap-2 flex-wrap">
+                <Boton color="morado" forma="pastilla" onClick={() => alert('Funcionalidad para Registrar aún no implementada.')}>
+                    Registrar Transacción
+                </Boton>
+                <Boton color="morado" forma="pastilla" onClick={() => alert('Funcionalidad para cancelar aún no implementada.')}>
+                    Cancelar
+                </Boton>
+            </div>
+        </div>
+
+        <div className={styles.tablaWrapper}>
+            <table className={styles.tabla}>
+                {/* ENCABEZADO: Usamos las columnas definidas + la columna de Acciones */}
+                <thead className={styles.table_header}>
+                    <tr>
+                        {detailColumns.map(col => (
+                            <th key={col.header} className={col.className}>{col.header}</th>
+                        ))}
+                        {/* Se añade el encabezado de "Acciones" manualmente para que la fila total tenga el colspan correcto */}
+                        <th className={styles.textAlignCenter}>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {/* Filas de DATOS (DocumentTable) */}
+                    <DocumentTable
+                        documents={transactionDetails}
+                        columns={detailColumns}
+                        styles={styles} 
+                        // Mostrará la columna de Acciones (trash/search) en DocumentTable
+                        showRowActions={true} 
+                        // Aquí se pasarían las props de acciones (ej: onDelete, onEdit)
+                        // actionsProps={{ handleDelete: onDeleteDetail, handleView: onEditDetail, ... }}
+                        emptyMessage="Añada la cuenta de contrapartida de la transacción."
+                    />
+
+                    {/* FILA DEL TOTAL (Renderizada Manualmente) */}
+                    <tr className={styles.tableTotalRow} style={{ backgroundColor: '#bcb7dd', fontWeight: 'bold' }}>
+                        {/* La celda "Total" ocupa las columnas de "Código" y "Cuenta" */}
+                        <td colSpan={colSpanTotalLabel}>Total</td> 
+                        
+                        {/* Total Debe */}
+                        <td className={styles.textAlignRight}>${totalDebe.toFixed(2)}</td> 
+                        
+                        {/* Total Haber */}
+                        <td className={styles.textAlignRight}>${totalHaber.toFixed(2)}</td>
+                        
+                        {/* Celda de Acciones (Vacía o con colspan de 1) */}
+                        <td></td> 
+                    </tr>
+                </tbody>
+            </table>
+        </div>
         </>
     )
 }
