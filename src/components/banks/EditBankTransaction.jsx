@@ -184,7 +184,7 @@ const EditBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
                 <Boton color="morado" forma="pastilla" onClick={() => alert('Funcionalidad para Actualizar aún no implementada.')}>
                     Actualizar Transacción
                 </Boton>
-                <Boton color="morado" forma="pastilla" onClick={() => alert('Funcionalidad para cancelar aún no implementada.')}>
+                <Boton color="morado" forma="pastilla" onClick={handleReturnTransaction}>
                     Cancelar
                 </Boton>
             </div>

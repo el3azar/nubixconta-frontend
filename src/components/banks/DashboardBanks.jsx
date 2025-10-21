@@ -6,7 +6,6 @@ import DashboardCards from "../../components/DashboardCards";
 const banksItems = [
   { label: "Transacciones", icon: BsBank2, to: "/bancos/transacciones" },
   { label: "Reportes", icon: BsFileEarmarkBarGraphFill, to: "/bancos/reportes" },
-  { label: "Pruebas", icon: BsFileEarmarkBarGraphFill, to: "/bancos/pruebas" },
 ];
 
 const BanksDashboard = () => (

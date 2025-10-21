@@ -186,7 +186,7 @@ const NewBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
                 <Boton color="morado" forma="pastilla" onClick={() => alert('Funcionalidad para Registrar aún no implementada.')}>
                     Registrar Transacción
                 </Boton>
-                <Boton color="morado" forma="pastilla" onClick={() => alert('Funcionalidad para cancelar aún no implementada.')}>
+                <Boton color="morado" forma="pastilla" onClick={handleReturnTransaction}>
                     Cancelar
                 </Boton>
             </div>
