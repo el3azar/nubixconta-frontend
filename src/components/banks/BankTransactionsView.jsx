@@ -17,7 +17,7 @@ const mockBankTransactions = [
         correlative: 1001,
         transactionDate: '2025-10-18T00:00:00Z',
         referenceNumber: 'REF-BANK-54321',
-        description: 'Pago a Proveedor A por mercadería Pago a Proveedor A por mercadería Pago a Proveedor A por mercadería Pago a Proveedor A por mercadería Pago a Proveedor A por mercadería Pago a Proveedor A por mercadería Pago a Proveedor A por mercadería',
+        description: 'Pago a Proveedor A por mercadería',
         amount: 4500.50,
         status: 'PENDIENTE' // Estado para probar la lógica de acciones
     },
