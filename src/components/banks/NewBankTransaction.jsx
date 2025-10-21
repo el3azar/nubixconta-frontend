@@ -53,20 +53,58 @@ const NewBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
     // --- LÓGICA DE LA TABLA ---
 
     // 1. Definición de las Columnas para el detalle contable
+    // --- LÓGICA DE LA TABLA ---
+
+    // 1. Definición de las Columnas para el detalle contable (SIN columna de acciones)
     const detailColumns = [
         { header: 'Código', accessor: 'code', className: styles.textAlignCenter },
         { header: 'Cuenta', accessor: 'accountName' },
         // Formato para los montos de Debe
         { header: 'Debe', accessor: 'debe', 
-            cell: (doc) => `$${doc.debe.toFixed(2)}`, 
+            cell: (doc) => `${doc.debe.toFixed(2)}`, 
             className: styles.textAlignRight
         },
         // Formato para los montos de Haber
         { header: 'Haber', accessor: 'haber', 
-            cell: (doc) => `$${doc.haber.toFixed(2)}`, 
+            cell: (doc) => `${doc.haber.toFixed(2)}`, 
             className: styles.textAlignRight
         },
+        // Agregamos la columna de Acciones manualmente con renderizado personalizado
+        { 
+            header: 'Acciones', 
+            accessor: 'actions',
+            className: styles.textAlignCenter,
+            cell: (doc) => (
+                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                    <Boton color="morado" title="Editar" size="icon" forma="pastilla" onClick={() => handleEditDetail(doc)}>
+                        <i className="bi bi-pencil me-2 mb-2 mt-2 ms-2"></i>
+                    </Boton>
+                    <Boton color="rojo" title="Eliminar" size="icon" forma="pastilla" onClick={() => handleDeleteDetail(doc)}>
+                        <i className="bi bi-trash"></i>
+                    </Boton>
+                </div>
+            )
+        }
     ];
+
+    // Funciones para manejar las acciones de la tabla
+    const handleEditDetail = (detail) => {
+        console.log('Editando detalle:', detail);
+        // Aquí puedes implementar la lógica para editar
+        // Por ejemplo: abrir un modal, poblar un formulario, etc.
+        alert(`Editar detalle de cuenta: ${detail.accountName}`);
+    };
+
+    const handleDeleteDetail = (detail) => {
+        if (detail.isMainAccount) {
+            alert('No se puede eliminar la cuenta principal de la transacción.');
+            return;
+        }
+        
+        if (window.confirm(`¿Está seguro de eliminar el detalle de "${detail.accountName}"?`)) {
+            setTransactionDetails(prev => prev.filter(item => item.id !== detail.id));
+        }
+    };
 
     // Función para AGREGAR (guardar) la nueva transacción
     const handleAdd = async () => {
@@ -163,7 +201,7 @@ const NewBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
                             <th key={col.header} className={col.className}>{col.header}</th>
                         ))}
                         {/* Se añade el encabezado de "Acciones" manualmente para que la fila total tenga el colspan correcto */}
-                        <th className={styles.textAlignCenter}>Acciones</th>
+                        
                     </tr>
                 </thead>
                 <tbody>
@@ -173,7 +211,7 @@ const NewBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
                         columns={detailColumns}
                         styles={styles} 
                         // Mostrará la columna de Acciones (trash/search) en DocumentTable
-                        showRowActions={true} 
+                        showRowActions={false} 
                         // Aquí se pasarían las props de acciones (ej: onDelete, onEdit)
                         // actionsProps={{ handleDelete: onDeleteDetail, handleView: onEditDetail, ... }}
                         emptyMessage="Añada la cuenta de contrapartida de la transacción."

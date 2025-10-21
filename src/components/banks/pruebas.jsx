@@ -51,3 +51,5 @@ const Pruebas = () => {
 };  
 
 export default Pruebas;
+
+//cuando funcionen las acciones se puede borrar este elemento

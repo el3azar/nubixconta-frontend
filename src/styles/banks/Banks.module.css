@@ -427,3 +427,16 @@ input:disabled {
 input:disabled::placeholder {
   color: #505050; /* Si el campo está vacío y deshabilitado, el placeholder es un gris sutil */
 }
+
+.actionIconBtn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
