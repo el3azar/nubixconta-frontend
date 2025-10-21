@@ -1,17 +1,36 @@
 //imports generales
-import React, {useState, useMemo } from 'react';
+import React, {useState, useMemo, useEffect } from 'react'; // Agregué useEffect
 import SubMenu from '../shared/SubMenu';
 import { banksSubMenuLinks } from '../../config/menuConfig';
 import styles from '../../styles/banks/Banks.module.css';
 import { Notifier } from '../../utils/alertUtils';
-import { formatDate } from '../../utils/dateFormatter'; // Importar formatDate
+import { formatDate } from '../../utils/dateFormatter';
 //imports especificos de la vista
 import SearchCardBank from './SearchCardBank';
 import { BsFileEarmarkExcel, BsFileEarmarkPdf } from 'react-icons/bs';
 import Boton from '../inventory/inventoryelements/Boton';
-import { DocumentTable } from '../shared/DocumentTable'; // IMPORTAR DocumentTable
+import { DocumentTable } from '../shared/DocumentTable';
 
-// Definición de columnas para BankReportsView
+// =========================================================================
+// DATOS QUEMADOS (MOCK DATA)
+// =========================================================================
+
+// Mock para 'Este Modulo' (thisModuleReportColumns)
+const mockEsteModuloReportData = [
+    { correlative: '1001', bankAccountName: 'Ahorro BNC', transactionDate: '2023-10-01T00:00:00Z', referenceNumber: 'REF-M-1', description: 'Depósito Manual de Cliente A', amount: 1500.00 },
+    { correlative: '1002', bankAccountName: 'Corriente BanCo', transactionDate: '2023-10-05T00:00:00Z', referenceNumber: 'REF-M-2', description: 'Pago de Cheque manual a Proveedor Z', amount: -450.50 },
+    { correlative: '1003', bankAccountName: 'Ahorro BNC', transactionDate: '2023-10-10T00:00:00Z', referenceNumber: 'REF-M-3', description: 'Transferencia electrónica manual', amount: -1200.99 },
+];
+
+// Mock para 'Otros Módulos' (otherModulesReportColumns)
+const mockOtrosModulosReportData = [
+    { correlative: '2001', seatNumber: 'ASN-001', transactionDate: '2023-10-02T00:00:00Z', originModule: 'Inventario', bankAccountName: 'Corriente BanCo', referenceNumber: 'INV-F45', description: 'Pago automático de factura de inventario', debit: 0.00, credit: 800.00 },
+    { correlative: '2002', seatNumber: 'ASN-002', transactionDate: '2023-10-06T00:00:00Z', originModule: 'Ventas', bankAccountName: 'Ahorro BNC', referenceNumber: 'VNT-R87', description: 'Ingreso por cobro de venta', debit: 1500.75, credit: 0.00 },
+    { correlative: '2003', seatNumber: 'ASN-003', transactionDate: '2023-10-11T00:00:00Z', originModule: 'Contabilidad', bankAccountName: 'Corriente BanCo', referenceNumber: 'CTA-C99', description: 'Ajuste contable de saldo bancario', debit: 0.00, credit: 50.00 },
+];
+
+
+// Definición de columnas (Se mantienen igual)
 export const thisModuleReportColumns = [
     { 
         header: 'Correlativo', 
@@ -20,13 +39,13 @@ export const thisModuleReportColumns = [
     },
     { 
         header: 'Nombre de cuenta bancaria', 
-        accessor: 'bankAccountName', // Asumiendo que el campo es 'bankAccountName'
+        accessor: 'bankAccountName',
         style: { width: '150px' }
     },
     { 
         header: 'Fecha de transacción', 
         accessor: 'transactionDate',
-        cell: (doc) => formatDate(doc.transactionDate), // Asegúrate de tener formatDate importado
+        cell: (doc) => formatDate(doc.transactionDate), 
         style: { width: '130px' } 
     },
     { 
@@ -45,7 +64,6 @@ export const thisModuleReportColumns = [
         cell: (doc) => `$${doc.amount ? doc.amount.toFixed(2) : '0.00'}`,
         style: { width: '120px', textAlign: 'right', fontWeight: 'bold' } 
     },
-    // No se incluye la columna 'Acciones' porque es un reporte (solo lectura).
 ];
 
 export const otherModulesReportColumns = [
@@ -62,78 +80,103 @@ export const otherModulesReportColumns = [
 
 // Recibe las props del selector para buscar la cuenta bancaria y cualquier otra que necesite la vista
 const BankReportsView = ({ apiDataCodigo }) => {
-    // 1. Definición de ESTADOS FALTANTES e internos
-    const [codigoValue, setCodigoValue] = React.useState(''); // ESTE ES EL ESTADO FALTANTE
-    const [startDate, setStartDate] = React.useState('');
-    const [endDate, setEndDate] = React.useState('');
-    // ...
-    // --- 2. ¡NUEVO! Estado para el filtro de tipo de origen (Manual/Automático) ---
-    const [originFilter, setOriginFilter] = useState(null); // null = Todos, 'Manual', 'Automatico'
-    // El estado para la vista: Usaremos 'ESTE_MODULO' como valor por defecto
+    // 1. Definición de ESTADOS
+    const [codigoValue, setCodigoValue] = useState('');
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+    const [originFilter, setOriginFilter] = useState(null); 
+    
+    // ESTADO INICIAL CON DATOS QUEMADOS para 'Este Módulo'
     const [activeReportMode, setActiveReportMode] = useState('ESTE_MODULO');
-    // --- NUEVOS ESTADOS para la Tabla ---
-    const [reportData, setReportData] = useState([]);
+    const [reportData, setReportData] = useState(mockEsteModuloReportData); // Inicializar con mock
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     
     // LÓGICA DE CONTROL DE VISTA
     const isEsteModulo = activeReportMode === 'ESTE_MODULO';
-    
-    // Seleccionar las columnas dinámicamente
     const currentColumns = isEsteModulo ? thisModuleReportColumns : otherModulesReportColumns;
 
 
-
     // --- LÓGICA DE BÚSQUEDA ---
+    // ... (Dentro del componente BankReportsView)
+
     const handleSearch = async () => {        
         setIsLoading(true);
         setError(null);
         setReportData([]); // Limpiar datos previos
         
+        // 1. Determinar el Endpoint y la estructura de datos
+        const endpointBase = isEsteModulo 
+            ? `/api/reports/banco/este-modulo`     // Ejemplo de API para Este Módulo
+            : `/api/reports/banco/otros-modulos`; // Ejemplo de API para Otros Módulos
+        
+        // 2. Construir los parámetros de la consulta (query string)
+        // Se incluyen los valores de los filtros (cuenta, fechas)
+        const query = new URLSearchParams({
+            codigo: codigoValue,
+            start: startDate,
+            end: endDate,
+            origin: originFilter || ''
+        }).toString();
+        
+        const url = `${endpointBase}?${query}`;
+        
         try {
-            // Ejemplo de llamada a la API con todos los filtros
-            // hacer que sea condicional si las apis son distintas para la tabla
-            const query = new URLSearchParams({
-                codigo: codigoValue,
-                start: startDate,
-                end: endDate,
-                origin: originFilter || ''
-            }).toString();
+            // 3. Realizar la llamada real a la API
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                // Manejar errores de respuesta HTTP (ej: 404, 500)
+                throw new Error(`Error ${response.status}: No se pudo generar el reporte.`);
+            }
+
+            const data = await response.json(); // La respuesta debe ser un array de documentos/transacciones
             
-            // Simulación de llamada a API
-            // const response = await fetch(`/api/reports/bank?${query}`);
-            // if (!response.ok) throw new Error('Error al generar el reporte.');
-            // const data = await response.json();
-            
-            // Reemplaza con datos mock para que la tabla se vea llena
-            const data = [
-                { correlative: '1A', bankAccountName: 'Banco 1', transactionDate: '2023-01-01', referenceNumber: '0085324', description: 'desc 1', amount: 1500.00, origin: 'Automático' },
-                { correlative: '1B', bankAccountName: 'Banco 2', transactionDate: '2023-01-02', referenceNumber: '0853679', description: 'desc 2', amount: 450.50, origin: 'Manual' },
-                { correlative: '1C', bankAccountName: 'Banco 3', transactionDate: '2023-01-03', referenceNumber: '0008765', description: 'desc 3', amount: 120.99, origin: 'Automático' },
-            ];
-            
+            // 4. Actualizar el estado con los datos reales
             setReportData(data);
+            
+            // **OPCIONAL:** CÓDIGO DE SIMULACIÓN DE MOCK DATA
+            /*
+            // Simulación: Esperar 500ms y cargar el mock correspondiente
+            await new Promise(resolve => setTimeout(resolve, 500));
+            const dataToLoad = isEsteModulo ? mockEsteModuloReportData : mockOtrosModulosReportData;
+            setReportData(dataToLoad);
+            */
+
         } catch (err) {
+            console.error("Error en la búsqueda del reporte:", err);
             setError(err);
+            // Opcionalmente, puedes cargar el mock data aquí si la API falla
+            // setReportData(isEsteModulo ? mockEsteModuloReportData : mockOtrosModulosReportData);
         } finally {
             setIsLoading(false);
         }
     };
 
     const handleClear = () => {
-        setCodigoValue(''); // Usamos el setter interno
+        setCodigoValue('');
         setStartDate('');
         setEndDate('');
         setOriginFilter(null);
-        setReportData([]); // Limpia la tabla, cuidado con este
+        setReportData([]); // Limpia la tabla
     };
 
-    // La función que maneja el cambio de módulo y dispara la búsqueda si ya hay filtros.
+    // La función que maneja el cambio de módulo y dispara la carga de mocks.
     const handleModuleChange = (moduleKey) => {
         setActiveReportMode(moduleKey);
-        // Opcional: Si deseas que la tabla se recargue automáticamente al cambiar de módulo, 
-        // puedes llamar a handleSearch() aquí o usar un useEffect como en el componente anterior.
+        // Cuando cambia el módulo, cargamos inmediatamente el mock correspondiente
+        const dataToLoad = moduleKey === 'ESTE_MODULO' ? mockEsteModuloReportData : mockOtrosModulosReportData;
+        setReportData(dataToLoad);
     };
+
+    // Efecto para cargar los datos iniciales si la tabla comienza vacía (opcional)
+    /*
+    useEffect(() => {
+        if (reportData.length === 0 && !codigoValue) {
+            setReportData(mockEsteModuloReportData);
+        }
+    }, []);
+    */
 
     return (
         // Usamos el Fragmento (<> </>) como contenedor raíz
@@ -150,15 +193,15 @@ const BankReportsView = ({ apiDataCodigo }) => {
             <SearchCardBank
                 apiDataCodigo={apiDataCodigo}
                 codigoValue={codigoValue}
-                onCodigoChange={setCodigoValue} // Pasa el setter directamente
+                onCodigoChange={setCodigoValue}
                 startDate={startDate}
-                onStartDateChange={setStartDate} // Pasa el setter
+                onStartDateChange={setStartDate}
                 endDate={endDate}
-                onEndDateChange={setEndDate} // Pasa el setter
+                onEndDateChange={setEndDate}
                 handleSearch={handleSearch}
                 handleClear={handleClear}
             />
-             {/* Los botones de acción son específicos de esta vista */}
+            {/* BOTONES DE ACCIÓN PARA LA VISUALIZACIÓN DE TABLAS */}
             <div className='d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 mb-3'>
             {/* Lado Izquierdo: Botones de filtro por origen */}
             <div className="d-flex gap-2 flex-wrap mb-2 mb-md-0">
@@ -180,11 +223,11 @@ const BankReportsView = ({ apiDataCodigo }) => {
     
             {/* Lado Derecho: Botones de generación de reportes */}
             <div className="d-flex gap-2 flex-wrap">
-                <Boton color="morado" forma="pastilla" onClick="submit">
+                <Boton color="morado" forma="pastilla" onClick={() => console.log('Generar PDF', reportData)}>
                 Generar Reporte en PDF
                 <BsFileEarmarkPdf size={19} className='ms-2'/>
                 </Boton>
-                <Boton color="morado" forma="pastilla" onClick="submit">
+                <Boton color="morado" forma="pastilla" onClick={() => console.log('Generar Excel', reportData)}>
                 Generar Reporte en Excel
                 <BsFileEarmarkExcel size={19} className='ms-2'/>
                 </Boton>
@@ -208,8 +251,9 @@ const BankReportsView = ({ apiDataCodigo }) => {
                             isLoading={isLoading}
                             isError={!!error}
                             error={error}
-                            showRowActions={false} // No se muestran acciones
+                            showRowActions={false} // No se muestran acciones para reportes
                             emptyMessage="Presione 'Buscar' para generar el reporte de transacciones."
+                            styles={styles} // Importante para la alineación CSS
                         />
                     </tbody>
                 </table>
