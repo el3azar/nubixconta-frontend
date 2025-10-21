@@ -59,91 +59,19 @@ const mockOtherModuleTransactions = [
     },
 ];
 
-// Columna de Acciones personalizada para 'Este Modulo'
-const renderBankActions = (doc, actionProps ) => (
-  <div className="d-flex gap-2 justify-content-center flex-wrap">
-    <Boton
-      color="morado"
-      title="Editar"
-      onClick={handleEdit}
-      size="icon"
-    >
-      <i className="bi bi-pencil-square"></i>
-    </Boton>
-    <Boton
-      color="verde"
-      title="Aplicar"
-      onClick={() => console.log("Aplicar:", doc.id)}
-      size="icon"
-    >
-      <i className="bi bi-check-circle"></i>
-    </Boton>
-    <Boton
-      color="rojo"
-      title="Eliminar"
-      onClick={() => console.log("Eliminar:", doc.id)}
-      size="icon"
-    >
-      <i className="bi bi-trash"></i>
-    </Boton>
-    <Boton
-      color="blanco"
-      title="Ver Detalles"
-      onClick={handleView}
-      size="icon"
-    >
-      <i className="bi bi-eye"></i>
-    </Boton>
-  </div>
-);
-
-//Columnas de la tabla de este modulo
-export const bankTransactionColumns = [
-    { 
-        header: 'Correlativo', 
-        accessor: 'correlative', 
-        style: { width: '80px', textAlign: 'center' } 
-    },
-    { 
-        header: 'Fecha de transacción', 
-        accessor: 'transactionDate',
-        cell: (doc) => formatDate(doc.transactionDate),
-        style: { width: '130px' } 
-    },
-    { 
-        header: 'No. de referencia', 
-        accessor: 'referenceNumber', 
-        style: { width: '130px', textAlign: 'center' } 
-    },
-    { 
-        header: 'Descripción de la transacción', 
-        accessor: 'description',
-        style: { flexGrow: 1 } 
-    },
-    { 
-        header: 'Estado', // Nueva columna para mostrar el estado
-        accessor: 'status', 
-        style: { width: '100px', textAlign: 'center' } 
-    },
-    { 
-        header: 'Monto', 
-        accessor: 'amount',
-        cell: (doc) => `$${doc.amount ? doc.amount.toFixed(2) : '0.00'}`,
-        style: { width: '120px', textAlign: 'right', fontWeight: 'bold' } 
-    },// NOTA: La columna 'Acciones' no se define aquí. Se manejará en el componente DocumentTable.
-];
-//columnas de la tabla de otros modulos
+//columnas de la tabla de otros modulos (SIN acciones)
 export const thisModuleColumns = [
     { header: 'Correlativo', accessor: 'correlative', style: { width: '80px', textAlign: 'center' } },
-    { header: 'No. de asiento', accessor: 'seatNumber', style: { width: '100px', textAlign: 'center' } }, // Asumiendo 'seatNumber'
+    { header: 'No. de asiento', accessor: 'seatNumber', style: { width: '100px', textAlign: 'center' } },
     { header: 'Fecha de transacción', accessor: 'transactionDate', cell: (doc) => formatDate(doc.transactionDate), style: { width: '130px' } },
-    { header: 'Modulo de origen', accessor: 'originModule', style: { width: '120px' } }, // Asumiendo 'originModule'
+    { header: 'Modulo de origen', accessor: 'originModule', style: { width: '120px' } },
     { header: 'Cuenta bancaria', accessor: 'bankAccountName', style: { width: '150px' } },
     { header: 'No. de referencia', accessor: 'referenceNumber', style: { width: '130px', textAlign: 'center' } },
     { header: 'Descripcion de la transaccion', accessor: 'description', style: { flexGrow: 1 } },
-    { header: 'Cargo', accessor: 'debit', cell: (doc) => `$${doc.debit ? doc.debit.toFixed(2) : '0.00'}`, style: { width: '100px', textAlign: 'right', fontWeight: 'bold' } }, // Asumiendo 'debit'
-    { header: 'Abono', accessor: 'credit', cell: (doc) => `$${doc.credit ? doc.credit.toFixed(2) : '0.00'}`, style: { width: '100px', textAlign: 'right', fontWeight: 'bold' } }, // Asumiendo 'credit'
+    { header: 'Cargo', accessor: 'debit', cell: (doc) => `$${doc.debit ? doc.debit.toFixed(2) : '0.00'}`, style: { width: '100px', textAlign: 'right', fontWeight: 'bold' } },
+    { header: 'Abono', accessor: 'credit', cell: (doc) => `$${doc.credit ? doc.credit.toFixed(2) : '0.00'}`, style: { width: '100px', textAlign: 'right', fontWeight: 'bold' } },
 ];
+
 // Recibe las props del selector para buscar la cuenta bancaria y cualquier otra que necesite la vista
 const BankTransactionsView = ({ apiDataCodigo }) => {
     // 1. Definición de ESTADOS FALTANTES e internos
@@ -152,7 +80,6 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
     const [endDate, setEndDate] = React.useState('');
 
     // 2. Estados para la Tabla (Datos, Carga y Error)
-    // *** INICIALIZACIÓN CON DATOS QUEMADOS DE 'ESTE_MODULO' ***
     const [transactions, setTransactions] = React.useState(mockBankTransactions);
     const [isLoading, setIsLoading] = React.useState(false);
     const [error, setError] = React.useState(null);
@@ -160,25 +87,147 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
     // Define el estado inicial para la tabla
     const [activeModule, setActiveModule] = React.useState('ESTE_MODULO');
     
-    // Define las columnas y acciones según el módulo activo
+    // 1. Inicializar el hook de navegación
+    const navigate = useNavigate();
+
+    // 2. Definir funciones (handlers) para la navegación y acciones
+    const handleNew = () => {
+        navigate('/bancos/nueva'); 
+    };
+    
+    const handleEdit = (doc) => {
+        console.log("Editar:", doc.id);
+        navigate('/bancos/editar');
+    };
+    
+    const handleView = (doc) => {
+        console.log("Ver:", doc.id);
+        navigate('/bancos/ver'); 
+    };
+
+    const handleDelete = (doc) => {
+        if (window.confirm(`¿Está seguro de eliminar la transacción "${doc.referenceNumber}"?`)) {
+            console.log("Eliminar:", doc.id);
+            // Aquí iría tu lógica de eliminación
+            setTransactions(prev => prev.filter(item => item.id !== doc.id));
+        }
+    };
+    
+    const handleApprove = (doc) => {
+        if (window.confirm(`¿Está seguro de aplicar la transacción "${doc.referenceNumber}"?`)) {
+            console.log("Aprobar:", doc.id);
+            // Aquí iría tu lógica de aplicación
+            setTransactions(prev => prev.map(item => 
+                item.id === doc.id ? { ...item, status: 'APLICADA' } : item
+            ));
+        }
+    };
+    
+    const handleCancel = (doc) => {
+        if (window.confirm(`¿Está seguro de anular la transacción "${doc.referenceNumber}"?`)) {
+            console.log("Anular:", doc.id);
+            // Aquí iría tu lógica de anulación
+            setTransactions(prev => prev.map(item => 
+                item.id === doc.id ? { ...item, status: 'ANULADA' } : item
+            ));
+        }
+    };
+
+    // Columnas de la tabla de este modulo (CON columna de acciones condicional)
+    const bankTransactionColumns = [
+        { 
+            header: 'Correlativo', 
+            accessor: 'correlative', 
+            style: { width: '80px', textAlign: 'center' } 
+        },
+        { 
+            header: 'Fecha de transacción', 
+            accessor: 'transactionDate',
+            cell: (doc) => formatDate(doc.transactionDate),
+            style: { width: '130px' } 
+        },
+        { 
+            header: 'No. de referencia', 
+            accessor: 'referenceNumber', 
+            style: { width: '130px', textAlign: 'center' } 
+        },
+        { 
+            header: 'Descripción de la transacción', 
+            accessor: 'description',
+            style: { flexGrow: 1 } 
+        },
+        { 
+            header: 'Estado',
+            accessor: 'status', 
+            style: { width: '100px', textAlign: 'center' } 
+        },
+        { 
+            header: 'Monto', 
+            accessor: 'amount',
+            cell: (doc) => `$${doc.amount ? doc.amount.toFixed(2) : '0.00'}`,
+            style: { width: '120px', textAlign: 'right', fontWeight: 'bold' } 
+        },
+        // COLUMNA DE ACCIONES con lógica condicional basada en el estado
+        {
+            header: 'Acciones',
+            accessor: 'actions',
+            style: { width: '180px', textAlign: 'center' },
+            cell: (doc) => {
+                // Lógica condicional basada en el estado
+                if (doc.status === 'PENDIENTE') {
+                    return (
+                        <div className="d-flex gap-1 justify-content-center flex-wrap">
+                            <Boton color="blanco" title="Ver Detalles" size="icon" forma="pastilla" onClick={() => handleView(doc)}>
+                                <i className="bi bi-eye"></i>
+                            </Boton>
+                            <Boton color="rojo" title="Eliminar" size="icon" forma="pastilla" onClick={() => handleDelete(doc)}>
+                                <i className="bi bi-trash"></i>
+                            </Boton>
+                            <Boton color="verde" title="Aplicar" size="icon" forma="pastilla" onClick={() => handleApprove(doc)}>
+                                <i className="bi bi-check-circle"></i>
+                            </Boton>
+                            <Boton color="morado" title="Editar" size="icon" forma="pastilla" onClick={() => handleEdit(doc)}>
+                                <i className="bi bi-pencil-square mb-2 me-2 mt-2 ms-2"></i>
+                            </Boton>
+                        </div>
+                    );
+                } else if (doc.status === 'APLICADA') {
+                    return (
+                        <div className="d-flex gap-1 justify-content-center flex-wrap">
+                            <Boton color="blanco" title="Ver Detalles" size="icon" forma="pastilla" onClick={() => handleView(doc)}>
+                                <i className="bi bi-eye"></i>
+                            </Boton>
+                            <Boton color="rojo" title="Anular" size="icon" forma="pastilla" onClick={() => handleCancel(doc)}>
+                                <i className="bi bi-x-circle"></i>
+                            </Boton>
+                        </div>
+                    );
+                } else if (doc.status === 'ANULADA') {
+                    return (
+                        <div className="d-flex gap-1 justify-content-center">
+                            <Boton color="blanco" title="Ver Detalles" size="icon" forma="pastilla" onClick={() => handleView(doc)}>
+                                <i className="bi bi-eye"></i>
+                            </Boton>
+                        </div>
+                    );
+                }
+                return null;
+            }
+        }
+    ];
+    
+    // Define las columnas según el módulo activo
     const isEsteModulo = activeModule === 'ESTE_MODULO';
     const currentColumns = isEsteModulo ? bankTransactionColumns : thisModuleColumns;
-    const showActions = isEsteModulo; 
     
-    const transactionsMapped = transactions.map(doc => ({
-    ...doc,
-    purchaseStatus: doc.status, // PENDIENTE o APLICADA
-    idPurchase: doc.id,         // ID que usa DocumentActions
-    }));
     // 3. Lógica de Búsqueda y API
     const handleSearch = async () => {
         setIsLoading(true);
         setError(null);
-        setTransactions([]); // Limpia la tabla anterior
+        setTransactions([]);
 
         // Lógica de datos quemados para la simulación
         if (codigoValue === 'TEST' && isEsteModulo) {
-             // Simulación de carga para datos de prueba
             await new Promise(resolve => setTimeout(resolve, 500)); 
             setTransactions(mockBankTransactions);
             setIsLoading(false);
@@ -191,7 +240,6 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
         }
 
         try {
-            // Aquí iría tu llamada real a la API (se mantiene como ejemplo)
             const endpoint = isEsteModulo
                 ? `/api/banco/transacciones?codigo=${codigoValue}&start=${startDate}&end=${endDate}`
                 : `/api/banco/transacciones-otros?codigo=${codigoValue}&start=${startDate}&end=${endDate}`;
@@ -206,87 +254,58 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
             setTransactions(data);
 
         } catch (err) {
-            // En caso de error real de API, se usa el error
             setError(err);
-             // Si hay error, se carga el mock para que el usuario pueda ver algo (Opcional: puedes dejar un array vacío)
-             const mockData = isEsteModulo ? mockBankTransactions : mockOtherModuleTransactions;
-             // Solo si el código no está vacío, cargamos el mock.
-             if (codigoValue) {
+            if (codigoValue) {
+                const mockData = isEsteModulo ? mockBankTransactions : mockOtherModuleTransactions;
                 setTransactions(mockData);
-             }
+            }
         } finally {
             setIsLoading(false);
         }
     };
 
     const handleClear = () => {
-        setCodigoValue(''); // Usamos el setter interno
+        setCodigoValue('');
         setStartDate('');
         setEndDate('');
-        setTransactions([]); // Limpiamos la tabla al limpiar filtros
+        setTransactions([]);
     };
 
-    // Placeholder de funciones de acción (NECESARIO si showActions es true para la tabla)
-
-    // HANDLERS PARA BOTONES DE ACCIÓN Y ORDENAMIENTO
-    // Handlers para los botones de la derecha 
-    const handleOrderByState = () => console.log('Ordenando por estado...');
-    const handleOrderByDate = () => console.log('Ordenando por fecha...');
+    // HANDLERS PARA BOTONES DE ORDENAMIENTO
+    const handleOrderByState = () => {
+        const sorted = [...transactions].sort((a, b) => {
+            const statusOrder = { 'PENDIENTE': 1, 'APLICADA': 2, 'ANULADA': 3 };
+            return (statusOrder[a.status] || 999) - (statusOrder[b.status] || 999);
+        });
+        setTransactions(sorted);
+        console.log('Ordenado por estado');
+    };
+    
+    const handleOrderByDate = () => {
+        const sorted = [...transactions].sort((a, b) => 
+            new Date(b.transactionDate) - new Date(a.transactionDate)
+        );
+        setTransactions(sorted);
+        console.log('Ordenado por fecha');
+    };
 
     //----------------------------------------------------------------------
-    // 3. EFECTO PARA RECARGAR DATOS AL CAMBIAR DE MÓDULO O FILTRO
+    // EFECTO PARA RECARGAR DATOS AL CAMBIAR DE MÓDULO
     // ----------------------------------------------------------------------
     React.useEffect(() => {
-        // Al cambiar de módulo, cargamos el mock o disparamos la búsqueda
         if (isEsteModulo) {
             setTransactions(mockBankTransactions);
         } else {
             setTransactions(mockOtherModuleTransactions);
         }
         
-        // Si ya hay cuenta seleccionada, disparamos la búsqueda de API
         if (codigoValue) {
-             handleSearch();
+            handleSearch();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [activeModule, codigoValue]); // Activa cuando cambian el módulo o la cuenta seleccionada
-
-    // 1. Inicializar el hook de navegación
-    const navigate = useNavigate();
-
-    // 2. Definir funciones (handlers) para la navegación
-    const handleNew = () => {
-        // Ejemplo de ruta para crear una nueva transacción
-        navigate('/bancos/nueva'); 
-    };
-    const handleEdit = () => {
-        navigate('/bancos/editar');
-    };
-    
-    const handleView = () => {
-        navigate('/bancos/ver'); 
-    };
-
-    const handleDelete = (id) => console.log("Eliminar:", id);
-    const handleApprove = (id) => console.log("Aprobar:", id);
-    const handleCancel = (id) => console.log("Anular:", id);
-    const actionsProps = {
-        // Funciones requeridas por DocumentActions:
-        onEdit: handleEdit,
-        onDelete: handleDelete,
-        onApprove: handleApprove,
-        onCancel: handleCancel,
-        onView: handleView,
-        
-        // El renderizador personalizado para sobrescribir la lógica:
-        renderActions: renderBankActions, 
-        
-        // 🛑 CRÍTICO: Incluimos el objeto de clases CSS Modules.
-        styles: styles
-    };
+    }, [activeModule, codigoValue]);
 
     return (
-        // Usamos el Fragmento (<> </>) como contenedor raíz
         <>
             <div>
                 <SubMenu links={banksSubMenuLinks} />
@@ -308,6 +327,7 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
                 handleSearch={handleSearch}
                 handleClear={handleClear}
             />
+            
             {/* BOTONES DE ACCION PARA LA VISUALIZACION DE TABLAS */}
             <div className='d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 mb-3'>
                 {/* Lado Izquierdo: Botones de filtro por origen */}
@@ -330,7 +350,6 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
         
                 {/* Lado Derecho: BOTONES CONDICIONALES */}
                 <div className="d-flex gap-2 flex-wrap">
-                    {/* 1. Botón NUEVA (Solo en 'Este Modulo') */}
                     {isEsteModulo && (
                         <Boton color="morado" forma="pastilla" onClick={handleNew}>
                             <i className="bi bi-plus-circle me-2"></i>
@@ -338,42 +357,33 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
                         </Boton>
                     )}
 
-                    {/* 2. Botón ORDENAR POR ESTADO (Solo en 'Este Modulo') */}
                     {isEsteModulo && (
                         <Boton color="blanco" forma="pastilla" onClick={handleOrderByState}>
                             Ordenar Por Estado
                         </Boton>
                     )}
 
-                    {/* 3. Botón ORDENAR POR FECHA (En AMBOS módulos) */}
                     <Boton color="blanco" forma="pastilla" onClick={handleOrderByDate}>
                         Ordenar Por Fecha
                     </Boton>
                 </div>
             </div>
-            {/* Componente de Tabla (Usando el genérico DocumentTable) */}
+            
             {/* TABLA: RENDERIZADO DINÁMICO */}
             <div className={styles.tablaWrapper}>
                 <table className={styles.tabla}>
                     <thead>
                         <tr className={styles.table_header}> 
-                            {/* Columnas dinámicas */}
                             {currentColumns.map(col => (
                                 <th key={col.header} style={col.style}>{col.header}</th>
                             ))}
-                            {/* Encabezado de Acciones Condicional */}
-                            {showActions && <th style={{ width: '100px', textAlign: 'center' }}>Acciones</th>} 
                         </tr>
                     </thead>
                     <tbody>
-                        {/* Se eliminan las etiquetas <tbody> para que DocumentTable las renderice */}
                         <DocumentTable
-                            documents={transactionsMapped}  // <- usa los mocks mapeados
+                            documents={transactions}
                             columns={currentColumns}
-                            showRowActions={showActions}
-                            actionsProps={
-                                actionsProps
-                            }
+                            showRowActions={false}
                             styles={styles}
                             isLoading={isLoading}
                             isError={!!error}
