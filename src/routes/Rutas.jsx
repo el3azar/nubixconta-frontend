@@ -81,7 +81,7 @@ import NewBankTransaction from '../components/banks/NewBankTransaction';
 import EditBankTransaction from '../components/banks/EditBankTransaction';
 import ViewBankTransaction from '../components/banks/ViewBankTransaction';
 
-export default function Rutas() {
+export default function Rutas({ catalogoCuentas, tiposTransaccion }) {
   return (
     <BrowserRouter>
       <ScrollToTop />
@@ -113,14 +113,12 @@ export default function Rutas() {
         }}
       />
       {/* --- FIN DEL BLOQUE AÑADIDO --- */}
-   
+
        <AuthProvider> {/* 1. AuthProvider envuelve TODO */}
           <CompanyProvider> {/* 2. CompanyProvider envuelve las rutas */}
             <Routes>
               {/* Ruta pública de login (no requiere layout ni contexto) */}
               <Route path='/' element={<Login />} />
-
-             
 
                 {/* Selección de empresa (asistente) - sin layout */}
                 <Route path="/empresas" element={<DashBoardEmpresas />} />
@@ -132,10 +130,10 @@ export default function Rutas() {
                   {/* Cada opción principal del panel de administración debe agregarse aquí */}
                     {/* Rutas para el usuario*/}
 
-             <Route path="/admin" element={<DashBoardGeneralAdmin />} />
-             <Route path="/admin/empresas-contabilidad" element={<DashBoardEmpresas />} />
-             <Route path="/admin/usuarios" element={<UserManagementDashboard />} />
-             <Route path="/administration/users/:userId/companies" element={<UserCompaniesDashboard/>} />
+                <Route path="/admin" element={<DashBoardGeneralAdmin />} />
+                <Route path="/admin/empresas-contabilidad" element={<DashBoardEmpresas />} />
+                <Route path="/admin/usuarios" element={<UserManagementDashboard />} />
+                <Route path="/administration/users/:userId/companies" element={<UserCompaniesDashboard/>} />
 
 
                   {/* Rutas extras que necesites en gestion de usuarios */}
@@ -195,17 +193,11 @@ export default function Rutas() {
                 <Route path="/ventas/notas-credito" element={<CreditNote />} />
                 <Route path="/ventas/nueva-nota-credito/:clientId" element={<NewCreditNote />} />
                 <Route path="/ventas/editar-nota-credito/:creditNoteId" element={<EditCreditNote />} />
-                
 
 
                   <Route path="/ventas/reportes" element={<SalesReport />} />
 
-
-
-                  {/* 
-                  <Route path="/ventas/asiento-contable" element={<AccountingEntry />} />
-
-      */}
+                  {/* <Route path="/ventas/asiento-contable" element={<AccountingEntry />} />*/}
                   <Route path="/ventas/reportes" element={<div>Reportes</div>}/>
 
                   {/* FIN RUTAS VENTAS*/}
@@ -218,7 +210,7 @@ export default function Rutas() {
                   <Route path="/cuentas/visualizar_ventas" element={<DetailedSalesView/>} />
                   {/* Rutas extras que necesites en CXC */}
 
-        
+
                   {/* Rutas extras que necesites en Inventario */}
 
                   {/* Ruta comodín: muestra mensaje o componente personalizado para errores */}
@@ -254,7 +246,6 @@ export default function Rutas() {
                   <Route path="/compras/compras" element={<Purchases />} />
                   <Route path="/compras/nueva/:supplierId" element={<NewPurchase />} />
                   <Route path="/compras/editar/:purchaseId" element={<EditPurchase />} />
-                 
 
 
                   {/* Ruta para la vista principal de la tabla */}
@@ -267,18 +258,11 @@ export default function Rutas() {
                 <Route path="/compras/editar-nota-credito/:creditNoteId" element={<EditPurchaseCreditNote />} />
 
 
-
-
-
                   <Route path="/compras/isr" element={<div>Impuesto sobre la renta (ISR) </div>} />
                   <Route path="/compras/reportes" element={<div>Reportes de Compras</div>} />
 
 
-
-
                      {/* --- Rutas para cuentas por pagar --- */}
-                 
-
 
                   <Route path="/cuentas-por-pagar" element={<AccountsPayableMenu/>} />
                   <Route path="/cuentas/visualizar_pagos" element={<DetailedPayableView/>} />
@@ -286,14 +270,18 @@ export default function Rutas() {
                   <Route path="/cuentas/pagos/reportes" element={<AccountsPayableReport />} />
                   <Route path="/cuentas/pagos/estado_cuenta" element={<AccountsPayableAccount/>} />
 
+                  {/* --- Rutas para bancos --- */}
+
                   <Route path="/bnks" element={<div>Dashboard de Bancos</div>} />
                   <Route path="/bancos" element={<DashboardBanks />} />
                   <Route path="/bancos/transacciones" element={<BankTransactionsView />} />
                   <Route path="/bancos/reportes" element={<BankReportsView />} />
                   <Route path="/bancos/pruebas" element={<Pruebas />} />
-                  <Route path="/bancos/nueva" element={<NewBankTransaction />} />
-                  <Route path="/bancos/editar" element={<EditBankTransaction />} />
-                  <Route path="/bancos/ver" element={<ViewBankTransaction />} />
+                  <Route path="/bancos/transacciones/nueva" element={<NewBankTransaction apiDataCuenta={catalogoCuentas} apiDataTipo={tiposTransaccion} />} />
+                  <Route path="/bancos/transacciones/editar/:id" element={<EditBankTransaction apiDataCuenta={catalogoCuentas} apiDataTipo={tiposTransaccion} />} />
+                  <Route path="/bancos/transacciones/ver/:id" element={<ViewBankTransaction apiDataTipo={tiposTransaccion} />} />
+
+
                   <Route path="/contabilidad" element={<div>Dashboard de Contabilidad</div>} />
                   {/* --- FIN DE LAS NUEVAS RUTAS --- */}
 

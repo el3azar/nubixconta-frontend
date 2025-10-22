@@ -1,85 +1,54 @@
-import React from "react";
+import React, { useState } from "react";
 import Boton from "../inventory/inventoryelements/Boton";
+import SelectBase from "../inventory/inventoryelements/SelectBase";
 import { useNavigate } from "react-router-dom";
 import SubMenu from "../shared/SubMenu";
 import { banksSubMenuLinks } from '../../config/menuConfig';
-import SCardUtil from './SCardUtil';
+import SCardUtil from './SCardUtil'; // El formulario de detalle
 import { DocumentTable } from '../shared/DocumentTable';
 import styles from '../../styles/banks/Banks.module.css';
 
+// --- NUEVOS IMPORTS ---
+import { bankTransactionService } from '../../services/banks/banksService';
+import { Notifier } from '../../utils/alertUtils';
+
+// Asumiendo que 'apiDataCuenta' es el catálogo contable
 const NewBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
 
-    // 🛑 1. ELIMINACIÓN DE ESTADOS DE BÚSQUEDA Y DEFINICIÓN DE ESTADOS DE FORMULARIO
-    
-    // Estados del Formulario
-    const [reference, setReference] = React.useState('');
-    const [date, setDate] = React.useState('');
-    const [description, setDescription] = React.useState('');
-    const [accountId, setAccountId] = React.useState(''); // Valor del SelectBase para la cuenta
-    const [balance, setBalance] = React.useState('');
-    const [type, setType] = React.useState(''); // Valor del SelectBase para el tipo (Cargo/Abono)
-    
-    // --- ESTADO CLAVE: DETALLE DE LA TRANSACCIÓN (ASIENTOS) ---
-    // Simulación de los asientos contables (Debe/Haber) que componen el monto total.
-    const [transactionDetails, setTransactionDetails] = React.useState([
-        { id: 1, code: '110.01', accountName: 'Banco 1', debe: 1000.00, haber: 0.00, isMainAccount: true },
-        { id: 2, code: '501.05', accountName: 'Gasto por Servicios', debe: 0.00, haber: 1000.00, isMainAccount: false }
-    ]);
-
-    // (Opcional) Estados de control (manteniéndolos por si los necesitas para la lógica de guardado)
-    const [isLoading, setIsLoading] = React.useState(false); 
-    const [error, setError] = React.useState(null);
-
-    // 1. Inicializar el hook de navegación
     const navigate = useNavigate();
 
-    const handleReturnTransaction = () => {
-        // Ejemplo de ruta para volver a la lista de transacciones
-        navigate('/bancos/transacciones'); 
-    }
-
-    // 🛑 2. ELIMINACIÓN DE handleSearch (es lógica de reporte, no de registro)
+    // --- 1. ESTADO DEL ENCABEZADO (Header) ---
+    const [header, setHeader] = useState({
+        transactionDate: '',
+        receiptNumber: '',
+        description: '',
+        transactionType: '', // Ej. 'ENTRADA' o 'SALIDA' (usando apiDataTipo)
+        companyId: 1 // 🛑 Asumiendo ID 1, ¡debes obtener esto del contexto de usuario!
+    });
     
-    // Función para limpiar todos los campos del formulario
-    const handleClear = () => {
-        setReference('');
-        setDate('');
-        setDescription('');
-        setAccountId('');
-        setBalance('');
-        setType('');
-    };
+    // --- 2. ESTADO DE LOS DETALLES (Bank Entries) ---
+    // Inicia vacío, ya no con datos quemados
+    const [bankEntries, setBankEntries] = useState([]);
 
-    // --- LÓGICA DE LA TABLA ---
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    // 1. Definición de las Columnas para el detalle contable
-    // --- LÓGICA DE LA TABLA ---
-
-    // 1. Definición de las Columnas para el detalle contable (SIN columna de acciones)
+    // --- 3. LÓGICA DE LA TABLA DE DETALLE ---
+    
+    // Columnas de la tabla de asientos
     const detailColumns = [
-        { header: 'Código', accessor: 'code', className: styles.textAlignCenter },
-        { header: 'Cuenta', accessor: 'accountName' },
-        // Formato para los montos de Debe
-        { header: 'Debe', accessor: 'debe', 
-            cell: (doc) => `${doc.debe.toFixed(2)}`, 
-            className: styles.textAlignRight
-        },
-        // Formato para los montos de Haber
-        { header: 'Haber', accessor: 'haber', 
-            cell: (doc) => `${doc.haber.toFixed(2)}`, 
-            className: styles.textAlignRight
-        },
-        // Agregamos la columna de Acciones manualmente con renderizado personalizado
+        // { header: 'Código', accessor: 'code' }, // 'idCatalog' es el ID, no el código visible
+        { header: 'Cuenta', accessor: 'idCatalog' }, // O 'accountName' si lo guardas
+        { header: 'Descripción', accessor: 'description' },
+        { header: 'Debe', accessor: 'debit', cell: (doc) => `$${doc.debit.toFixed(2)}`, className: styles.textAlignRight },
+        { header: 'Haber', accessor: 'credit', cell: (doc) => `$${doc.credit.toFixed(2)}`, className: styles.textAlignRight },
         { 
             header: 'Acciones', 
             accessor: 'actions',
             className: styles.textAlignCenter,
-            cell: (doc) => (
+            cell: (doc, index) => ( // Usamos 'index' para eliminar
                 <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                    <Boton color="morado" title="Editar" size="icon" forma="pastilla" onClick={() => handleEditDetail(doc)}>
-                        <i className="bi bi-pencil me-2 mb-2 mt-2 ms-2"></i>
-                    </Boton>
-                    <Boton color="rojo" title="Eliminar" size="icon" forma="pastilla" onClick={() => handleDeleteDetail(doc)}>
+                    <Boton color="rojo" title="Eliminar" size="icon" forma="pastilla" onClick={() => handleDeleteDetail(index)}>
                         <i className="bi bi-trash"></i>
                     </Boton>
                 </div>
@@ -87,58 +56,87 @@ const NewBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
         }
     ];
 
-    // Funciones para manejar las acciones de la tabla
-    const handleEditDetail = (detail) => {
-        console.log('Editando detalle:', detail);
-        // Aquí puedes implementar la lógica para editar
-        // Por ejemplo: abrir un modal, poblar un formulario, etc.
-        alert(`Editar detalle de cuenta: ${detail.accountName}`);
+    // Función que SCardUtil llamará
+    const handleAddDetail = (newDetail) => {
+        // Validación de partida doble (simplificada)
+        // Aquí deberías añadir la contrapartida de la cuenta de banco principal
+        setBankEntries(prevEntries => [...prevEntries, newDetail]);
     };
 
-    const handleDeleteDetail = (detail) => {
-        if (detail.isMainAccount) {
-            alert('No se puede eliminar la cuenta principal de la transacción.');
-            return;
-        }
-        
-        if (window.confirm(`¿Está seguro de eliminar el detalle de "${detail.accountName}"?`)) {
-            setTransactionDetails(prev => prev.filter(item => item.id !== detail.id));
+    // Función para eliminar un asiento de la tabla
+    const handleDeleteDetail = (indexToDelete) => {
+        if (window.confirm(`¿Está seguro de eliminar esta línea?`)) {
+            setBankEntries(prev => prev.filter((_, index) => index !== indexToDelete));
         }
     };
 
-    // Función para AGREGAR (guardar) la nueva transacción
-    const handleAdd = async () => {
-        // Validación básica de campos requeridos
-        if (!accountId || !balance || !type) {
-            alert('Por favor, complete al menos la Cuenta, Monto y Tipo.');
+    // --- LOG ---
+    console.log("Current bankEntries state:", bankEntries);
+    // --------------------
+
+    // Cálculo de Totales
+    const totalDebe = bankEntries.reduce((sum, item) => sum + (Number(item.debit) || 0), 0);
+    const totalHaber = bankEntries.reduce((sum, item) => sum + (Number(item.credit) || 0), 0);
+    const balance = totalDebe - totalHaber;
+
+    // --- 4. LÓGICA DE GUARDADO (EL BOTÓN PRINCIPAL) ---
+
+    const handleSaveTransaction = async () => {
+        if (!header.transactionDate || !header.description || !header.transactionType) {
+            Notifier.warning('Complete los campos del encabezado: Fecha, Descripción y Tipo.');
             return;
         }
-        
+        if (bankEntries.length < 2) {
+            Notifier.warning('La transacción debe tener al menos dos asientos (partida doble).');
+            return;
+        }
+        if (balance !== 0) {
+            Notifier.error(`La partida no cuadra. Balance: $${balance.toFixed(2)}`);
+            return;
+        }
+
         setIsLoading(true);
         setError(null);
-        
+
         try {
-            // Aquí iría tu lógica de POST al API
-            console.log('Enviando datos de nueva transacción:', { reference, date, description, accountId, balance, type });
-            
-            // Simulación de API call exitosa
-            // const response = await fetch('/api/banks/transactions', { method: 'POST', body: JSON.stringify({...}) });
-            
-            alert('Transacción agregada con éxito!');
-            handleClear(); // Limpia el formulario
-            // navigate('/bancos/transacciones'); // Opcional: Navegar de vuelta a la lista
-            
+            // Prepara el DTO final
+            const transactionData = {
+                ...header, // Copia fecha, descripción, receiptNumber, companyId
+
+                // Sobreescribe 'transactionType' para enviar solo el valor string.
+                transactionType: header.transactionType ? header.transactionType.value : null,
+                // ---------------------------------------------
+
+                bankEntries: bankEntries // El arreglo de detalles
+            };
+            // ------------------------
+
+            console.log("Enviando a la API:", transactionData); // Verifica que transactionType sea string aquí
+            await bankTransactionService.create(transactionData);
+
+            Notifier.success('Transacción registrada con éxito!');
+            navigate('/bancos/transacciones'); // Vuelve a la lista
+
         } catch (err) {
+            console.error("Error al guardar:", err);
             setError('Error al guardar la transacción.');
+            // Muestra el error específico del backend si existe
+            const backendError = err.response?.data?.message || err.message || 'Error desconocido.';
+            Notifier.error(`Error al guardar: ${backendError}`);
         } finally {
             setIsLoading(false);
         }
     };
-    // 2. Cálculo de la Fila Total
-    const totalDebe = transactionDetails.reduce((sum, item) => sum + item.debe, 0);
-    const totalHaber = transactionDetails.reduce((sum, item) => sum + item.haber, 0);
-    const totalColSpan = detailColumns.length; // Columna de Código + Cuenta
-    const colSpanTotalLabel = 2; // Columna de Código + Cuenta (para el texto "Total")
+
+    const handleReturnTransaction = () => {
+        navigate('/bancos/transacciones'); 
+    }
+
+    // Handler para actualizar el estado del encabezado
+    const handleHeaderChange = (e) => {
+        const { name, value } = e.target;
+        setHeader(prev => ({ ...prev, [name]: value }));
+    };
 
     return (
         <>
@@ -150,89 +148,97 @@ const NewBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
         </div>
         <div className="mb-3"> 
             <Boton color="morado" forma="pastilla" onClick={handleReturnTransaction}>
-                <i className="bi bi-arrow-left me-2"></i>
-                Volver
+                <i className="bi bi-arrow-left me-2"></i> Volver
             </Boton>
         </div>
-        {/* Muestra un mensaje de error o carga si es necesario */}
-        {error && <div className="alert alert-danger">{error}</div>}
-        {isLoading && <div>Cargando...</div>}
 
-        {/*3. PASAR LAS NUEVAS PROPS AL SCardUtil */}
+        {/* --- 5. FORMULARIO DE ENCABEZADO (Manual) --- */}
+        <div className={styles.searchCard}>
+            <h3 className={styles.h2Izq}>Encabezado de la Transacción</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: '18px' }}>
+                <div className={styles['trans-form-group']}>
+                    <label className={styles.formLabel}>Fecha:</label>
+                    <input type="date" name="transactionDate" value={header.transactionDate} onChange={handleHeaderChange} />
+                </div>
+                <div className={styles['trans-form-group']}>
+                    <label className={styles.formLabel}>No. de Referencia:</label>
+                    <input type="text" name="receiptNumber" placeholder="Ej. CH-001" value={header.receiptNumber} onChange={handleHeaderChange} />
+                </div>
+                <div className={styles['trans-form-group']}>
+                    <label className={styles.formLabel}>Tipo (ENTRADA/SALIDA):</label>
+                    <SelectBase
+                        apiData={apiDataTipo} // Asumo que esto es [{ value: 'ENTRADA', label: 'Entrada' }, ...]
+                        value={header.transactionType}
+                        onChange={(value) => setHeader(prev => ({ ...prev, transactionType: value }))}
+                        placeholder="Seleccione el tipo"
+                    />
+                </div>
+                <div className={styles['trans-form-group']} style={{ gridColumn: '1 / span 3' }}>
+                    <label className={styles.formLabel}>Descripción General:</label>
+                    <input type="text" name="description" placeholder="Descripción de la transacción" value={header.description} onChange={handleHeaderChange} />
+                </div>
+            </div>
+        </div>
+
+        {/* --- 6. FORMULARIO DE DETALLES (SCardUtil) --- */}
         <SCardUtil
-            // Props de los campos del formulario
-            referenceValue={reference} onReferenceChange={setReference}
-            dateValue={date} onDateChange={setDate}
-            descriptionValue={description} onDescriptionChange={setDescription}
-
-            // Props de Selects
-            apiDataAccount={apiDataCuenta} accountValue={accountId} onAccountChange={setAccountId}
-            apiDataType={apiDataTipo} typeValue={type} onTypeChange={setType}
-            
-            // Prop del Monto/Saldo
-            balanceValue={balance} onBalanceChange={setBalance}
-            
-            // Handlers de la Tarjeta
-            handleAdd={handleAdd} // El botón "Agregar"
-            handleClear={handleClear} // El botón "Limpiar"
-            
-            // 🛑 NOTA: Se eliminan las props obsoletas: apiDataCodigo, startDate, endDate, handleSearch
+            apiDataAccount={apiDataCuenta}
+            onAddDetail={handleAddDetail}
         />
-        <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 mb-3">
-            <div className="d-flex gap-2 flex-wrap mb-2 mb-md-0">
-                <h3>Detalle de la Transacción</h3>
-            </div>
-            <div className="d-flex gap-2 flex-wrap">
-                <Boton color="morado" forma="pastilla" onClick={() => alert('Funcionalidad para Registrar aún no implementada.')}>
-                    Registrar Transacción
-                </Boton>
-                <Boton color="morado" forma="pastilla" onClick={handleReturnTransaction}>
-                    Cancelar
-                </Boton>
-            </div>
+
+        {/* --- 7. TABLA DE DETALLES --- */}
+        <div className="d-flex justify-content-between align-items-center mt-4 mb-3">
+            <h3>Detalle de la Transacción (Asientos)</h3>
         </div>
 
         <div className={styles.tablaWrapper}>
             <table className={styles.tabla}>
-                {/* ENCABEZADO: Usamos las columnas definidas + la columna de Acciones */}
                 <thead className={styles.table_header}>
                     <tr>
                         {detailColumns.map(col => (
                             <th key={col.header} className={col.className}>{col.header}</th>
                         ))}
-                        {/* Se añade el encabezado de "Acciones" manualmente para que la fila total tenga el colspan correcto */}
-                        
                     </tr>
                 </thead>
                 <tbody>
-                    {/* Filas de DATOS (DocumentTable) */}
                     <DocumentTable
-                        documents={transactionDetails}
+                        documents={bankEntries}
                         columns={detailColumns}
                         styles={styles} 
-                        // Mostrará la columna de Acciones (trash/search) en DocumentTable
-                        showRowActions={false} 
-                        // Aquí se pasarían las props de acciones (ej: onDelete, onEdit)
-                        // actionsProps={{ handleDelete: onDeleteDetail, handleView: onEditDetail, ... }}
-                        emptyMessage="Añada la cuenta de contrapartida de la transacción."
+                        showRowActions={false}
+                        emptyMessage="Añada asientos a la transacción."
                     />
-
-                    {/* FILA DEL TOTAL (Renderizada Manualmente) */}
+                    {/* FILA DEL TOTAL */}
                     <tr className={styles.tableTotalRow} style={{ backgroundColor: '#bcb7dd', fontWeight: 'bold' }}>
-                        {/* La celda "Total" ocupa las columnas de "Código" y "Cuenta" */}
-                        <td colSpan={colSpanTotalLabel}>Total</td> 
-                        
-                        {/* Total Debe */}
-                        <td className={styles.textAlignRight}>${totalDebe.toFixed(2)}</td> 
-                        
-                        {/* Total Haber */}
-                        <td className={styles.textAlignRight}>${totalHaber.toFixed(2)}</td>
-                        
-                        {/* Celda de Acciones (Vacía o con colspan de 1) */}
+                        <td colSpan={2}>Total</td> 
+                        <td className={styles.textAlignRight}>${(totalDebe || 0).toFixed(2)}</td> 
+                        <td className={styles.textAlignRight}>${(totalHaber || 0).toFixed(2)}</td>
                         <td></td> 
+                    </tr>
+                    {/* FILA DE BALANCE */}
+                    <tr style={{ fontWeight: 'bold', backgroundColor: balance !== 0 ? '#ffcdd2' : '#c8e6c9' }}>
+                        <td colSpan={2}>Balance (Debe - Haber)</td>
+                        <td colSpan={2} className={styles.textAlignRight}>${(balance || 0).toFixed(2)}</td>
+                        <td>{balance !== 0 ? '¡No cuadra!' : '¡Cuadrado!'}</td>
                     </tr>
                 </tbody>
             </table>
+        </div>
+
+        {/* --- 8. BOTONES DE ACCIÓN PRINCIPAL --- */}
+        {error && <div className="alert alert-danger mt-3">{error}</div>}
+        <div className="d-flex gap-2 flex-wrap mt-4 justify-content-end">
+            <Boton 
+                color="verde" 
+                forma="pastilla" 
+                onClick={handleSaveTransaction}
+                disabled={isLoading}
+            >
+                {isLoading ? 'Registrando...' : 'Registrar Transacción'}
+            </Boton>
+            <Boton color="rojo" forma="pastilla" onClick={handleReturnTransaction}>
+                Cancelar
+            </Boton>
         </div>
         </>
     )

@@ -1,161 +1,178 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Boton from "../inventory/inventoryelements/Boton";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom"; // Importa useParams
 import SubMenu from "../shared/SubMenu";
 import { banksSubMenuLinks } from '../../config/menuConfig';
-import styles from '../../styles/banks/Banks.module.css'; 
+// SCardUtil no se importa, es solo lectura
 import { DocumentTable } from '../shared/DocumentTable';
+import styles from '../../styles/banks/Banks.module.css';
 
-const ViewBankTransaction = ({
-// Campos de entrada (inputs)
-    referenceValue, onReferenceChange,
-    dateValue, onDateChange,
-    descriptionValue, onDescriptionChange,
-    
-    // NOTA: Las props de búsqueda como handleSearch y startDate/endDate se eliminan
+// --- NUEVOS IMPORTS ---
+import { bankTransactionService } from '../../services/banks/banksService';
+import { Notifier } from '../../utils/alertUtils';
+import SelectBase from "../inventory/inventoryelements/SelectBase"; // Importamos SelectBase para mostrarlo deshabilitado
 
-}) => {
-    // --- ESTADO CLAVE: DETALLE DE LA TRANSACCIÓN (ASIENTOS) ---
-    // Simulación de los asientos contables (Debe/Haber) que componen el monto total.
-    const [transactionDetails, setTransactionDetails] = React.useState([
-        { id: 1, code: '110.01', accountName: 'Banco 1', debe: 1000.00, haber: 0.00, isMainAccount: true },
-        { id: 2, code: '501.05', accountName: 'Gasto por Servicios', debe: 0.00, haber: 1000.00, isMainAccount: false }
-    ]);
-    // 1. Inicializar el hook de navegación
+const ViewBankTransaction = ({ apiDataTipo }) => { // Solo necesitamos apiDataTipo para el 'Select'
+
+    const { id } = useParams(); // 1. Obtiene el ID desde la URL
     const navigate = useNavigate();
+
+    // --- ESTADO DEL ENCABEZADO (Header) ---
+    const [header, setHeader] = useState({
+        transactionDate: '',
+        receiptNumber: '',
+        description: '',
+        transactionType: '', 
+        companyId: 1
+    });
+    
+    // --- ESTADO DE LOS DETALLES (Bank Entries) ---
+    const [bankEntries, setBankEntries] = useState([]);
+
+    const [isLoading, setIsLoading] = useState(true); // Inicia en true
+    const [error, setError] = useState(null);
+
+    // --- 2. CARGA DE DATOS ---
+    useEffect(() => {
+        if (!id) return;
+
+        const loadData = async () => {
+            setIsLoading(true);
+            try {
+                const data = await bankTransactionService.getById(id);
+                
+                setHeader({
+                    transactionDate: data.transactionDate.split('T')[0], // Formato YYYY-MM-DD
+                    receiptNumber: data.receiptNumber,
+                    description: data.description,
+                    transactionType: data.transactionType,
+                    companyId: data.companyId
+                });
+                setBankEntries(data.bankEntries);
+
+            } catch (err) {
+                Notifier.error("Error al cargar la transacción.");
+                setError(err.message);
+                navigate('/bancos/transacciones'); 
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        
+        loadData();
+    }, [id, navigate]);
+
+
+    // --- 3. LÓGICA DE LA TABLA (SIN ACCIONES) ---
+    
+    const detailColumns = [
+        { header: 'Cuenta', accessor: 'idCatalog' }, 
+        { header: 'Descripción', accessor: 'description' },
+        { header: 'Debe', accessor: 'debit', cell: (doc) => `$${doc.debit.toFixed(2)}`, className: styles.textAlignRight },
+        { header: 'Haber', accessor: 'credit', cell: (doc) => `$${doc.credit.toFixed(2)}`, className: styles.textAlignRight },
+        // --- Sin columna de Acciones ---
+    ];
+
+    // Cálculo de Totales
+    const totalDebe = bankEntries.reduce((sum, item) => sum + item.debit, 0);
+    const totalHaber = bankEntries.reduce((sum, item) => sum + item.haber, 0);
+    const balance = totalDebe - totalHaber;
+
     const handleReturnTransaction = () => {
-        // Ejemplo de ruta para volver a la lista de transacciones
         navigate('/bancos/transacciones'); 
     }
 
-    // Usamos la sintaxis con corchetes para la clase con guion
-    const TransFormGroup = styles['trans-form-group'];
-    // --- LÓGICA DE LA TABLA ---
+    // --- 4. RENDERIZADO ---
+    if (isLoading) {
+        return <div>Cargando datos de la transacción...</div>;
+    }
 
-    // 1. Definición de las Columnas para el detalle contable
-    const detailColumns = [
-        { header: 'Código', accessor: 'code', className: styles.textAlignCenter },
-        { header: 'Cuenta', accessor: 'accountName' },
-        // Formato para los montos de Debe
-        { header: 'Debe', accessor: 'debe', 
-            cell: (doc) => `$${doc.debe.toFixed(2)}`, 
-            className: styles.textAlignRight
-        },
-        // Formato para los montos de Haber
-        { header: 'Haber', accessor: 'haber', 
-            cell: (doc) => `$${doc.haber.toFixed(2)}`, 
-            className: styles.textAlignRight
-        },
-    ];
-    
-    // 2. Cálculo de la Fila Total
-    const totalDebe = transactionDetails.reduce((sum, item) => sum + item.debe, 0);
-    const totalHaber = transactionDetails.reduce((sum, item) => sum + item.haber, 0);
-    const totalColSpan = detailColumns.length; // Columna de Código + Cuenta
-    const colSpanTotalLabel = 2; // Columna de Código + Cuenta (para el texto "Total")
     return (
         <>
         <div>
             <SubMenu links={banksSubMenuLinks} />
         </div>
         <div>
-            <h2>Ver Transacción de Banco</h2>
+            <h2>Ver Transacción de Banco (ID: {id})</h2>
         </div>
-        <div className="mb-3">
+        <div className="mb-3"> 
             <Boton color="morado" forma="pastilla" onClick={handleReturnTransaction}>
-                <i className="bi bi-arrow-left me-2"></i>
-                Volver
+                <i className="bi bi-arrow-left me-2"></i> Volver a la Lista
             </Boton>
         </div>
-        <div>
-            {/* aca va el card */}
-            <div className={styles.searchCard}>
-                <div style={{ 
-                    display: 'grid', 
-                    // 4 columnas: 3 de contenido (1fr) + 1 para botones (auto)
-                    gridTemplateColumns: '2fr 1fr 2fr',
-                    // 3 filas de altura automática para los grupos de formulario
-                    gridTemplateRows: 'auto auto auto',
-                    gap: '18px', // Aumentamos el gap a 18px para un mejor espaciado
-                    alignItems: 'start' // Alinea el contenido al inicio de cada fila
-                }}>
-                    
-                    {/* --------------------- PRIMERA FILA (grid-row: 1) --------------------- */}
-                    
-                    {/* 1. No. de Referencia (Col 1, Fila 1) - USA CLASE NUEVA Y POSICIÓN EXPLÍCITA */}
-                    <div className={TransFormGroup} style={{ gridColumn: 1, gridRow: 1 }}> 
-                        <label className={styles.formLabel}>No. de Referencia:</label>
-                        <input type="text" placeholder="Número de comprobante" value={referenceValue} onChange={(e) => onReferenceChange(e.target.value)} disabled/>
-                    </div>
-                    
-                    {/* 2. Fecha (Col 2, Fila 1) - USA styles.fechaGrupo y POSICIÓN EXPLÍCITA */}
-                    <div className={styles.fechaGrupo} style={{ gridColumn: 2, gridRow: 1 }}>
-                        <label className={styles.formLabel}>Fecha:</label>
-                        <input type="date" value={dateValue} onChange={(e) => onDateChange(e.target.value)} disabled/>
-                    </div>
-                    
-                    {/* 3. Descripción (Col 3, Fila 1) - USA CLASE NUEVA Y POSICIÓN EXPLÍCITA */}
-                    <div className={TransFormGroup} style={{ gridColumn: "3/ span 3", gridRow: 1 }}> 
-                        <label className={styles.formLabel}>Descripción:</label>
-                        <textarea 
-                            placeholder="Descripción de la transacción" 
-                            value={descriptionValue} 
-                            onChange={(e) => onDescriptionChange(e.target.value)}
-                            rows={3} // ⬅️ Aumenta la altura a 3 líneas
-                            style={{ resize: 'vertical' }} // Opcional: permite al usuario redimensionar solo verticalmente
-                            disabled
-                        />
-                    </div>               
+
+        {/* --- FORMULARIO DE ENCABEZADO (SOLO LECTURA) --- */}
+        <div className={styles.searchCard}>
+            <h3 className={styles.h2Izq}>Encabezado de la Transacción</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: '18px' }}>
+                <div className={styles['trans-form-group']}>
+                    <label className={styles.formLabel}>Fecha:</label>
+                    <input type="date" name="transactionDate" value={header.transactionDate} disabled />
+                </div>
+                <div className={styles['trans-form-group']}>
+                    <label className={styles.formLabel}>No. de Referencia:</label>
+                    <input type="text" name="receiptNumber" value={header.receiptNumber} disabled />
+                </div>
+                <div className={styles['trans-form-group']}>
+                    <label className={styles.formLabel}>Tipo (ENTRADA/SALIDA):</label>
+                    <SelectBase
+                        apiData={apiDataTipo} 
+                        value={header.transactionType}
+                        disabled
+                    />
+                </div>
+                <div className={styles['trans-form-group']} style={{ gridColumn: '1 / span 3' }}>
+                    <label className={styles.formLabel}>Descripción General:</label>
+                    <input type="text" name="description" value={header.description} disabled />
                 </div>
             </div>
         </div>
-        <div>
-            {/* aca va la tabla */}
-            <h3>Detalles de la Transacción</h3>
+
+        {/* --- SCardUtil NO SE RENDERIZA --- */}
+
+        {/* --- TABLA DE DETALLES --- */}
+        <div className="d-flex justify-content-between align-items-center mt-4 mb-3">
+            <h3>Detalle de la Transacción (Asientos)</h3>
         </div>
-        {/* 2. TABLA DE DETALLE CONTABLE */}
+
         <div className={styles.tablaWrapper}>
             <table className={styles.tabla}>
-                {/* ENCABEZADO: Usamos las columnas definidas + la columna de Acciones */}
                 <thead className={styles.table_header}>
                     <tr>
                         {detailColumns.map(col => (
                             <th key={col.header} className={col.className}>{col.header}</th>
                         ))}
-                        
                     </tr>
                 </thead>
                 <tbody>
-                    {/* Filas de DATOS (DocumentTable) */}
                     <DocumentTable
-                        documents={transactionDetails}
+                        documents={bankEntries}
                         columns={detailColumns}
                         styles={styles} 
-                        // Mostrará la columna de Acciones (trash/search) en DocumentTable
-                        showRowActions={false} 
-                        // Aquí se pasarían las props de acciones (ej: onDelete, onEdit)
-                        // actionsProps={{ handleDelete: onDeleteDetail, handleView: onEditDetail, ... }}
-                        emptyMessage="Añada la cuenta de contrapartida de la transacción."
+                        showRowActions={false}
+                        emptyMessage="Esta transacción no tiene asientos."
                     />
-
-                    {/* FILA DEL TOTAL (Renderizada Manualmente) */}
+                    {/* FILA DEL TOTAL */}
                     <tr className={styles.tableTotalRow} style={{ backgroundColor: '#bcb7dd', fontWeight: 'bold' }}>
-                        {/* La celda "Total" ocupa las columnas de "Código" y "Cuenta" */}
-                        <td colSpan={colSpanTotalLabel}>Total</td> 
-                        
-                        {/* Total Debe */}
+                        <td colSpan={2}>Total</td> 
                         <td className={styles.textAlignRight}>${totalDebe.toFixed(2)}</td> 
-                        
-                        {/* Total Haber */}
                         <td className={styles.textAlignRight}>${totalHaber.toFixed(2)}</td>
-                        
-                        {/* Celda de Acciones (Vacía o con colspan de 1) */}
+                        {/* Sin celda de acciones */}
+                    </tr>
+                    {/* FILA DE BALANCE */}
+                    <tr style={{ fontWeight: 'bold', backgroundColor: balance !== 0 ? '#ffcdd2' : '#c8e6c9' }}>
+                        <td colSpan={2}>Balance (Debe - Haber)</td>
+                        <td className={styles.textAlignRight}>${balance.toFixed(2)}</td>
+                        <td>{balance !== 0 ? '¡No cuadra!' : '¡Cuadrado!'}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
+
+        {/* --- SIN BOTONES DE ACCIÓN PRINCIPAL --- */}
+        {error && <div className="alert alert-danger mt-3">{error}</div>}
         </>
     )
-}   
+}
 
 export default ViewBankTransaction;

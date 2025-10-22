@@ -1,62 +1,93 @@
+// src/services/banksService.js
+import api from '../api'; // Importa la instancia de Axios configurada
 
-// Servicios de transacciones bancarias para la API (revisar y actualizar luego)
-const BASE_URL = "http://localhost:8080/api/v1/bank-transactions";
+// --- YA NO NECESITAMOS LA FUNCIÓN toApiDate ---
+
+// -------------------------------------------------------------
+// --- SERVICIOS DEL MÓDULO DE BANCOS ---
+// -------------------------------------------------------------
 
 /**
- * Obtiene todas las transacciones bancarias
+ * Obtiene la lista de transacciones bancarias (con filtros opcionales).
+ * @param {object} filters - Objeto con filtros: { idCatalog, dateFrom, dateTo }
+ * @param {string} [filters.dateFrom] - Fecha en formato 'YYYY-MM-DD'
+ * @param {string} [filters.dateTo] - Fecha en formato 'YYYY-MM-DD'
  */
-export const getBankTransactions = async (token) => {
-  const response = await fetch(BASE_URL, {
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
-    },
+const listAllTransactions = (filters = {}) => {
+  // 1. Prepara los parámetros (¡ya no hay conversión!)
+  const params = {
+    idCatalog: filters.idCatalog,
+    dateFrom: filters.dateFrom,
+    dateTo: filters.dateTo,
+  };
+
+  // 2. Limpia los parámetros que sean nulos o vacíos
+  Object.keys(params).forEach(key => {
+    if (!params[key]) {
+      delete params[key];
+    }
   });
 
-  if (!response.ok) {
-    const message = await response.text();
-    throw new Error(`Error al obtener transacciones: ${message}`);
-  }
-
-  return response.json();
+  return api.get("/bank-transactions", { params }).then(response => response.data);
 };
 
 /**
- * Crea una nueva transacción bancaria
+ * Obtiene una sola transacción por su ID.
+ * @param {number} id - El ID de la transacción.
  */
-export const createBankTransaction = async (transaction, token) => {
-  const response = await fetch(BASE_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
-    },
-    body: JSON.stringify(transaction),
-  });
-
-  if (!response.ok) {
-    const message = await response.text();
-    throw new Error(`Error al crear transacción: ${message}`);
-  }
-
-  return response.json();
+const getTransactionById = (id) => {
+  return api.get(`/bank-transactions/${id}`).then(response => response.data);
 };
 
 /**
- * Elimina una transacción bancaria por ID
+ * Crea una nueva transacción bancaria.
+ * @param {object} transactionData - El DTO de la transacción desde el formulario.
  */
-export const deleteBankTransaction = async (id, token) => {
-  const response = await fetch(`${BASE_URL}/${id}`, {
-    method: "DELETE",
-    headers: {
-      "Authorization": `Bearer ${token}`,
-    },
-  });
+const createTransaction = (transactionData) => {
+  // El DTO (incluyendo transactionData.transactionDate) debe venir en 'YYYY-MM-DD'
+  return api.post("/bank-transactions", transactionData).then(response => response.data);
+};
 
-  if (!response.ok) {
-    const message = await response.text();
-    throw new Error(`Error al eliminar transacción: ${message}`);
-  }
+/**
+ * Actualiza una transacción bancaria.
+ * @param {number} id - El ID de la transacción a actualizar.
+ * @param {object} transactionData - El DTO con los campos a actualizar.
+ */
+const updateTransaction = (id, transactionData) => {
+  return api.put(`/bank-transactions/${id}`, transactionData).then(response => response.data);
+};
 
-  return true;
+/**
+ * Elimina una transacción bancaria por ID.
+ * @param {number} id - El ID de la transacción a eliminar.
+ */
+const deleteTransaction = (id) => {
+  return api.delete(`/bank-transactions/${id}`).then(response => response.data);
+};
+
+/**
+ * Aplica una transacción (cambia estado a 'APLICADA').
+ * @param {number} id - El ID de la transacción a aplicar.
+ */
+const applyTransaction = (id) => {
+  return api.post(`/bank-transactions/${id}/apply`).then(response => response.data);
+};
+
+/**
+ * Anula una transacción (cambia estado a 'ANULADA').
+ * @param {number} id - El ID de la transacción a anular.
+ */
+const annulTransaction = (id) => {
+    return api.post(`/bank-transactions/${id}/annul`).then(response => response.data);
+};
+
+// --- Exportamos todas las funciones en un solo objeto ---
+export const bankTransactionService = {
+  listAll: listAllTransactions,
+  getById: getTransactionById,
+  create: createTransaction,
+  update: updateTransaction,
+  delete: deleteTransaction,
+  apply: applyTransaction,
+  annul: annulTransaction
 };

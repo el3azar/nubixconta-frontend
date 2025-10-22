@@ -1,114 +1,128 @@
-import React from 'react';
-import styles from '../../styles/banks/Banks.module.css'; 
+// src/components/banks/SCardUtil.jsx
+import React, { useState, useEffect } from 'react'; // Add useEffect if not already there
+import styles from '../../styles/banks/Banks.module.css';
 import SelectBase from '../inventory/inventoryelements/SelectBase';
-import Boton from '../inventory/inventoryelements/Boton'; // Se asume que Boton está disponible
+import Boton from '../inventory/inventoryelements/Boton';
 
-// 🛑 Las props se redefinen para reflejar el formulario de registro/edición
-const SCardUtil = ({
-    // Campos de entrada (inputs)
-    referenceValue, onReferenceChange,
-    dateValue, onDateChange,
-    descriptionValue, onDescriptionChange,
-    balanceValue, onBalanceChange,
-    
-    // Selects (Cuenta y Tipo)
-    apiDataAccount, accountValue, onAccountChange, // apiDataAccount reemplaza apiDataCodigo
-    apiDataType, typeValue, onTypeChange,
+const SCardUtil = ({ apiDataAccount, onAddDetail }) => {
 
-    // Handlers
-    handleAdd, // Para el botón "Agregar"
-    handleClear // Para el botón "Limpiar"
+    // --- STATES ---
+    // Keep idCatalog if you need it elsewhere, but it's less critical now
+    // const [idCatalog, setIdCatalog] = useState('');
     
-    // NOTA: Las props de búsqueda como handleSearch y startDate/endDate se eliminan
-}) => {
-    // 🛑 Datos Mock para los campos informativos (Código y Nombre), asumiendo que vienen de la selección de accountValue
-    // En una aplicación real, usarías useEffect y una búsqueda para obtener estos datos
-    const mockAccountInfo = { 
-        codigo: 'Ejemplo: C-98765', 
-        nombre: 'Ejemplo: Cuenta Corriente Principal' 
+    // 1. NEW STATE: Store the selected account OBJECT
+    const [selectedAccount, setSelectedAccount] = useState(null); 
+    
+    const [description, setDescription] = useState('');
+    const [debit, setDebit] = useState('');
+    const [credit, setCredit] = useState('');
+    // No need for accountName state anymore, we get it from selectedAccount
+
+    // Optional: Clear description/amounts if account changes
+    // useEffect(() => {
+    //    setDescription('');
+    //    setDebit('');
+    //    setCredit('');
+    // }, [selectedAccount]);
+
+    const handleClear = () => {
+        setSelectedAccount(null); // Clear the selected object
+        // setIdCatalog('');
+        setDescription('');
+        setDebit('');
+        setCredit('');
     };
-    // Usamos la sintaxis con corchetes para la clase con guion
+
+    const handleAddClick = () => {
+        // --- 3. GET DATA FROM selectedAccount ---
+        const catalogIdValue = selectedAccount ? parseInt(selectedAccount.value) : null;
+        const accountNameValue = selectedAccount ? selectedAccount.label : '';
+
+        const debitValue = Number(debit) || 0;
+        const creditValue = Number(credit) || 0;
+
+        // Validations
+        if (!catalogIdValue) { // Check the derived ID
+            alert('Por favor, seleccione una cuenta.');
+            return;
+        }
+        // ... (rest of your validations: amount, debit/credit conflict)
+
+        onAddDetail({
+            idCatalog: catalogIdValue,
+            accountName: accountNameValue, // Use the name from the selected object
+            description: description || accountNameValue || 'Detalle de asiento',
+            debit: debitValue,
+            credit: creditValue,
+        });
+
+        // ---  LOG ---
+        console.log("Adding Detail:", detailToAdd); 
+        // --------------------
+
+        onAddDetail(detailToAdd);
+
+        handleClear();
+    };
+
     const TransFormGroup = styles['trans-form-group'];
 
     return (
         <div className={styles.searchCard}>
-            <h3 className={styles.h2Izq}>Detalles de la Transacción</h3> 
-            
-            <div style={{ 
-                display: 'grid', 
-                // 4 columnas: 3 de contenido (1fr) + 1 para botones (auto)
-                gridTemplateColumns: 'repeat(3, 1fr) auto', 
-                // 3 filas de altura automática para los grupos de formulario
-                gridTemplateRows: 'auto auto auto',
-                gap: '18px', // Aumentamos el gap a 18px para un mejor espaciado
-                alignItems: 'start' // Alinea el contenido al inicio de cada fila
-            }}>
-                
-                {/* --------------------- PRIMERA FILA (grid-row: 1) --------------------- */}
-                
-                {/* 1. No. de Referencia (Col 1, Fila 1) - USA CLASE NUEVA Y POSICIÓN EXPLÍCITA */}
-                <div className={TransFormGroup} style={{ gridColumn: 1, gridRow: 1 }}> 
-                    <label className={styles.formLabel}>No. de Referencia:</label>
-                    <input type="text" placeholder="Número de comprobante" value={referenceValue} onChange={(e) => onReferenceChange(e.target.value)}/>
-                </div>
-                
-                {/* 2. Fecha (Col 2, Fila 1) - USA styles.fechaGrupo y POSICIÓN EXPLÍCITA */}
-                <div className={styles.fechaGrupo} style={{ gridColumn: 2, gridRow: 1 }}>
-                    <label className={styles.formLabel}>Fecha:</label>
-                    <input type="date" value={dateValue} onChange={(e) => onDateChange(e.target.value)}/>
-                </div>
-                
-                {/* 3. Descripción (Col 3, Fila 1) - USA CLASE NUEVA Y POSICIÓN EXPLÍCITA */}
-                <div className={TransFormGroup} style={{ gridColumn: 3, gridRow: 1 }}> 
-                    <label className={styles.formLabel}>Descripción:</label>
-                    <input type="text" placeholder="Descripción de la transacción" value={descriptionValue} onChange={(e) => onDescriptionChange(e.target.value)}/>
+            <h3 className={styles.h2Izq}>Añadir Asiento (Línea de Detalle)</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 3fr repeat(2, 1fr) auto', gap: '18px', alignItems: 'start' }}>
+
+                {/* --- 2. MODIFY SelectBase --- */}
+                <div className={TransFormGroup} style={{ gridColumn: 1 }}>
+                    <label className={styles.formLabel}>Cuenta Contable:</label>
+                    <SelectBase
+                        apiData={apiDataAccount}
+                        // Pass the selected OBJECT to value
+                        value={selectedAccount} 
+                        // onChange receives the selected OBJECT (or null)
+                        onChange={(option) => {
+                            setSelectedAccount(option); // Store the object
+                            // setIdCatalog(option ? option.value : ''); // Update ID if needed
+                        }}
+                        placeholder="Seleccione una cuenta..."
+                    />
                 </div>
 
-                {/* --------------------- SEGUNDA FILA (grid-row: 2) --------------------- */}
-                
-                {/* 4. Buscar Cuenta (Col 1, Fila 2) - USA CLASE NUEVA Y POSICIÓN EXPLÍCITA */}
-                <div className={TransFormGroup} style={{ gridColumn: 1, gridRow: 2 }}>
-                    <label className={styles.formLabel}>Buscar Cuenta:</label>
-                    <SelectBase apiData={apiDataAccount} value={accountValue} onChange={onAccountChange} placeholder="Seleccione una cuenta..."/>
+                {/* ... (rest of your inputs for Description, Debit, Credit) ... */}
+                <div className={TransFormGroup} style={{ gridColumn: 2 }}> 
+                    <label className={styles.formLabel}>Descripción (Asiento):</label>
+                    <input 
+                        type="text" 
+                        placeholder="Descripción de la línea" 
+                        value={description} 
+                        onChange={(e) => setDescription(e.target.value)}
+                    />
+                </div>
+                <div className={TransFormGroup} style={{ gridColumn: 3 }}> 
+                    <label className={styles.formLabel}>Débito (Cargo):</label>
+                    <input 
+                        type="number" 
+                        placeholder="0.00" 
+                        value={debit} 
+                        onChange={(e) => setDebit(e.target.value)}
+                        disabled={!!credit && parseFloat(credit) > 0} 
+                    />
+                </div>
+                <div className={TransFormGroup} style={{ gridColumn: 4 }}> 
+                    <label className={styles.formLabel}>Crédito (Abono):</label>
+                    <input 
+                        type="number" 
+                        placeholder="0.00" 
+                        value={credit} 
+                        onChange={(e) => setCredit(e.target.value)}
+                        disabled={!!debit && parseFloat(debit) > 0} 
+                    />
                 </div>
 
-                {/* 5. Monto/Saldo (Col 2, Fila 2) - USA CLASE NUEVA Y POSICIÓN EXPLÍCITA */}
-                <div className={TransFormGroup} style={{ gridColumn: 2, gridRow: 2 }}>
-                    <label className={styles.formLabel}>Monto/Saldo:</label>
-                    <input type="number" placeholder="Monto (en números)" value={balanceValue} onChange={(e) => onBalanceChange(e.target.value)}/>
-                </div>
 
-                {/* 6. Tipo (Col 3, Fila 2) - USA CLASE NUEVA Y POSICIÓN EXPLÍCITA */}
-                <div className={TransFormGroup} style={{ gridColumn: 3, gridRow: 2 }}>
-                    <label className={styles.formLabel}>Tipo:</label>
-                    <SelectBase apiData={apiDataType} value={typeValue} onChange={onTypeChange} placeholder="Seleccione..."/>
-                </div>
-
-                {/* --------------------- TERCERA FILA (grid-row: 3) --------------------- */}
-
-                {/* 8. Código (Informativo) (Col 1, Fila 3) - USA CLASE NUEVA Y POSICIÓN EXPLÍCITA */}
-                <div className={TransFormGroup} style={{ gridColumn: 1, gridRow: 3 }}>
-                    <label className={styles.formLabel}>Código:</label>
-                    <input type="text" placeholder="Código de la cuenta" value={mockAccountInfo.codigo} disabled />
-                </div>
-
-                {/* 9. Nombre (Informativo) (Col 2, Fila 3) - USA CLASE NUEVA Y POSICIÓN EXPLÍCITA */}
-                <div className={TransFormGroup} style={{ gridColumn: 2, gridRow: 3 }}>
-                    <label className={styles.formLabel}>Nombre:</label>
-                    <input type="text" placeholder="Nombre de la cuenta" value={mockAccountInfo.nombre} disabled />
-                </div>
-                
-                {/* 7. Columna de Botones (Col 4, Ocupa Fila 1 y 2) - POSICIÓN EXPLÍCITA */}
-                <div style={{ 
-                    gridColumn: 3, 
-                    gridRow: '3 / span 4', // Se extiende desde la Fila 1 hasta la Fila 2
-                    alignSelf: 'start', 
-                    display: 'flex', 
-                    flexDirection: 'column', 
-                    gap: '8px',
-                    paddingTop: '30px' // Ajuste visual si la Fila 1/2 es demasiado alta
-                }}>
-                    <Boton color="morado" forma="pastilla" onClick={handleAdd}>
+                {/* ... (rest of your Buttons) ... */}
+                <div style={{ gridColumn: 5, alignSelf: 'end', display: 'flex', gap: '8px', paddingBottom: '5px' }}>
+                    <Boton color="morado" forma="pastilla" onClick={handleAddClick}>
                         <i className="bi bi-plus me-2"></i> Agregar
                     </Boton>
                     <Boton color="blanco" forma="pastilla" onClick={handleClear}>
@@ -116,9 +130,6 @@ const SCardUtil = ({
                     </Boton>
                 </div>
 
-
-                {/* 🛑 Se eliminan los DIVs de espacio vacío y los estilos redundantes. */}
-                
             </div>
         </div>
     );
