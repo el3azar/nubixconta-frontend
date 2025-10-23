@@ -43,12 +43,14 @@ const EditBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
             try {
                 const data = await bankTransactionService.getById(id);
                 
+                const tipoObjeto = apiDataTipo.find(tipo => tipo.value === data.transactionType);
+
                 // Rellena los estados con los datos de la API
                 setHeader({
                     transactionDate: data.transactionDate.split('T')[0], // Formato YYYY-MM-DD
                     receiptNumber: data.receiptNumber,
                     description: data.description,
-                    transactionType: data.transactionType,
+                    transactionType: tipoObjeto || null,
                     companyId: data.companyId
                 });
                 setBankEntries(data.bankEntries);
@@ -71,7 +73,7 @@ const EditBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
         };
         
         loadData();
-    }, [id, navigate]); // Depende del ID y navigate
+    }, [id, navigate, apiDataTipo]); // Depende del ID y navigate
 
 
     // --- 3. LÓGICA DE LA TABLA DE DETALLE ---
@@ -115,8 +117,8 @@ const EditBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
     };
 
     // Cálculo de Totales
-    const totalDebe = bankEntries.reduce((sum, item) => sum + item.debit, 0);
-    const totalHaber = bankEntries.reduce((sum, item) => sum + item.haber, 0);
+    const totalDebe = bankEntries.reduce((sum, item) => sum + (Number(item.debit) || 0), 0);
+    const totalHaber = bankEntries.reduce((sum, item) => sum + (Number(item.credit) || 0), 0);
     const balance = totalDebe - totalHaber;
 
     // --- 4. LÓGICA DE GUARDADO (ACTUALIZACIÓN) ---
@@ -136,7 +138,7 @@ const EditBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
             return;
         }
         if (balance !== 0) {
-            Notifier.error(`La partida no cuadra. Balance: $${balance.toFixed(2)}`);
+            Notifier.error(`La partida no cuadra. Balance: $${(balance || 0).toFixed(2)}`);
             return;
         }
 
@@ -146,6 +148,7 @@ const EditBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
         try {
             const transactionData = {
                 ...header,
+                transactionType: header.transactionType ? header.transactionType.value : null,
                 bankEntries: bankEntries
             };
 
@@ -254,14 +257,14 @@ const EditBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
                     {/* FILA DEL TOTAL */}
                     <tr className={styles.tableTotalRow} style={{ backgroundColor: '#bcb7dd', fontWeight: 'bold' }}>
                         <td colSpan={2}>Total</td> 
-                        <td className={styles.textAlignRight}>${totalDebe.toFixed(2)}</td> 
-                        <td className={styles.textAlignRight}>${totalHaber.toFixed(2)}</td>
+                        <td className={styles.textAlignRight}>${(totalDebe || 0).toFixed(2)}</td>
+                        <td className={styles.textAlignRight}>${(totalHaber || 0).toFixed(2)}</td>
                         <td></td> 
                     </tr>
                     {/* FILA DE BALANCE */}
                     <tr style={{ fontWeight: 'bold', backgroundColor: balance !== 0 ? '#ffcdd2' : '#c8e6c9' }}>
                         <td colSpan={2}>Balance (Debe - Haber)</td>
-                        <td colSpan={2} className={styles.textAlignRight}>${balance.toFixed(2)}</td>
+                        <td colSpan={2} className={styles.textAlignRight}>${(balance || 0).toFixed(2)}</td>
                         <td>{balance !== 0 ? '¡No cuadra!' : '¡Cuadrado!'}</td>
                     </tr>
                 </tbody>

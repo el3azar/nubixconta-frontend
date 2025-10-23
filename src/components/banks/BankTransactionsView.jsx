@@ -8,17 +8,13 @@ import { useNavigate } from "react-router-dom";
 
 // --- IMPORTS NUEVOS ---
 import { bankTransactionService } from '../../services/banks/banksService'; // 1. IMPORTA EL SERVICIO
-import { Notifier } from '../../utils/alertUtils'; // (Asumo que tienes esto para alertas)
+import { Notifier } from '../../utils/alertUtils'; // 2. IMPORTA EL NOTIFIER PARA ALERTAS
 
 //imports especificos de la vista
 import SearchCardBank from './SearchCardBank';
 import { DocumentTable } from '../shared/DocumentTable';
 import Boton from '../inventory/inventoryelements/Boton';
 
-// 🛑 ELIMINAMOS mockBankTransactions y mockOtherModuleTransactions
-
-// ... (El export de 'thisModuleColumns' se queda igual) ...
-// ... (Tuve que copiarlo de tu código original) ...
 export const thisModuleColumns = [
     { header: 'Correlativo', accessor: 'correlative', style: { width: '80px', textAlign: 'center' } },
     { header: 'No. de asiento', accessor: 'seatNumber', style: { width: '100px', textAlign: 'center' } },
@@ -63,7 +59,7 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
             const filters = { idCatalog, dateFrom, dateTo };
             const data = await bankTransactionService.listAll(filters);
             
-            // 🛑 ¡IMPORTANTE! Mapea los datos de tu API a los que espera la tabla
+            // ¡IMPORTANTE! Mapea los datos de la API a los que espera la tabla
             // Tu API tiene 'idBankTransaction', 'totalAmount', 'accountingTransactionStatus'
             // Tu tabla espera 'id', 'amount', 'status'
             const mappedData = data.map(tx => ({
@@ -101,12 +97,12 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
     };
     
     const handleEdit = (doc) => {
-        // 🛑 Navegamos a la ruta de edición CON el ID
+        // Navegamos a la ruta de edición CON el ID
         navigate(`/bancos/transacciones/editar/${doc.id}`);
     };
     
     const handleView = (doc) => {
-        // 🛑 Navegamos a la ruta de ver CON el ID
+        // Navegamos a la ruta de ver CON el ID
         navigate(`/bancos/transacciones/ver/${doc.id}`); 
     };
 
@@ -178,8 +174,8 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
             { 
                 header: 'Estado',
                 accessor: 'status', 
-                // 🛑 APLICA ESTILOS SEGÚN EL ESTADO (OPCIONAL PERO RECOMENDADO)
-                style: { width: '100px', textAlign: 'center' },
+                // APLICA ESTILOS SEGÚN EL ESTADO (OPCIONAL PERO RECOMENDADO)
+                style: { width: '90px', textAlign: 'center' },
                 cell: (doc) => {
                     let className = '';
                     if (doc.status === 'PENDIENTE') className = styles.statusPending;
@@ -198,7 +194,7 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
             {
                 header: 'Acciones',
                 accessor: 'actions',
-                style: { width: '180px', textAlign: 'center' },
+                style: { width: '210px', textAlign: 'center' },
                 cell: (doc) => {
                     // (Tu lógica de botones condicionales se queda aquí... es correcta)
                     if (doc.status === 'PENDIENTE') {
@@ -264,15 +260,25 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
         setError(null);
     };
 
-    // ... (Tus handlers de Ordenar por Estado/Fecha se quedan igual, ¡están bien!) ...
     const handleOrderByState = () => {
-        // ... (tu código)
+        const sorted = [...transactions].sort((a, b) => {
+            const statusOrder = { 'PENDIENTE': 1, 'APLICADA': 2, 'ANULADA': 3 };
+                // Sorts based on the order defined in statusOrder
+        return (statusOrder[a.status] || 999) - (statusOrder[b.status] || 999);
+        });
+        setTransactions(sorted); // Updates the state with the sorted array
+        console.log('Ordenado por estado'); // You added this log
     };
+
     const handleOrderByDate = () => {
-        // ... (tu código)
+        const sorted = [...transactions].sort((a, b) => 
+            // Sorts descending (newest first)
+            new Date(b.transactionDate) - new Date(a.transactionDate)
+        );
+        setTransactions(sorted); // Updates the state
+        console.log('Ordenado por fecha'); // You added this log
     };
- 
-    // 🛑 ELIMINAMOS EL useEffect que recargaba con mocks
+
     // React.useEffect(() => { ... }, [activeModule, codigoValue]);
 
     return (

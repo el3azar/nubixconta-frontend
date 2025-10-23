@@ -41,11 +41,14 @@ const ViewBankTransaction = ({ apiDataTipo }) => { // Solo necesitamos apiDataTi
             try {
                 const data = await bankTransactionService.getById(id);
                 
+                // Busca el objeto correspondiente en apiDataTipo
+                const tipoObjeto = apiDataTipo.find(tipo => tipo.value === data.transactionType);
+
                 setHeader({
                     transactionDate: data.transactionDate.split('T')[0], // Formato YYYY-MM-DD
                     receiptNumber: data.receiptNumber,
                     description: data.description,
-                    transactionType: data.transactionType,
+                    transactionType: tipoObjeto || null, // Guarda el objeto encontrado (o null si no se encuentra)
                     companyId: data.companyId
                 });
                 setBankEntries(data.bankEntries);
@@ -60,7 +63,7 @@ const ViewBankTransaction = ({ apiDataTipo }) => { // Solo necesitamos apiDataTi
         };
         
         loadData();
-    }, [id, navigate]);
+    }, [id, navigate, apiDataTipo]);
 
 
     // --- 3. LÓGICA DE LA TABLA (SIN ACCIONES) ---
@@ -74,8 +77,8 @@ const ViewBankTransaction = ({ apiDataTipo }) => { // Solo necesitamos apiDataTi
     ];
 
     // Cálculo de Totales
-    const totalDebe = bankEntries.reduce((sum, item) => sum + item.debit, 0);
-    const totalHaber = bankEntries.reduce((sum, item) => sum + item.haber, 0);
+    const totalDebe = bankEntries.reduce((sum, item) => sum + (Number(item.debit) || 0), 0);
+    const totalHaber = bankEntries.reduce((sum, item) => sum + (Number(item.credit) || 0), 0);
     const balance = totalDebe - totalHaber;
 
     const handleReturnTransaction = () => {
@@ -118,7 +121,7 @@ const ViewBankTransaction = ({ apiDataTipo }) => { // Solo necesitamos apiDataTi
                     <SelectBase
                         apiData={apiDataTipo} 
                         value={header.transactionType}
-                        disabled
+                        isDisabled
                     />
                 </div>
                 <div className={styles['trans-form-group']} style={{ gridColumn: '1 / span 3' }}>
@@ -155,14 +158,14 @@ const ViewBankTransaction = ({ apiDataTipo }) => { // Solo necesitamos apiDataTi
                     {/* FILA DEL TOTAL */}
                     <tr className={styles.tableTotalRow} style={{ backgroundColor: '#bcb7dd', fontWeight: 'bold' }}>
                         <td colSpan={2}>Total</td> 
-                        <td className={styles.textAlignRight}>${totalDebe.toFixed(2)}</td> 
-                        <td className={styles.textAlignRight}>${totalHaber.toFixed(2)}</td>
+                        <td className={styles.textAlignRight}>${(totalDebe || 0).toFixed(2)}</td> 
+                        <td className={styles.textAlignRight}>${(totalHaber || 0).toFixed(2)}</td>
                         {/* Sin celda de acciones */}
                     </tr>
                     {/* FILA DE BALANCE */}
                     <tr style={{ fontWeight: 'bold', backgroundColor: balance !== 0 ? '#ffcdd2' : '#c8e6c9' }}>
                         <td colSpan={2}>Balance (Debe - Haber)</td>
-                        <td className={styles.textAlignRight}>${balance.toFixed(2)}</td>
+                        <td className={styles.textAlignRight}>${(balance || 0).toFixed(2)}</td>
                         <td>{balance !== 0 ? '¡No cuadra!' : '¡Cuadrado!'}</td>
                     </tr>
                 </tbody>
