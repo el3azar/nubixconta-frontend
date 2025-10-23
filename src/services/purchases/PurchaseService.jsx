@@ -145,6 +145,16 @@ export const usePurchaseService = () => {
     return response.data;
   };
 
+    /**
+   * Obtiene una lista resumida de compras de un proveedor que son elegibles para una retención de ISR.
+   * @param {number} supplierId - El ID del proveedor.
+   * @returns {Promise<Array>} Lista de DTOs de compras elegibles.
+   */
+  const getAvailableForISR = async (supplierId) => {
+    const response = await axios.get(`${API_URL}/available-for-isr?supplierId=${supplierId}`, getAuthHeader(token));
+    return response.data;
+  };
+
   // Exponemos todas las funciones para que puedan ser utilizadas en los componentes.
   return {
     getAllPurchases,
@@ -157,5 +167,6 @@ export const usePurchaseService = () => {
     cancelPurchase,
     getPurchaseAccountingEntry,
     getAvailableForCreditNote,
+    getAvailableForISR,
   };
 };

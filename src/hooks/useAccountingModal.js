@@ -38,6 +38,9 @@ export const useAccountingModal = () => {
       // Esta es la nueva condición que identifica nuestro documento.
       type = 'nota-credito-compra';
       id = doc.idPurchaseCreditNote; // Usamos el ID correcto.
+    }else if (doc.incomeTaxStatus) {
+      type = 'retencion-isr';
+      id = doc.idIncomeTax;
     }
     // --- FIN DE LA CORRECCIÓN ---
 

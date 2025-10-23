@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaPlusCircle, FaEyeSlash,FaShoppingCart } from "react-icons/fa";
+import { FaPlusCircle, FaEyeSlash,FaShoppingCart , FaPercentage } from "react-icons/fa";
 import { useForm, Controller } from "react-hook-form";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { IMaskInput } from 'react-imask';
@@ -267,6 +267,7 @@ const onSearch = (data) => {
                               <>
                                 <button className={styles.iconBtn} title="Crear Compra" onClick={() => navigate(`/compras/nueva/${entity[config.idField]}`)}><FaShoppingCart /></button>
                                 <button className={styles.iconBtn} title="Crear Nota de Crédito" onClick={() => navigate(`/compras/nueva-nota-credito/${entity[config.idField]}`)}><CreditNoteIcon /></button>
+                                <button className={styles.iconBtn} title="Crear Retención ISR" onClick={() => navigate(`/compras/isr/nuevo/${entity[config.idField]}`)}><FaPercentage /></button>
                               </>
                             )}
                           </div>

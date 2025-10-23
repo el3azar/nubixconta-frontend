@@ -32,7 +32,7 @@ export const generateProductMovementsPDF = (fileName, movements, user, company) 
   // --- TABLA CON DATOS REALES Y COMPLETOS ---
   const tableColumn = [
     "Cód. Producto", "Nombre Producto", "Fecha", "Estado", "Tipo", "Cantidad",
-    "Stock Resultante", "Descripción", "Cliente", "Módulo Origen"
+    "Stock Resultante", "Descripción", "Cliente", "Proveedor", "Módulo Origen","Doc. Origen",
   ];
   const tableRows = movements.map(mov => [
     mov.product.productCode,
@@ -43,10 +43,13 @@ export const generateProductMovementsPDF = (fileName, movements, user, company) 
     mov.quantity,
     mov.stockAfterMovement,
     mov.description,
-    mov.customerName,
+    mov.customerName || '-',
+    mov.supplierName || '-',
     mov.originModule,
+    mov.originDocument,
   ]);
 
+  
   autoTable(doc, {
     head: [tableColumn],
     body: tableRows,

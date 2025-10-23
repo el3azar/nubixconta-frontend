@@ -151,8 +151,17 @@ const MovementView = () => {
       accessorKey: 'customerName',
       size: 200,
       minSize: 150,
+      cell: ({ row }) => row.original.customerName || '-',
+    },
+     { 
+      header: 'Proveedor', 
+      accessorKey: 'supplierName',
+      size: 200,
+      cell: ({ row }) => row.original.supplierName || '-',
+      minSize: 150,
     },
     { header: 'Módulo Origen', accessorKey: 'originModule' },
+    { header: 'Documento Origen', accessorKey: 'originDocument' },
     {
       header: 'Acciones',
       id: 'acciones',

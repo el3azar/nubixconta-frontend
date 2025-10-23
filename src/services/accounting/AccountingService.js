@@ -21,7 +21,8 @@ export const AccountingService = () => {
     'venta': 'sales',
     'nota-credito': 'credit-notes',
     'compra': 'purchases',
-    'nota-credito-compra': 'purchase-credit-notes'
+    'nota-credito-compra': 'purchase-credit-notes',
+    'retencion-isr': 'income-taxes'
   };
 
   /**
