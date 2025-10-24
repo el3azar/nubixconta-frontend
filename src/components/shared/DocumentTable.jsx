@@ -6,8 +6,8 @@ import { formatDate } from '../../utils/dateFormatter';
 
 const DocumentTableRow = ({ doc, columns, actionsProps, styles, showRowActions }) => {
   // La lógica para el estilo de la fila y las acciones aún necesita saber el estado.
-  const status = doc.creditNoteStatus || doc.saleStatus || doc.purchaseStatus;
-  const id = doc.idPurchase || doc.idNotaCredit || doc.saleId;
+  const status = doc.creditNoteStatus || doc.saleStatus || doc.purchaseStatus || doc.incomeTaxStatus;
+  const id = doc.idPurchase || doc.idNotaCredit || doc.saleId || doc.idIncomeTax;
 
   // Las clases de color se mantienen igual.
  const rowClass = showRowActions
@@ -46,7 +46,7 @@ export const DocumentTable = ({ documents, isLoading, isError, error, actionsPro
 
   return documents.map(doc => (
     <DocumentTableRow
-      key={doc.idPurchase || doc.idNotaCredit || doc.saleId|| doc.idPurchaseCreditNote}
+      key={doc.idPurchase || doc.idNotaCredit || doc.saleId|| doc.idPurchaseCreditNote || doc.idIncomeTax}
       doc={doc}
       columns={columns}
       actionsProps={actionsProps}

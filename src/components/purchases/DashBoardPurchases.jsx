@@ -11,7 +11,7 @@ const purchasesItems = [
   { label: "Proveedores", icon: FaTruck, to: "/compras/proveedores" },
   { label: "Compras", icon: FaShoppingCart, to: "/compras/compras" },
   { label: "Notas de Crédito", icon: FaStickyNote, to: "/compras/notas-credito" }, // Nota: Generalmente son "Notas de Débito" en compras, pero usamos el nombre que pediste.
-  { label: "Impuesto sobre la Renta", icon: FaPercentage, to: "/compras/reportes-isr" }, // Usamos una ruta más descriptiva.
+  { label: "Impuesto sobre la Renta", icon: FaPercentage, to: "/compras/isr" }, // Usamos una ruta más descriptiva.
   { label: "Reportes",icon: FaClipboardList, to: "/compras/reportes" } // Usamos una ruta más descriptiva.
 ];
 

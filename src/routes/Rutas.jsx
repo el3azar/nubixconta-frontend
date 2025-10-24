@@ -74,6 +74,12 @@ import PurchaseCreditNotes from '../components/purchases/creditnote/PurchaseCred
 import NewPurchaseCreditNote from '../components/purchases/creditnote/NewPurchaseCreditNote';
 import EditPurchaseCreditNote from '../components/purchases/creditnote/EditPurchaseCreditNote';
 
+import IncomeTax from '../components/purchases/incometax/IncomeTax';
+import NewIncomeTax from '../components/purchases/incometax/NewIncomeTax';
+import EditIncomeTax from '../components/purchases/incometax/EditIncomeTax';
+
+import PurchasesReport from '../components/purchases/reports/PurchasesReport';
+
 export default function Rutas() {
   return (
     <BrowserRouter>
@@ -260,11 +266,12 @@ export default function Rutas() {
                 <Route path="/compras/editar-nota-credito/:creditNoteId" element={<EditPurchaseCreditNote />} />
 
 
+                <Route path="/compras/isr" element={<IncomeTax />} />
+                <Route path="/compras/isr/nuevo/:supplierId" element={<NewIncomeTax />} />
+                <Route path="/compras/isr/editar/:id" element={<EditIncomeTax />} />
 
 
-
-                  <Route path="/compras/isr" element={<div>Impuesto sobre la renta (ISR) </div>} />
-                  <Route path="/compras/reportes" element={<div>Reportes de Compras</div>} />
+                <Route path="/compras/reportes" element={<PurchasesReport />} />
 
 
 

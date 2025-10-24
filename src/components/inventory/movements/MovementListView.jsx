@@ -76,8 +76,18 @@ const MovementListView = () => {
     { header: 'Cantidad', accessorKey: 'quantity' },
     { header: 'Stock Resultante', accessorKey: 'stockAfterMovement' },
     { header: 'Descripción', accessorKey: 'description' },
-    { header: 'Cliente', accessorKey: 'customerName' },
+     { 
+      header: 'Cliente', 
+      accessorKey: 'customerName',
+      cell: ({ row }) => row.original.customerName || '-',
+    },
+    { 
+      header: 'Proveedor', 
+      accessorKey: 'supplierName',
+      cell: ({ row }) => row.original.supplierName || '-',
+    },
     { header: 'Módulo Origen', accessorKey: 'originModule' },
+    { header: 'Documento Origen', accessorKey: 'originDocument' },
   ], []);
 
   if (isLoading) return <p className="text-center">Cargando movimientos...</p>;

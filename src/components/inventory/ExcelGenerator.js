@@ -15,9 +15,10 @@ export const generateProductMovementsExcel = async (fileName, movements, user, c
   worksheet.addRow([`Generado por: ${user?.sub || 'Usuario'} | Fecha: ${new Date().toLocaleDateString()}`]);
   worksheet.addRow([]);
 
-  worksheet.mergeCells('A1:H1');
-  worksheet.mergeCells('A2:H2');
-  worksheet.mergeCells('A3:H3');
+  // Se ajusta el rango de fusión al nuevo número de columnas
+  worksheet.mergeCells('A1:L1');
+  worksheet.mergeCells('A2:L2');
+  worksheet.mergeCells('A3:L3');
   
   worksheet.getCell('A1').font = { size: 16, bold: true };
   worksheet.getCell('A1').alignment = { horizontal: 'center' };
@@ -29,7 +30,7 @@ export const generateProductMovementsExcel = async (fileName, movements, user, c
   // --- CABECERAS DE LA TABLA CON ESTILO ---
   const headerRow = worksheet.addRow([
     "Cód. Producto", "Nombre Producto", "Fecha", "Estado", "Tipo", "Cantidad",
-    "Stock Resultante", "Descripción", "Cliente", "Módulo Origen"
+    "Stock Resultante", "Descripción", "Cliente", "Proveedor", "Módulo Origen", "Doc. Origen"
   ]);
 
   headerRow.eachCell((cell) => {
@@ -49,18 +50,30 @@ export const generateProductMovementsExcel = async (fileName, movements, user, c
       mov.quantity,
       mov.stockAfterMovement,
       mov.description,
-      mov.customerName,
-      mov.originModule,
+      mov.customerName || '-',
+      mov.supplierName || '-',
+      mov.originModule || '-',
+      mov.originDocument || '-',
     ]);
     row.eachCell((cell) => {
       cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
     });
   });
 
-  // Ajustar ancho de columnas
+  // --- INICIO DE LA CORRECCIÓN: Anchos ajustados al orden de TUS cabeceras ---
   worksheet.columns = [
-    { width: 15 }, { width: 30 }, { width: 15 }, { width: 15 }, { width: 12 },
-    { width: 18 }, { width: 40 }, { width: 25 }
+    { width: 15 }, // Cód. Producto
+    { width: 35 }, // Nombre Producto
+    { width: 15 }, // Fecha
+    { width: 12 }, // Estado
+    { width: 12 }, // Tipo
+    { width: 10 }, // Cantidad
+    { width: 18 }, // Stock Resultante
+    { width: 40 }, // Descripción
+    { width: 30 }, // Cliente
+    { width: 30 }, // Proveedor
+    { width: 25 }, // Módulo Origen
+    { width: 20 }  // Doc. Origen
   ];
 
   const buffer = await workbook.xlsx.writeBuffer();
