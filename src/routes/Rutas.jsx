@@ -79,6 +79,8 @@ import NewIncomeTax from '../components/purchases/incometax/NewIncomeTax';
 import EditIncomeTax from '../components/purchases/incometax/EditIncomeTax';
 
 import PurchasesReport from '../components/purchases/reports/PurchasesReport';
+import DashBoardContabilidad from '../components/accounting/DashBoardAccounting';
+import GestionCatalogoPage from '../components/accounting/catalog/GestionCatalogoPage';
 
 export default function Rutas() {
   return (
@@ -287,7 +289,17 @@ export default function Rutas() {
                   <Route path="/cuentas/pagos/estado_cuenta" element={<AccountsPayableAccount/>} />
 
                   <Route path="/bancos" element={<div>Dashboard de Bancos</div>} />
-                  <Route path="/contabilidad" element={<div>Dashboard de Contabilidad</div>} />
+
+
+
+
+
+
+
+
+
+                  <Route path="/contabilidad" element={<DashBoardContabilidad />} />
+                  <Route path="/contabilidad/gestion-catalogo" element={<GestionCatalogoPage />} />
                   {/* --- FIN DE LAS NUEVAS RUTAS --- */}
 
 
