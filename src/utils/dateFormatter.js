@@ -1,31 +1,35 @@
-// src/utils/dateFormatter.js
+// src/utils/dateFormatter.js (Replaces your existing function)
+import { parseISO, format, isValid } from 'date-fns';
+// Opcional: para formato español si lo prefieres
+// import { es } from 'date-fns/locale'; 
 
 /**
- * Formatea una fecha (objeto Date o string ISO) al formato DD/MM/YYYY.
- * Si la fecha es inválida o nula, devuelve un placeholder.
- * @param {Date|string} dateInput - La fecha a formatear.
+ * Formatea una fecha string (ISO) al formato DD/MM/YYYY usando date-fns.
+ * Maneja correctamente fechas sin hora sin asumir UTC.
+ * @param {string} dateString - La fecha a formatear (ej. "2025-10-21" o "2025-10-21T14:30:00").
  * @returns {string} La fecha formateada como "DD/MM/YYYY" o un texto de fallback.
  */
-export const formatDate = (dateInput) => {
-  // Si no hay fecha de entrada, devuelve un placeholder.
-  if (!dateInput) {
+export const formatDate = (dateString) => {
+  if (!dateString) {
     return 'N/A';
   }
 
-  // Crea un objeto Date. Esto funciona si dateInput es ya un objeto Date
-  // o si es un string como "2025-07-20T10:30:00".
-  const date = new Date(dateInput);
+  try {
+    // parseISO interpreta "YYYY-MM-DD" como fecha local, no UTC midnight
+    const date = parseISO(dateString); 
 
-  // Comprueba si la fecha creada es válida.
-  if (isNaN(date.getTime())) {
-    return 'Fecha inválida';
+    // Comprueba si la fecha parseada es válida
+    if (!isValid(date)) {
+      return 'Fecha inválida';
+    }
+
+    // Formatea como DD/MM/YYYY
+    // Puedes cambiar 'dd/MM/yyyy' por 'MM/dd/yyyy' si prefieres ese formato
+    return format(date, 'dd/MM/yyyy'); 
+    // Para formato español: return format(date, 'dd/MM/yyyy', { locale: es });
+
+  } catch (error) {
+    console.error("Error formateando fecha (date-fns):", dateString, error);
+    return 'Error al formatear'; 
   }
-
-  // Extrae los componentes de la fecha LOCAL del usuario.
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // Se suma 1 porque los meses en JS van de 0 a 11
-  const year = date.getFullYear();
-
-  // Devuelve el string formateado.
-  return `${day}/${month}/${year}`;
 };

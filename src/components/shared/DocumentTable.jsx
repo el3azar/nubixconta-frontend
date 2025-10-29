@@ -4,50 +4,47 @@ import React from 'react';
 import { DocumentActions } from './DocumentActions';
 import { formatDate } from '../../utils/dateFormatter';
 
-const DocumentTableRow = ({ doc, columns, actionsProps, styles, showRowActions }) => {
-  // La lógica para el estilo de la fila y las acciones aún necesita saber el estado.
-  const status = doc.creditNoteStatus || doc.saleStatus || doc.purchaseStatus || doc.incomeTaxStatus;
-  const id = doc.idPurchase || doc.idNotaCredit || doc.saleId || doc.idIncomeTax;
-
-  // Las clases de color se mantienen igual.
- const rowClass = showRowActions
+// --- CAMBIO 1: DocumentTableRow AHORA ACEPTA 'index' ---
+const DocumentTableRow = ({ doc, columns, actionsProps, styles, showRowActions, index }) => {
+  const status = doc.creditNoteStatus || doc.saleStatus || doc.purchaseStatus || doc.incomeTaxStatus;;
+  
+  const rowClass = showRowActions
     ? (status === 'APLICADA' ? 'table-success' : status === 'ANULADA' ? 'table-danger' : '')
     : undefined;
 
   return (
+    // <tr> no necesita 'key' aquí, la 'key' va en el .map() de DocumentTable
     <tr className={rowClass}>
-      {/* 1. Renderiza dinámicamente cada celda según la configuración */}
       {columns.map((col) => (
         <td key={col.header} style={col.style || {}} className={col.className || styles.textAlignCenter}>
-          {/* 
-            2. Usa una función de renderizado `cell` si se proporciona (para formato o datos anidados).
-               Si no, accede directamente a la propiedad del objeto usando `accessor`.
+          {/* --- CAMBIO 2: PASAMOS EL 'index' A LA FUNCIÓN 'cell' ---
+            Esto es crucial para que tu botón de borrar funcione.
           */}
-          {col.cell ? col.cell(doc) : doc[col.accessor]}
+          {col.cell ? col.cell(doc, index) : doc[col.accessor]}
         </td>
       ))}
-        {/* Solo renderizamos la celda de acciones si 'showRowActions' es true */}
       {showRowActions && (
         <td className="text-center">
-          <DocumentActions doc={doc}  styles={styles} {...actionsProps} />
+          <DocumentActions doc={doc} styles={styles} {...actionsProps} />
         </td>
       )}
     </tr>
   );
 };
 
-export const DocumentTable = ({ documents, isLoading, isError, error, actionsProps, styles, columns,showRowActions, emptyMessage }) => {
-  // El colSpan ahora es dinámico, basado en el número de columnas + la columna de acciones.
+export const DocumentTable = ({ documents, isLoading, isError, error, actionsProps, styles, columns, showRowActions, emptyMessage }) => {
   const colSpan = columns.length + (showRowActions ? 1 : 0);
 
   if (isLoading) return <tr><td colSpan={colSpan} className="text-center">Cargando documentos...</td></tr>;
   if (isError) return <tr><td colSpan={colSpan} className="text-center text-danger p-4"><strong>Error:</strong> {error.response?.data?.message || error.message}</td></tr>;
   if (!documents || documents.length === 0) return <tr><td colSpan={colSpan} className="text-center">{emptyMessage}</td></tr>;
 
-  return documents.map(doc => (
+  // --- CAMBIO 3: EL .map() AHORA PASA EL 'index' Y USA EL 'index' COMO FALLBACK KEY ---
+  return documents.map((doc, index) => (
     <DocumentTableRow
-      key={doc.idPurchase || doc.idNotaCredit || doc.saleId|| doc.idPurchaseCreditNote || doc.idIncomeTax}
+      key={doc.idPurchase || doc.idNotaCredit || doc.saleId || doc.idPurchaseCreditNote || doc.idIncomeTax || doc.idBankTransaction || doc.idBankEntry || index}
       doc={doc}
+      index={index} // Pasamos el 'index' como prop
       columns={columns}
       actionsProps={actionsProps}
       styles={styles}
