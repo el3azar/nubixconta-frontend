@@ -19,7 +19,7 @@ const buscarEnApi = (terminoDeBusqueda, baseDeDatos) => {
 
 // --- ESTA ES LA VERSIÓN CORREGIDA Y MEJORADA ---
 // Ahora es un componente "controlado" puro.
-const SelectBase = ({ apiData = [], value, onChange, placeholder = "Escribe para buscar..." }) => {
+const SelectBase = ({ apiData = [], value, onChange, placeholder = "Escribe para buscar...", isDisabled = false }) => {
   
   const loadOptions = (inputValue, callback) => {
     // La búsqueda ahora usará la propiedad correcta para filtrar
@@ -35,13 +35,14 @@ const SelectBase = ({ apiData = [], value, onChange, placeholder = "Escribe para
       cacheOptions
       loadOptions={loadOptions}
       defaultOptions
-      isClearable
+      isClearable={!isDisabled}
       placeholder={placeholder}
       loadingMessage={() => "Buscando..."}
       noOptionsMessage={({ inputValue }) => `No se encontraron resultados para "${inputValue}"`}
       // Props clave para un componente controlado
       value={value}
       onChange={onChange}
+      isDisabled={isDisabled}
     />
   );
 };

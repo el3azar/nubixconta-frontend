@@ -65,8 +65,12 @@ const AccountingEntry = ({ entryData }) => {
       </div>
 
       <div className="p-3 rounded mb-3" style={{ backgroundColor: '#E6E4EB', fontSize: '0.8rem'}}>
-        <p><strong>{entry.documentType} número:</strong> {entry.documentNumber}</p>
-        <p><strong>{entry.partnerLabel}:</strong> {entry.partnerName}</p>
+        {entry.documentType !== 'CONTABILIDAD' && (
+          <p><strong>{entry.documentType} número:</strong> {entry.documentNumber}</p>
+        )}
+        {entry.partnerName && entry.partnerName !== 'N/A' && (
+          <p><strong>{entry.partnerLabel}:</strong> {entry.partnerName}</p>
+        )}
         <p><strong>Tipo:</strong> {entry.documentType}</p>
         <p><strong>Descripción:</strong> {entry.description}</p>
         <p><strong>Estado:</strong> {entry.documentStatus}</p>

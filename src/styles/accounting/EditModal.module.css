@@ -1,0 +1,121 @@
+/* src/styles/Modal.module.css */
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalContent {
+  width: 450px;
+  max-width: 90%;
+  background: #B6B3D0;
+  color: #ABAABC;
+  border: 1px solid #49207B;
+  border-radius: 10px;
+  padding: 25px;
+  position: relative;
+  outline: none;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modalHeader h2 {
+  margin: 0;
+  margin-bottom: 1.5rem;
+  color: #1B043B;
+  font-weight: 600;
+}
+
+.formGroup {
+  margin-bottom: 1rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: .5rem;
+  font-weight: 500;
+  color: #1B043B;
+}
+
+/* Estilos para los inputs, compatibles con tu tema */
+.formInput {
+  display: block;
+  width: 100%;
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #e9ecef;
+  background-color: rgba(0, 0, 0, 0.2);
+  background-clip: padding-box;
+  border: 1px solid #49207B;
+  border-radius: .375rem;
+  transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.formInput:focus {
+  color: #ffffff;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-color: #8c5dff; /* Un morado más brillante para el foco */
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(140, 93, 255, 0.25);
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 1.5rem;
+}
+
+/* src/styles/Modal.module.css */
+
+/* ... (deja todos los estilos existentes del modal aquí arriba) ... */
+
+
+/* --- NUEVOS ESTILOS PARA BOTONES (según tu sistema de diseño) --- */
+
+.actionButton {
+  background-color: #10031C;
+  color: #fff;
+  border: 2px solid #10031C;
+  padding: 0.6rem 1.5rem;
+  border-radius: 50px; /* Estilo píldora */
+  font-weight: 500;
+  min-width: 140px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.actionButton:hover {
+  background-color: transparent;
+  color: #10031C;
+}
+
+/* Clase modificadora para el botón secundario (Cancelar) */
+.secondary {
+  background-color: transparent;
+  color: #10031C;
+}
+
+.secondary:hover {
+  background-color: #10031C;
+  color: #fff;
+}
