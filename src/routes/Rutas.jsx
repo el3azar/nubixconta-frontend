@@ -88,6 +88,16 @@ import EditIncomeTax from '../components/purchases/incometax/EditIncomeTax';
 import PurchasesReport from '../components/purchases/reports/PurchasesReport';
 import DashBoardContabilidad from '../components/accounting/DashBoardAccounting';
 import GestionCatalogoPage from '../components/accounting/catalog/GestionCatalogoPage';
+import AccountingTransactionsView from '../components/accounting/accounting-transaction/AccountingTransactionsView';
+import NewAccountingTransaction from '../components/accounting/accounting-transaction/NewAccountingTransaction';
+import EditAccountingTransaction from '../components/accounting/accounting-transaction/EditAccountingTransaction';
+
+
+import LibroDiario from '../components/accounting/financial-statements/LibroDiario';
+import LibroMayor from '../components/accounting/financial-statements/LibroMayor';
+import BalanceComprobacion from '../components/accounting/financial-statements/BalanceComprobacion';
+import BalanceGeneral from '../components/accounting/financial-statements/BalanceGeneral';
+import EstadoResultados from '../components/accounting/financial-statements/EstadoResultados';
 
 export default function Rutas({ catalogoCuentas, tiposTransaccion }) {
   return (
@@ -302,6 +312,16 @@ export default function Rutas({ catalogoCuentas, tiposTransaccion }) {
                   <Route path="/contabilidad/gestion-catalogo" element={<GestionCatalogoPage />} />
                   {/* --- FIN DE LAS NUEVAS RUTAS --- */}
 
+                    <Route path="/contabilidad/transacciones" element={<AccountingTransactionsView />} />
+                  <Route path="/contabilidad/transacciones/nueva" element={<NewAccountingTransaction />} />
+                  <Route path="/contabilidad/transacciones/editar/:id" element={<EditAccountingTransaction />} />
+
+
+                  <Route path="/contabilidad/estados-financieros/libro-diario" element={<LibroDiario />} />
+                  <Route path="/contabilidad/estados-financieros/libro-mayor" element={<LibroMayor />} />
+                  <Route path="/contabilidad/estados-financieros/balance-comprobacion" element={<BalanceComprobacion />} />
+                  <Route path="/contabilidad/estados-financieros/balance-general" element={<BalanceGeneral />} />
+                  <Route path="/contabilidad/estados-financieros/estado-resultados" element={<EstadoResultados />} />
 
 
                   {/* Ruta comodín: muestra Dashboard general (puedes personalizar para un 404) */}

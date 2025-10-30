@@ -1,12 +1,9 @@
-// src/components/shared/DocumentTable.jsx
-
 import React from 'react';
 import { DocumentActions } from './DocumentActions';
-import { formatDate } from '../../utils/dateFormatter';
 
 // --- CAMBIO 1: DocumentTableRow AHORA ACEPTA 'index' ---
 const DocumentTableRow = ({ doc, columns, actionsProps, styles, showRowActions, index }) => {
-  const status = doc.creditNoteStatus || doc.saleStatus || doc.purchaseStatus || doc.incomeTaxStatus;;
+  const status = doc.status || doc.creditNoteStatus || doc.saleStatus || doc.purchaseStatus || doc.incomeTaxStatus;
   
   const rowClass = showRowActions
     ? (status === 'APLICADA' ? 'table-success' : status === 'ANULADA' ? 'table-danger' : '')
@@ -39,10 +36,27 @@ export const DocumentTable = ({ documents, isLoading, isError, error, actionsPro
   if (isError) return <tr><td colSpan={colSpan} className="text-center text-danger p-4"><strong>Error:</strong> {error.response?.data?.message || error.message}</td></tr>;
   if (!documents || documents.length === 0) return <tr><td colSpan={colSpan} className="text-center">{emptyMessage}</td></tr>;
 
+  // Función helper para obtener una clave única y fiable.
+  const getUniqueKey = (doc, index) => {
+    // 1. Se da prioridad a los IDs únicos y específicos de cada módulo.
+    const key = doc.id || // Para Transacciones Contables, Bancos, etc.
+                doc.saleId ||
+                doc.idPurchase ||
+                doc.idNotaCredit ||
+                doc.idPurchaseCreditNote ||
+                doc.idIncomeTax ||
+                doc.idBankTransaction ||
+                doc.idBankEntry;
+    
+    // 2. Si por alguna razón NINGÚN ID está presente, se usa el índice como último recurso.
+    //    Se añade un prefijo para evitar colisiones con IDs numéricos (ej. 'fallback-0').
+    return key !== undefined && key !== null ? key : `fallback-${index}`;
+  };
+
   // --- CAMBIO 3: EL .map() AHORA PASA EL 'index' Y USA EL 'index' COMO FALLBACK KEY ---
   return documents.map((doc, index) => (
     <DocumentTableRow
-      key={doc.idPurchase || doc.idNotaCredit || doc.saleId || doc.idPurchaseCreditNote || doc.idIncomeTax || doc.idBankTransaction || doc.idBankEntry || index}
+      key={getUniqueKey(doc, index)}
       doc={doc}
       index={index} // Pasamos el 'index' como prop
       columns={columns}

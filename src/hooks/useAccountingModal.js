@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useCompany } from '../context/CompanyContext';
-import { AccountingService } from '../services/accounting/AccountingService';
+import { useAccountingViewerService } from '../services/accounting/AccountingService';
 
 export const useAccountingModal = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDocInfo, setSelectedDocInfo] = useState(null);
   const { company } = useCompany();
-  const { getAccountingEntry } = AccountingService();
+  const { getAccountingEntry } = useAccountingViewerService();
 
   // La query para buscar los datos del asiento.
   const queryResult = useQuery({
@@ -41,6 +41,9 @@ export const useAccountingModal = () => {
     }else if (doc.incomeTaxStatus) {
       type = 'retencion-isr';
       id = doc.idIncomeTax;
+    } else if (doc.moduleType === 'CONTABILIDAD' || doc.moduleType === 'CONTABILIDAD_MANUAL') {
+      type = 'transaccion-contable'; // Un nuevo tipo que el servicio aprenderá a manejar.
+      id = doc.id;
     }
     // --- FIN DE LA CORRECCIÓN ---
 

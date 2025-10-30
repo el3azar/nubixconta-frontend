@@ -7,6 +7,8 @@ import MasterCatalogTree from './MasterCatalogTree';
 import CompanyCatalogTree from './CompanyCatalogTree';
 import EditAccountModal from './EditAccountModal';
 import styles from '../../../styles/accounting/Catalog.module.css';
+import SubMenu from "../../shared/SubMenu";
+import { accountingSubMenuLinks } from '../../../config/menuConfig';
 
 const GestionCatalogoPage = () => {
   // 1. Obtenemos la nueva función del servicio
@@ -145,6 +147,7 @@ const handleMasterTreeCheck = (allSelectedKeys) => {
   
   return (
     <section className={styles.viewWrapper}>
+      <SubMenu links={accountingSubMenuLinks} />
       <h2 className="mb-4">Gestión de Catálogo Contable</h2>
       <div className={styles.panelsContainer}>
         {/* Panel Izquierdo */}

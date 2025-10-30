@@ -12,15 +12,16 @@ const accountingItems = [
     icon: FaSitemap, 
     to: "/contabilidad/gestion-catalogo" 
   },
+ { 
+    label: "Transacciones Contables", 
+    icon: FaExchangeAlt, 
+    to: "/contabilidad/transacciones"
+  },
   { 
     label: "Estados Financieros", 
     icon: FaFileInvoiceDollar, 
-    to: "/contabilidad/estados-financieros" // Ruta para la futura pantalla de reportes
-  },
-  { 
-    label: "Transacciones Contables", 
-    icon: FaExchangeAlt, 
-    to: "/contabilidad/transacciones" // Ruta para la futura pantalla de partidas contables
+    // Apuntamos al primer reporte como página de inicio de la sección
+    to: "/contabilidad/estados-financieros/libro-diario" 
   },
 ];
 
