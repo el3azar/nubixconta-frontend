@@ -1,20 +1,22 @@
-//imports generales
-import React, { useState, useEffect } from 'react'; // Importa useState y useEffect
+// src/components/banks/BankTransactionsView.jsx
+import React, { useState, useEffect } from 'react';
 import SubMenu from '../shared/SubMenu';
 import { banksSubMenuLinks } from '../../config/menuConfig';
 import styles from '../../styles/banks/Banks.module.css';
 import { formatDate } from '../../utils/dateFormatter';
 import { useNavigate } from "react-router-dom";
 
-// --- IMPORTS NUEVOS ---
-import { bankTransactionService } from '../../services/banks/banksService'; // 1. IMPORTA EL SERVICIO
-import { Notifier } from '../../utils/alertUtils'; // 2. IMPORTA EL NOTIFIER PARA ALERTAS
+// --- IMPORTS ACTUALIZADOS ---
+import { bankTransactionService } from '../../services/banks/banksService'; // Servicio para 'Este Módulo'
+import { useBankEntriesService } from '../../services/banks/BankEntriesService'; // Importa el NUEVO servicio
+import { Notifier } from '../../utils/alertUtils';
 
 //imports especificos de la vista
 import SearchCardBank from './SearchCardBank';
 import { DocumentTable } from '../shared/DocumentTable';
 import Boton from '../inventory/inventoryelements/Boton';
 
+// Las columnas para 'Este Módulo' (BankTransactionsView original)
 export const thisModuleColumns = [
     { header: 'Correlativo', accessor: 'correlative', style: { width: '80px', textAlign: 'center' } },
     { header: 'No. de asiento', accessor: 'seatNumber', style: { width: '100px', textAlign: 'center' } },
@@ -27,119 +29,139 @@ export const thisModuleColumns = [
     { header: 'Abono', accessor: 'credit', cell: (doc) => `$${doc.credit ? doc.credit.toFixed(2) : '0.00'}`, style: { width: '100px', textAlign: 'right', fontWeight: 'bold' } },
 ];
 
-
 const BankTransactionsView = ({ apiDataCodigo }) => {
-    
-    // --- 2. ESTADOS DE FILTROS (NOMBRES CORREGIDOS) ---
-    const [idCatalog, setIdCatalog] = useState(''); // 'codigoValue' ahora es 'idCatalog'
-    const [dateFrom, setDateFrom] = useState('');   // 'startDate' ahora es 'dateFrom'
-    const [dateTo, setDateTo] = useState('');     // 'endDate' ahora es 'dateTo'
 
-    // --- 3. ESTADOS DE DATOS (INICIAN VACÍOS) ---
-    const [transactions, setTransactions] = useState([]); // Inicia vacío
+  const [accountName, setAccountName] = useState('');
+    const [dateFrom, setDateFrom] = useState('');
+    const [dateTo, setDateTo] = useState('');
+
+    const [transactions, setTransactions] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const [activeModule, setActiveModule] = useState('ESTE_MODULO');
+    const [activeModule, setActiveModule] = useState('ESTE_MODULO'); // Estado para controlar qué módulo está activo
     const navigate = useNavigate();
 
-    // --- 4. FUNCIÓN CENTRAL PARA CARGAR DATOS ---
-    const loadTransactions = async () => {
-        // Solo carga si es "Este Módulo" (el único que tiene API por ahora)
-        if (activeModule !== 'ESTE_MODULO') {
-            setTransactions([]); // O pon los datos mock de "Otros Módulos" si quieres
-            return;
-        }
+    // --- INSTANCIA DEL NUEVO SERVICIO ---
+    const { listAllBankEntries } = useBankEntriesService();
 
+    // Las columnas para el endpoint de bank-entries (Otros Módulos)
+    // Se adaptan a la estructura de tus datos JSON
+    const otherModuleColumns = [
+        { header: 'Correlativo', accessor: 'id', style: { width: '80px', textAlign: 'center' } },
+        { header: 'No. de asiento', accessor: 'id', style: { width: '100px', textAlign: 'center' } }, // Usamos id como asiento por ahora
+        { header: 'Fecha de transacción', accessor: 'date', cell: (doc) => formatDate(doc.date), style: { width: '130px' } },
+        { header: 'Modulo de origen', accessor: 'collection.moduleType', style: { width: '120px' } }, // Acceder a nested object
+        { header: 'Cuenta bancaria', accessor: 'accountName', style: { width: '150px' } },
+        { header: 'No. de referencia', accessor: 'collection.reference', style: { width: '130px', textAlign: 'center' } }, // Acceder a nested object
+        { header: 'Descripcion de la transaccion', accessor: 'description', style: { flexGrow: 1 } },
+        { header: 'Cargo', accessor: 'debit', cell: (doc) => `$${doc.debit ? doc.debit.toFixed(2) : '0.00'}`, style: { width: '100px', textAlign: 'right', fontWeight: 'bold' } },
+        { header: 'Abono', accessor: 'credit', cell: (doc) => `$${doc.credit ? doc.credit.toFixed(2) : '0.00'}`, style: { width: '100px', textAlign: 'right', fontWeight: 'bold' } },
+    ];
+
+    const loadTransactions = async () => {
         setIsLoading(true);
         setError(null);
-        
+        setTransactions([]); // Limpiar datos previos
+
         try {
-            // Prepara los filtros
-            const filters = { idCatalog, dateFrom, dateTo };
-            const data = await bankTransactionService.listAll(filters);
-            
-            // ¡IMPORTANTE! Mapea los datos de la API a los que espera la tabla
-            // Tu API tiene 'idBankTransaction', 'totalAmount', 'accountingTransactionStatus'
-            // Tu tabla espera 'id', 'amount', 'status'
-            const mappedData = data.map(tx => ({
-                id: tx.idBankTransaction, // Mapeo
-                correlative: tx.idBankTransaction, // Asumiendo que el correlativo es el ID
-                transactionDate: tx.transactionDate,
-                referenceNumber: tx.receiptNumber, // Mapeo
-                description: tx.description,
-                amount: tx.totalAmount, // Mapeo
-                status: tx.accountingTransactionStatus // Mapeo
-            }));
-            
-            setTransactions(mappedData);
+            const filters = { accountName, dateFrom, dateTo };
+
+            if (activeModule === 'ESTE_MODULO') {
+                // Lógica existente para 'Este Módulo'
+                const data = await bankTransactionService.listAll(filters);
+                const mappedData = data.map(tx => ({
+                    id: tx.idBankTransaction,
+                    correlative: tx.idBankTransaction,
+                    transactionDate: tx.transactionDate,
+                    referenceNumber: tx.receiptNumber,
+                    description: tx.description,
+                    amount: tx.totalAmount,
+                    status: tx.accountingTransactionStatus
+                }));
+                setTransactions(mappedData);
+            } else if (activeModule === 'OTROS_MODULOS') {
+                // --- NUEVA LÓGICA PARA 'OTROS MÓDULOS' ---
+                const data = await listAllBankEntries(filters); // Usar el nuevo servicio
+                // Los datos ya vienen con la estructura que esperamos, solo los asignamos
+                setTransactions(data);
+            }
 
         } catch (err) {
             console.error("Error al cargar transacciones:", err);
             setError("No se pudieron cargar las transacciones.");
-            Notifier.error("Error al cargar datos."); // Alerta
+            Notifier.error("Error al cargar datos.");
         } finally {
             setIsLoading(false);
         }
     };
+    
 
-    // --- 5. LLAMADA A DATOS AL MONTAR EL COMPONENTE ---
+
     useEffect(() => {
         loadTransactions();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [activeModule]); // Se recarga si cambias entre "Este Módulo" y "Otros"
+    }, [activeModule]); // Se recarga si cambias entre "Este Módulo" y "Otros", o si cambian los filtros
 
-
-    // --- 6. HANDLERS DE ACCIONES REFACTORIZADOS ---
-    
     const handleNew = () => {
-        navigate('/bancos/transacciones/nueva'); 
+        navigate('/bancos/transacciones/nueva');
     };
-    
+
     const handleEdit = (doc) => {
-        // Navegamos a la ruta de edición CON el ID
         navigate(`/bancos/transacciones/editar/${doc.id}`);
     };
-    
-    const handleView = (doc) => {
-        // Navegamos a la ruta de ver CON el ID
-        navigate(`/bancos/transacciones/ver/${doc.id}`); 
-    };
 
-    // --- ACCIONES ASÍNCRONAS (DELETE, APPROVE, CANCEL) ---
+    const handleView = (doc) => {
+        navigate(`/bancos/transacciones/ver/${doc.id}`);
+    };
 
     const handleDelete = async (doc) => {
         if (window.confirm(`¿Está seguro de eliminar la transacción "${doc.referenceNumber}"?`)) {
             try {
-                await bankTransactionService.delete(doc.id);
-                Notifier.success("Transacción eliminada con éxito.");
-                loadTransactions(); // Recarga la tabla
+                // Solo aplica para 'Este Módulo' si tienes un delete para bankTransactionService
+                if (activeModule === 'ESTE_MODULO') {
+                    await bankTransactionService.delete(doc.id);
+                    Notifier.success("Transacción eliminada con éxito.");
+                    loadTransactions();
+                } else {
+                    Notifier.info("La eliminación no está disponible para 'Otros Módulos' en esta vista.");
+                }
             } catch (err) {
                 console.error("Error al eliminar:", err);
                 Notifier.error("Error al eliminar la transacción.");
             }
         }
     };
-    
+
     const handleApprove = async (doc) => {
         if (window.confirm(`¿Está seguro de aplicar la transacción "${doc.referenceNumber}"?`)) {
             try {
-                await bankTransactionService.apply(doc.id);
-                Notifier.success("Transacción aplicada con éxito.");
-                loadTransactions(); // Recarga la tabla
+                // Solo aplica para 'Este Módulo'
+                if (activeModule === 'ESTE_MODULO') {
+                    await bankTransactionService.apply(doc.id);
+                    Notifier.success("Transacción aplicada con éxito.");
+                    loadTransactions();
+                } else {
+                    Notifier.info("La aplicación no está disponible para 'Otros Módulos' en esta vista.");
+                }
             } catch (err) {
                 console.error("Error al aplicar:", err);
                 Notifier.error(err.message || "Error al aplicar la transacción.");
             }
         }
     };
-    
+
     const handleCancel = async (doc) => {
         if (window.confirm(`¿Está seguro de anular la transacción "${doc.referenceNumber}"?`)) {
             try {
-                await bankTransactionService.annul(doc.id);
-                Notifier.success("Transacción anulada con éxito.");
-                loadTransactions(); // Recarga la tabla
+                // Solo aplica para 'Este Módulo'
+                if (activeModule === 'ESTE_MODULO') {
+                    await bankTransactionService.annul(doc.id);
+                    Notifier.success("Transacción anulada con éxito.");
+                    loadTransactions();
+                } else {
+                    Notifier.info("La anulación no está disponible para 'Otros Módulos' en esta vista.");
+                }
             } catch (err) {
                 console.error("Error al anular:", err);
                 Notifier.error(err.message || "Error al anular la transacción.");
@@ -147,113 +169,97 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
         }
     };
 
-    // ... (Tu definición de 'bankTransactionColumns' se queda igual, con los handlers) ...
-        const bankTransactionColumns = [
-            // ... (columna correlativo, fecha, referencia, descripción) ...
-            { 
-                header: 'Correlativo', 
-                accessor: 'correlative', 
-                style: { width: '80px', textAlign: 'center' } 
-            },
-            { 
-                header: 'Fecha de transacción', 
-                accessor: 'transactionDate',
-                cell: (doc) => formatDate(doc.transactionDate),
-                style: { width: '130px' } 
-            },
-            { 
-                header: 'No. de referencia', 
-                accessor: 'referenceNumber', 
-                style: { width: '130px', textAlign: 'center' } 
-            },
-            { 
-                header: 'Descripción de la transacción', 
-                accessor: 'description',
-                style: { flexGrow: 1 } 
-            },
-            { 
-                header: 'Estado',
-                accessor: 'status', 
-                // APLICA ESTILOS SEGÚN EL ESTADO (OPCIONAL PERO RECOMENDADO)
-                style: { width: '90px', textAlign: 'center' },
-                cell: (doc) => {
-                    let className = '';
-                    if (doc.status === 'PENDIENTE') className = styles.statusPending;
-                    if (doc.status === 'APLICADA') className = styles.statusApplied;
-                    if (doc.status === 'ANULADA') className = styles.statusAnnulled;
-                    return <span className={className}>{doc.status}</span>;
-                }
-            },
-            { 
-                header: 'Monto', 
-                accessor: 'amount',
-                cell: (doc) => `$${doc.amount ? doc.amount.toFixed(2) : '0.00'}`,
-                style: { width: '120px', textAlign: 'right', fontWeight: 'bold' } 
-            },
-            // COLUMNA DE ACCIONES (Tus botones ya llaman a los nuevos handlers)
-            {
-                header: 'Acciones',
-                accessor: 'actions',
-                style: { width: '210px', textAlign: 'center' },
-                cell: (doc) => {
-                    // (Tu lógica de botones condicionales se queda aquí... es correcta)
-                    if (doc.status === 'PENDIENTE') {
-                        return (
-                            <div className="d-flex gap-1 justify-content-center flex-wrap">
-                                {/* ... (tus botones Ver, Eliminar, Aplicar, Editar) ... */}
-                                <Boton color="blanco" title="Ver Detalles" size="icon" forma="pastilla" onClick={() => handleView(doc)}>
-                                    <i className="bi bi-eye"></i>
-                                </Boton>
-                                <Boton color="rojo" title="Eliminar" size="icon" forma="pastilla" onClick={() => handleDelete(doc)}>
-                                    <i className="bi bi-trash"></i>
-                                </Boton>
-                                <Boton color="verde" title="Aplicar" size="icon" forma="pastilla" onClick={() => handleApprove(doc)}>
-                                    <i className="bi bi-check-circle"></i>
-                                </Boton>
-                                <Boton color="morado" title="Editar" size="icon" forma="pastilla" onClick={() => handleEdit(doc)}>
-                                    <i className="bi bi-pencil-square mb-2 me-2 mt-2 ms-2"></i>
-                                </Boton>
-                            </div>
-                        );
-                    } else if (doc.status === 'APLICADA') {
-                        return (
-                            <div className="d-flex gap-1 justify-content-center flex-wrap">
-                                {/* ... (tus botones Ver, Anular) ... */}
-                                <Boton color="blanco" title="Ver Detalles" size="icon" forma="pastilla" onClick={() => handleView(doc)}>
-                                    <i className="bi bi-eye"></i>
-                                </Boton>
-                                <Boton color="rojo" title="Anular" size="icon" forma="pastilla" onClick={() => handleCancel(doc)}>
-                                    <i className="bi bi-x-circle"></i>
-                                </Boton>
-                            </div>
-                        );
-                    } else if (doc.status === 'ANULADA') {
-                        return (
-                            <div className="d-flex gap-1 justify-content-center">
-                                {/* ... (tu botón Ver) ... */}
-                                <Boton color="blanco" title="Ver Detalles" size="icon" forma="pastilla" onClick={() => handleView(doc)}>
-                                    <i className="bi bi-eye"></i>
-                                </Boton>
-                            </div>
-                        );
-                    }
-                    return null;
-                }
+    // Columnas para 'Este Módulo' (BankTransactionsView original)
+    const bankTransactionColumns = [
+        {
+            header: 'Correlativo',
+            accessor: 'correlative',
+            style: { width: '80px', textAlign: 'center' }
+        },
+        {
+            header: 'Fecha de transacción',
+            accessor: 'transactionDate',
+            cell: (doc) => formatDate(doc.transactionDate),
+            style: { width: '130px' }
+        },
+        {
+            header: 'No. de referencia',
+            accessor: 'referenceNumber',
+            style: { width: '130px', textAlign: 'center' }
+        },
+        {
+            header: 'Descripción de la transacción',
+            accessor: 'description',
+            style: { flexGrow: 1 }
+        },
+        {
+            header: 'Estado',
+            accessor: 'status',
+            style: { width: '90px', textAlign: 'center' },
+            cell: (doc) => {
+                let className = '';
+                if (doc.status === 'PENDIENTE') className = styles.statusPending;
+                if (doc.status === 'APLICADA') className = styles.statusApplied;
+                if (doc.status === 'ANULADA') className = styles.statusAnnulled;
+                return <span className={className}>{doc.status}</span>;
             }
-        ];
+        },
+        {
+            header: 'Monto',
+            accessor: 'amount',
+            cell: (doc) => `$${doc.amount ? doc.amount.toFixed(2) : '0.00'}`,
+            style: { width: '120px', textAlign: 'right', fontWeight: 'bold' }
+        },
+        {
+        
+            header: 'Acciones',
+            accessor: 'actions',
+            style: { width: '210px', textAlign: 'center' },
+            cell: (doc) => {
+                if (doc.status === 'PENDIENTE') {
+                    return (
+                        <div className="d-flex gap-1 justify-content-center flex-wrap">
+                            <Boton color="blanco" title="Ver Detalles" size="icon" forma="pastilla" onClick={() => handleView(doc)}>
+                                <i className="bi bi-eye"></i>
+                            </Boton>
+                            <Boton color="rojo" title="Eliminar" size="icon" forma="pastilla" onClick={() => handleDelete(doc)}>
+                                <i className="bi bi-trash"></i>
+                            </Boton>
+                            <Boton color="verde" title="Aplicar" size="icon" forma="pastilla" onClick={() => handleApprove(doc)}>
+                                <i className="bi bi-check-circle"></i>
+                            </Boton>
+                            <Boton color="morado" title="Editar" size="icon" forma="pastilla" onClick={() => handleEdit(doc)}>
+                                <i className="bi bi-pencil-square mb-2 me-2 mt-2 ms-2"></i>
+                            </Boton>
+                        </div>
+                    );
+                } else if (doc.status === 'APLICADA') {
+                    return (
+                        <div className="d-flex gap-1 justify-content-center flex-wrap">
+                            <Boton color="blanco" title="Ver Detalles" size="icon" forma="pastilla" onClick={() => handleView(doc)}>
+                                <i className="bi bi-eye"></i>
+                            </Boton>
+                            <Boton color="rojo" title="Anular" size="icon" forma="pastilla" onClick={() => handleCancel(doc)}>
+                                <i className="bi bi-x-circle"></i>
+                            </Boton>
+                        </div>
+                    );
+                } 
+                return null;
+            }
+        }
+    ];
 
-    
     const isEsteModulo = activeModule === 'ESTE_MODULO';
-    const currentColumns = isEsteModulo ? bankTransactionColumns : thisModuleColumns;
-    
-    // 7. HANDLERS DE BÚSQUEDA Y LIMPIEZA
+    // Se eligen las columnas dinámicamente
+    const currentColumns = isEsteModulo ? bankTransactionColumns : otherModuleColumns;
+
     const handleSearch = () => {
-        // El botón "Buscar" ahora solo llama a la función de carga
         loadTransactions();
     };
 
     const handleClear = () => {
-        setIdCatalog('');
+        setAccountName('');
         setDateFrom('');
         setDateTo('');
         setTransactions([]);
@@ -261,25 +267,27 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
     };
 
     const handleOrderByState = () => {
-        const sorted = [...transactions].sort((a, b) => {
-            const statusOrder = { 'PENDIENTE': 1, 'APLICADA': 2, 'ANULADA': 3 };
-                // Sorts based on the order defined in statusOrder
-        return (statusOrder[a.status] || 999) - (statusOrder[b.status] || 999);
-        });
-        setTransactions(sorted); // Updates the state with the sorted array
-        console.log('Ordenado por estado'); // You added this log
+        // Solo tiene sentido ordenar por estado para "Este Módulo"
+        if (activeModule === 'ESTE_MODULO') {
+            const sorted = [...transactions].sort((a, b) => {
+                const statusOrder = { 'PENDIENTE': 1, 'APLICADA': 2, 'ANULADA': 3 };
+                return (statusOrder[a.status] || 999) - (statusOrder[b.status] || 999);
+            });
+            setTransactions(sorted);
+            Notifier.info('Ordenado por estado.');
+        } else {
+            Notifier.info('La opción "Ordenar por Estado" solo aplica para "Este Módulo".');
+        }
     };
 
     const handleOrderByDate = () => {
-        const sorted = [...transactions].sort((a, b) => 
-            // Sorts descending (newest first)
-            new Date(b.transactionDate) - new Date(a.transactionDate)
+        const sorted = [...transactions].sort((a, b) =>
+            new Date(b.transactionDate || b.date) - new Date(a.transactionDate || a.date)
         );
-        setTransactions(sorted); // Updates the state
-        console.log('Ordenado por fecha'); // You added this log
+        setTransactions(sorted);
+        Notifier.info('Ordenado por fecha.');
     };
 
-    // React.useEffect(() => { ... }, [activeModule, codigoValue]);
 
     return (
         <>
@@ -289,44 +297,36 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
             <div className={styles.title}>
                 <h2>Gestión de Transacciones Bancarias</h2>
             </div>
-            
-            {/* 8. PASAMOS LAS PROPS CORREGIDAS A SearchCardBank */}
+
             <SearchCardBank
-                apiDataCodigo={apiDataCodigo}
-                
-                // Nombres corregidos
-                codigoValue={idCatalog}
-                onCodigoChange={setIdCatalog} 
+               accountName={accountName}
+                onAccountNameChange={setAccountName}
                 startDate={dateFrom}
-                onStartDateChange={setDateFrom} 
+                onStartDateChange={setDateFrom}
                 endDate={dateTo}
-                onEndDateChange={setDateTo} 
-                
+                onEndDateChange={setDateTo}
                 handleSearch={handleSearch}
                 handleClear={handleClear}
             />
-            
-            {/* ... (Todo tu JSX de botones de Módulo, 'Nueva', 'Ordenar', etc. se queda igual) ... */}
+
             <div className='d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 mb-3'>
-                {/* Lado Izquierdo: Botones de filtro por origen */}
                 <div className="d-flex gap-2 flex-wrap">
-                    <Boton 
-                        color={isEsteModulo ? 'morado' : 'blanco'} 
-                        forma="pastilla" 
+                    <Boton
+                        color={isEsteModulo ? 'morado' : 'blanco'}
+                        forma="pastilla"
                         onClick={() => setActiveModule('ESTE_MODULO')}
                     >
                         Este Modulo
                     </Boton>
-                    <Boton 
-                        color={!isEsteModulo ? 'morado' : 'blanco'} 
-                        forma="pastilla" 
+                    <Boton
+                        color={!isEsteModulo ? 'morado' : 'blanco'}
+                        forma="pastilla"
                         onClick={() => setActiveModule('OTROS_MODULOS')}
                     >
                         Otros Modulos
                     </Boton>
                 </div>
-        
-                {/* Lado Derecho: BOTONES CONDICIONALES */}
+
                 <div className="d-flex gap-2 flex-wrap">
                     {isEsteModulo && (
                         <Boton color="morado" forma="pastilla" onClick={handleNew}>
@@ -335,6 +335,7 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
                         </Boton>
                     )}
 
+                    {/* Mostrar "Ordenar por Estado" solo para "Este Módulo" */}
                     {isEsteModulo && (
                         <Boton color="blanco" forma="pastilla" onClick={handleOrderByState}>
                             Ordenar Por Estado
@@ -346,30 +347,34 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
                     </Boton>
                 </div>
             </div>
-            
-            {/* ... (Tu JSX de la tabla se queda igual, ahora recibe los datos de la API) ... */}
+
             <div className={styles.tablaWrapper}>
                 <table className={styles.tabla}>
                     <thead>
-                        <tr className={styles.table_header}> 
+                        <tr className={styles.table_header}>
                             {currentColumns.map(col => (
                                 <th key={col.header} style={col.style}>{col.header}</th>
                             ))}
+                            {/* La columna de acciones solo para "Este Módulo" */}
+                          
                         </tr>
                     </thead>
                     <tbody>
                         <DocumentTable
                             documents={transactions}
                             columns={currentColumns}
-                            showRowActions={false}
+                            // showRowActions debe ser true para 'Este Modulo' y false para 'Otros Modulos'
+                            showRowActions={isEsteModulo}
                             styles={styles}
                             isLoading={isLoading}
                             isError={!!error}
                             error={error ? "Error al cargar datos" : null}
-                            emptyMessage={isEsteModulo 
+                            emptyMessage={isEsteModulo
                                 ? "No se encontraron transacciones. Pruebe a cambiar los filtros."
-                                : "Vista de 'Otros Módulos' (aún no conectada)."
+                                : "No se encontraron entradas bancarias de otros módulos. Pruebe a cambiar los filtros."
                             }
+                            // Pasar `renderActionsCell` solo si es 'Este Módulo'
+                            renderActionsCell={isEsteModulo ? (doc) => bankTransactionColumns.find(c => c.accessor === 'actions').cell(doc) : undefined}
                         />
                     </tbody>
                 </table>

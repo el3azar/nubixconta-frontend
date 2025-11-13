@@ -276,12 +276,14 @@ export default function Rutas({ catalogoCuentas, tiposTransaccion }) {
                 <Route path="/compras/editar-nota-credito/:creditNoteId" element={<EditPurchaseCreditNote />} />
 
 
+
                 <Route path="/compras/isr" element={<IncomeTax />} />
                 <Route path="/compras/isr/nuevo/:supplierId" element={<NewIncomeTax />} />
                 <Route path="/compras/isr/editar/:id" element={<EditIncomeTax />} />
 
 
                 <Route path="/compras/reportes" element={<PurchasesReport />} />
+
 
 
                      {/* --- Rutas para cuentas por pagar --- */}
@@ -300,7 +302,7 @@ export default function Rutas({ catalogoCuentas, tiposTransaccion }) {
 
                   <Route path="/bnks" element={<div>Dashboard de Bancos</div>} />
                   <Route path="/bancos" element={<DashboardBanks />} />
-                  <Route path="/bancos/transacciones" element={<BankTransactionsView />} />
+                  <Route path="/bancos/transacciones" element={<BankTransactionsView/>} />
                   <Route path="/bancos/reportes" element={<BankReportsView />} />
                   <Route path="/bancos/pruebas" element={<Pruebas />} />
                   <Route path="/bancos/transacciones/nueva" element={<NewBankTransaction apiDataCuenta={catalogoCuentas} apiDataTipo={tiposTransaccion} />} />

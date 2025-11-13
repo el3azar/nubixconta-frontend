@@ -440,3 +440,11 @@ input:disabled::placeholder {
   gap: 0.5rem;
   justify-content: center;
 }
+
+.rowAnnulled {
+  background-color: #F8CCCC !important; 
+}
+
+.rowApplied {
+  background-color: #a8ffa8 !important; 
+}

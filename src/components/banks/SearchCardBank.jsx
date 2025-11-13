@@ -1,25 +1,23 @@
 // src/components/banks/SearchCardBank.jsx
 import React from 'react';
-import styles from '../../styles/banks/Banks.module.css'; 
-import SelectBase from '../inventory/inventoryelements/SelectBase';
-import Boton from '../inventory/inventoryelements/Boton'; // Asegúrate de que Boton esté importado
+import styles from '../../styles/banks/Banks.module.css';
+import Boton from '../inventory/inventoryelements/Boton';
 
 /**
- * Componente reutilizable para la tarjeta de filtros de búsqueda.
- * @param {Array} apiDataCodigo - Datos para el Select de "Cuenta bancaria".
- * @param {string} codigoValue - Valor actual del Select de cuenta (idCatalog).
- * @param {Function} onCodigoChange - Handler para cambios en el Select de cuenta.
- * @param {string} startDate - Valor actual de la fecha de inicio (YYYY-MM-DD).
+ * Componente de filtros de búsqueda. Simplificado para usar un input de texto para la cuenta bancaria.
+ *
+ * @param {string} accountName - Valor del campo de nombre de cuenta.
+ * @param {Function} onAccountNameChange - Handler para cambios en el nombre de la cuenta.
+ * @param {string} startDate - Valor de la fecha de inicio.
  * @param {Function} onStartDateChange - Handler para cambios en la fecha de inicio.
- * @param {string} endDate - Valor actual de la fecha de fin (YYYY-MM-DD).
+ * @param {string} endDate - Valor de la fecha de fin.
  * @param {Function} onEndDateChange - Handler para cambios en la fecha de fin.
- * @param {Function} handleSearch - Función a llamar al presionar "Buscar".
- * @param {Function} handleClear - Función a llamar al presionar "Limpiar".
+ * @param {Function} handleSearch - Función para el botón "Buscar".
+ * @param {Function} handleClear - Función para el botón "Limpiar".
  */
 const SearchCardBank = ({
-    apiDataCodigo,
-    codigoValue,
-    onCodigoChange,
+    accountName,
+    onAccountNameChange,
     startDate,
     onStartDateChange,
     endDate,
@@ -30,20 +28,23 @@ const SearchCardBank = ({
     return (
         <div className={styles.searchCard}>
             <h3 className={styles.h2Izq}>Filtro de Búsqueda</h3>
-            
+
             <div className={styles.searchGrid}>
-                {/* CAMPO 1: Cuenta Bancaria (idCatalog) */}
+                {/* --- CAMPO SIMPLIFICADO --- */}
                 <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Cuenta bancaria:</label>
-                    <SelectBase
-                        apiData={apiDataCodigo}
-                        value={codigoValue}
-                        onChange={onCodigoChange} // Asumiendo que SelectBase devuelve el 'value'
-                        placeholder="Buscar código de la cuenta"
+                    <label className={styles.formLabel} htmlFor="accountNameInput">Cuenta bancaria:</label>
+                    <input
+                        id="accountNameInput"
+                        type="text"
+                        // Recomiendo crear una clase para inputs en tu CSS module, ej: styles.textInput
+                        className="form-control" // Usando una clase de Bootstrap como ejemplo
+                        value={accountName}
+                        onChange={(e) => onAccountNameChange(e.target.value)}
+                        placeholder="Buscar por nombre de la cuenta"
                     />
                 </div>
-                
-                {/* Contenedor de Fechas (dateFrom y dateTo) */}
+
+                {/* Contenedor de Fechas (sin cambios) */}
                 <div className={`${styles.formGroup} ${styles.fechaGroupWrapper}`}>
                     <div className={styles.buscador}>
                         <div className={styles.fechaGrupo}>
@@ -55,7 +56,6 @@ const SearchCardBank = ({
                                 onChange={(e) => onStartDateChange(e.target.value)}
                             />
                         </div>
-
                         <div className={styles.fechaGrupo}>
                             <label htmlFor="endDate">Fecha de Fin:</label>
                             <input
@@ -67,10 +67,9 @@ const SearchCardBank = ({
                         </div>
                     </div>
                 </div>
-                
-                {/* Fila de Botones */}
+
+                {/* Fila de Botones (sin cambios) */}
                 <div className={`${styles.buttonGroup} mt-3`}>
-                    {/* Reemplazando <button> por <Boton> para consistencia */}
                     <Boton color="morado" forma="pastilla" onClick={handleSearch} className="me-3">
                         Buscar
                     </Boton>

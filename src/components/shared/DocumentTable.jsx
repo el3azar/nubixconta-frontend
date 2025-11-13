@@ -5,23 +5,52 @@ import { DocumentActions } from './DocumentActions';
 const DocumentTableRow = ({ doc, columns, actionsProps, styles, showRowActions, index }) => {
   const status = doc.status || doc.creditNoteStatus || doc.saleStatus || doc.purchaseStatus || doc.incomeTaxStatus;
   
-  const rowClass = showRowActions
-    ? (status === 'APLICADA' ? 'table-success' : status === 'ANULADA' ? 'table-danger' : '')
-    : undefined;
 
+
+   let rowClass = '';
+  if (status === 'APLICADA') {
+    rowClass = styles.rowApplied; 
+  } else if (status === 'ANULADA') {
+    rowClass = styles.rowAnnulled; 
+  }
+  
   return (
-    // <tr> no necesita 'key' aquí, la 'key' va en el .map() de DocumentTable
+    // La key ya no va en el <tr> aquí, sino en el .map() de DocumentTable
     <tr className={rowClass}>
-      {columns.map((col) => (
-        <td key={col.header} style={col.style || {}} className={col.className || styles.textAlignCenter}>
-          {/* --- CAMBIO 2: PASAMOS EL 'index' A LA FUNCIÓN 'cell' ---
-            Esto es crucial para que tu botón de borrar funcione.
-          */}
-          {col.cell ? col.cell(doc, index) : doc[col.accessor]}
-        </td>
-      ))}
+      {columns.map((col) => {
+        let cellContent;
+        // Manejo de accessor anidado para 'collection.moduleType' y 'collection.reference'
+        if (col.accessor && col.accessor.includes('.')) {
+          const parts = col.accessor.split('.');
+          let current = doc;
+          for (let i = 0; i < parts.length; i++) {
+            current = current ? current[parts[i]] : undefined;
+            if (current === undefined) break;
+          }
+          cellContent = current;
+        } else {
+          cellContent = doc[col.accessor];
+        }
+
+        // Si col.cell está definido, úsalo. Este es el punto principal de la extensión.
+        if (col.cell) {
+          cellContent = col.cell(doc, index); // Pasa `doc` y `index` a la función `cell`
+        } else if (col.accessor === 'amount' || col.accessor === 'debit' || col.accessor === 'credit') {
+          const num = typeof cellContent === 'number' ? cellContent : 0;
+          cellContent = `$${num.toFixed(2)}`;
+        } else if (col.accessor === 'transactionDate' || col.accessor === 'date') {
+          cellContent = formatDate(cellContent);
+        }
+
+        return (
+          // Usar una key única para cada celda
+          <td key={`${id || index}-${col.accessor}`} style={col.style || {}} className={col.className || styles.textAlignCenter}>
+            {cellContent ?? ''}
+          </td>
+        );
+      })}
       {showRowActions && (
-        <td className="text-center">
+        <td key={`${id || index}-actions`} className="text-center">
           <DocumentActions doc={doc} styles={styles} {...actionsProps} />
         </td>
       )}
@@ -29,7 +58,7 @@ const DocumentTableRow = ({ doc, columns, actionsProps, styles, showRowActions, 
   );
 };
 
-export const DocumentTable = ({ documents, isLoading, isError, error, actionsProps, styles, columns, showRowActions, emptyMessage }) => {
+export const DocumentTable = ({ documents, isLoading, isError, error, actionsProps, styles, columns, showRowActions, emptyMessage, renderActionsCell }) => {
   const colSpan = columns.length + (showRowActions ? 1 : 0);
 
   if (isLoading) return <tr><td colSpan={colSpan} className="text-center">Cargando documentos...</td></tr>;

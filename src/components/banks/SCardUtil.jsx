@@ -1,68 +1,75 @@
 // src/components/banks/SCardUtil.jsx
-import React, { useState, useEffect } from 'react'; // Add useEffect if not already there
-import styles from '../../styles/banks/Banks.module.css';
-import SelectBase from '../inventory/inventoryelements/SelectBase';
-import Boton from '../inventory/inventoryelements/Boton';
+import React, { useState } from 'react';
+import styles from '../../styles/banks/Banks.module.css'; // Asegúrate que la ruta es correcta
+import SelectBase from '../inventory/inventoryelements/SelectBase'; // Asegúrate que la ruta es correcta
+import Boton from '../inventory/inventoryelements/Boton'; // Asegúrate que la ruta es correcta
+import { useCatalogService } from '../../services/accounting/CatalogService'; // Importar el hook, asegúrate que la ruta es correcta
 
-const SCardUtil = ({ apiDataAccount, onAddDetail }) => {
+const SCardUtil = ({ onAddDetail }) => { // onAddDetail es la función callback para el padre
+    const { searchCatalogs } = useCatalogService(); // Hook para buscar catálogos contables
 
-    // --- STATES ---
-    // Keep idCatalog if you need it elsewhere, but it's less critical now
-    // const [idCatalog, setIdCatalog] = useState('');
-    
-    // 1. NEW STATE: Store the selected account OBJECT
-    const [selectedAccount, setSelectedAccount] = useState(null); 
-    
+    const [selectedAccount, setSelectedAccount] = useState(null); // Objeto { value, label } de la cuenta seleccionada
     const [description, setDescription] = useState('');
     const [debit, setDebit] = useState('');
     const [credit, setCredit] = useState('');
-    // No need for accountName state anymore, we get it from selectedAccount
 
-    // Optional: Clear description/amounts if account changes
-    // useEffect(() => {
-    //    setDescription('');
-    //    setDebit('');
-    //    setCredit('');
-    // }, [selectedAccount]);
-
+    // Limpia los campos del formulario
     const handleClear = () => {
-        setSelectedAccount(null); // Clear the selected object
-        // setIdCatalog('');
+        setSelectedAccount(null);
         setDescription('');
         setDebit('');
         setCredit('');
     };
 
+    // Maneja el clic en el botón "Agregar" para añadir un asiento
     const handleAddClick = () => {
-        // --- 3. GET DATA FROM selectedAccount ---
-        const catalogIdValue = selectedAccount ? parseInt(selectedAccount.value) : null;
+        const catalogIdValue = selectedAccount ? selectedAccount.value : null;
         const accountNameValue = selectedAccount ? selectedAccount.label : '';
 
         const debitValue = Number(debit) || 0;
         const creditValue = Number(credit) || 0;
 
-        // Validations
-        if (!catalogIdValue) { // Check the derived ID
-            alert('Por favor, seleccione una cuenta.');
+        // Validaciones básicas antes de añadir el detalle
+        if (!catalogIdValue) {
+            alert('Por favor, seleccione una cuenta contable.');
             return;
         }
-        // ... (rest of your validations: amount, debit/credit conflict)
+        if (debitValue === 0 && creditValue === 0) {
+            alert('Debe ingresar un valor en Débito o Crédito.');
+            return;
+        }
+        if (debitValue > 0 && creditValue > 0) {
+            alert('No puede ingresar valores en Débito y Crédito a la vez.');
+            return;
+        }
 
-        onAddDetail({
-            idCatalog: catalogIdValue,
-            accountName: accountNameValue, // Use the name from the selected object
-            description: description || accountNameValue || 'Detalle de asiento',
+        // Construye el objeto de detalle a añadir
+        const detailToAdd = {
+            idCatalog: parseInt(catalogIdValue), // Asegura que idCatalog sea un número entero
+            accountName: accountNameValue,       // Nombre de la cuenta para mostrar en la tabla
+            description: description || accountNameValue || 'Detalle de asiento', // Usa la descripción ingresada o el nombre de la cuenta
             debit: debitValue,
             credit: creditValue,
-        });
+        };
 
-        // ---  LOG ---
-        console.log("Adding Detail:", detailToAdd); 
-        // --------------------
+        console.log("Añadiendo Detalle:", detailToAdd);
 
-        onAddDetail(detailToAdd);
+        onAddDetail(detailToAdd); // Llama a la función del componente padre para añadir el detalle
+        handleClear();             // Limpia el formulario después de añadir
+    };
 
-        handleClear();
+    // Función asíncrona que SelectBase usará para buscar cuentas contables
+    const handleSearchAccounts = async (term) => {
+        try {
+            const results = await searchCatalogs(term); // Llama al servicio real para buscar catálogos
+            // Los resultados deben venir en un formato que SelectBase entienda ({ value, label })
+            return results;
+        } catch (error) {
+            console.error("Error en la búsqueda de cuentas en SCardUtil:", error);
+            // Si tienes un Notifier, podrías usarlo aquí:
+            // Notifier.error("Error al buscar cuentas contables.");
+            return []; // Devuelve un array vacío en caso de error
+        }
     };
 
     const TransFormGroup = styles['trans-form-group'];
@@ -72,55 +79,53 @@ const SCardUtil = ({ apiDataAccount, onAddDetail }) => {
             <h3 className={styles.h2Izq}>Añadir Asiento (Línea de Detalle)</h3>
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 3fr repeat(2, 1fr) auto', gap: '18px', alignItems: 'start' }}>
 
-                {/* --- 2. MODIFY SelectBase --- */}
                 <div className={TransFormGroup} style={{ gridColumn: 1 }}>
                     <label className={styles.formLabel}>Cuenta Contable:</label>
                     <SelectBase
-                        apiData={apiDataAccount}
-                        // Pass the selected OBJECT to value
-                        value={selectedAccount} 
-                        // onChange receives the selected OBJECT (or null)
-                        onChange={(option) => {
-                            setSelectedAccount(option); // Store the object
-                            // setIdCatalog(option ? option.value : ''); // Update ID if needed
-                        }}
-                        placeholder="Seleccione una cuenta..."
+                        onSearchAsync={handleSearchAccounts} // Prop para la búsqueda asíncrona
+                        value={selectedAccount}             // Cuenta seleccionada (objeto { value, label })
+                        onChange={setSelectedAccount}       // Actualiza la cuenta seleccionada
+                        placeholder="Buscar y seleccionar una cuenta..."
+                        minimumInputLength={2}              // Requiere al menos 2 caracteres para buscar
                     />
                 </div>
 
-                {/* ... (rest of your inputs for Description, Debit, Credit) ... */}
-                <div className={TransFormGroup} style={{ gridColumn: 2 }}> 
+                <div className={TransFormGroup} style={{ gridColumn: 2 }}>
                     <label className={styles.formLabel}>Descripción (Asiento):</label>
-                    <input 
-                        type="text" 
-                        placeholder="Descripción de la línea" 
-                        value={description} 
+                    <input
+                        type="text"
+                        placeholder="Descripción de la línea"
+                        value={description}
                         onChange={(e) => setDescription(e.target.value)}
                     />
                 </div>
-                <div className={TransFormGroup} style={{ gridColumn: 3 }}> 
+                <div className={TransFormGroup} style={{ gridColumn: 3 }}>
                     <label className={styles.formLabel}>Débito (Cargo):</label>
-                    <input 
-                        type="number" 
-                        placeholder="0.00" 
-                        value={debit} 
-                        onChange={(e) => setDebit(e.target.value)}
-                        disabled={!!credit && parseFloat(credit) > 0} 
+                    <input
+                        type="number"
+                        placeholder="0.00"
+                        value={debit}
+                        onChange={(e) => {
+                            const val = e.target.value;
+                            setDebit(val);
+                            if (parseFloat(val) > 0) setCredit(''); // Limpia Crédito si se ingresa Débito
+                        }}
                     />
                 </div>
-                <div className={TransFormGroup} style={{ gridColumn: 4 }}> 
+                <div className={TransFormGroup} style={{ gridColumn: 4 }}>
                     <label className={styles.formLabel}>Crédito (Abono):</label>
-                    <input 
-                        type="number" 
-                        placeholder="0.00" 
-                        value={credit} 
-                        onChange={(e) => setCredit(e.target.value)}
-                        disabled={!!debit && parseFloat(debit) > 0} 
+                    <input
+                        type="number"
+                        placeholder="0.00"
+                        value={credit}
+                        onChange={(e) => {
+                            const val = e.target.value;
+                            setCredit(val);
+                            if (parseFloat(val) > 0) setDebit(''); // Limpia Débito si se ingresa Crédito
+                        }}
                     />
                 </div>
 
-
-                {/* ... (rest of your Buttons) ... */}
                 <div style={{ gridColumn: 5, alignSelf: 'end', display: 'flex', gap: '8px', paddingBottom: '5px' }}>
                     <Boton color="morado" forma="pastilla" onClick={handleAddClick}>
                         <i className="bi bi-plus me-2"></i> Agregar

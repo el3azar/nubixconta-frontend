@@ -7,9 +7,9 @@ import { useCallback } from 'react'; // <-- 1. Importar useCallback
 const API_BASE_URL = 'http://localhost:8080/api/v1';
 
 const getAuthHeader = (token) => ({
-  headers: {
-    Authorization: `Bearer ${token}`,
-  },
+    headers: {
+        Authorization: `Bearer ${token}`,
+    },
 });
 
 export const useCatalogService = () => {

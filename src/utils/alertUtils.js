@@ -1,5 +1,6 @@
+// src/utils/alertUtils.js
 import Swal from 'sweetalert2';
-import { toast } from 'react-hot-toast';
+import { toast } from 'react-hot-toast'; // Importación correcta de react-hot-toast
 
 // --- CONFIGURACIÓN CENTRALIZADA ---
 
@@ -20,15 +21,15 @@ const swalCustomClasses = {
 // =================================================================
 
 export const Notifier = {
-  
-  // --- TOASTS ESTÁNDAR (Con el tema morado de Rutas.jsx) ---
+
+  // --- TOASTS ESTÁNDAR (Con el tema morado de Rutas.jsx o el Toaster global) ---
 
   /** Muestra un toast de éxito con el tema principal de la aplicación. */
   success: (message = '¡Operación exitosa!') => toast.success(message),
 
   /** Muestra un toast de error con el tema principal de la aplicación. */
   error: (message = 'Ocurrió un error.') => toast.error(message),
-  
+
   /**
    * Muestra un toast de información. Acepta opciones para personalizarlo.
    * @param {string} message - El mensaje a mostrar.
@@ -37,21 +38,14 @@ export const Notifier = {
    * @param {number} [options.duration] - Duración personalizada en milisegundos.
    */
   info: (message, options = {}) => {
-    // Definimos un icono por defecto.
     const defaultIcon = 'ℹ️';
-
-    // Usamos el operador de coalescencia nula (??) para asegurarnos
-    // de que siempre haya un icono. Si options.icon no se proporciona, usa el default.
-    const finalIcon = options.icon ?? defaultIcon;
-    
-    // Pasamos el icono y cualquier otra opción al toast.
-    // El operador '...' fusiona las opciones personalizadas con las por defecto.
-    toast(message, { 
+    const finalIcon = options.icon ?? defaultIcon; // Usa el operador de coalescencia nula
+    toast(message, {
       icon: finalIcon,
-      ...options 
+      ...options
     });
   },
-  
+
   /** Muestra un toast de advertencia con el tema principal de la aplicación. */
   warning: (message) => toast(message, { icon: '⚠️' }),
 
@@ -67,12 +61,10 @@ export const Notifier = {
    * @param {string} toastId - El ID del toast a cerrar.
    */
   dismiss: (toastId) => toast.dismiss(toastId),
-  
+
   // =================================================================
   // == TOASTS TEMÁTICOS (Colores Alternativos)
   // =================================================================
-  // Para casos de uso específicos que requieren un feedback visual diferente
-  // al tema principal de la aplicación.
 
   /** Muestra un toast de éxito con un fondo VERDE. */
   successGreen: (message = '¡Éxito!') => {
@@ -88,7 +80,7 @@ export const Notifier = {
       },
     });
   },
-  
+
   /** Muestra un toast de error con un fondo ROJO. */
   errorRed: (message = 'Error') => {
     toast.error(message, {
@@ -105,11 +97,13 @@ export const Notifier = {
   },
 
 
-
   // --- MODALES BLOQUEANTES (Con SweetAlert2 y tu CSS personalizado) ---
 
   /**
    * Muestra una alerta de error grave que bloquea la UI.
+   * @param {string} title - Título del modal.
+   * @param {string} text - Texto del cuerpo del modal.
+   * @returns {Promise<SweetAlertResult>} Resultado de la interacción del usuario.
    */
   showError: (title, text) => {
     return Swal.fire({
@@ -120,9 +114,14 @@ export const Notifier = {
       customClass: swalCustomClasses,
     });
   },
-  
+
   /**
    * Muestra un diálogo de confirmación.
+   * @param {object} options - Opciones para el modal de confirmación.
+   * @param {string} options.title - Título del modal.
+   * @param {string} options.text - Texto del cuerpo del modal.
+   * @param {string} [options.confirmButtonText='Sí, continuar'] - Texto del botón de confirmación.
+   * @returns {Promise<SweetAlertResult>} Resultado de la interacción del usuario.
    */
   confirm: ({ title, text, confirmButtonText = 'Sí, continuar' }) => {
     return Swal.fire({
@@ -137,7 +136,12 @@ export const Notifier = {
   },
 
   /**
-   * Muestra un diálogo con un campo de texto.
+   * Muestra un diálogo con un campo de texto para entrada de usuario.
+   * @param {object} options - Opciones para el modal de input.
+   * @param {string} options.title - Título del modal.
+   * @param {string} options.inputLabel - Etiqueta para el campo de entrada.
+   * @param {string} [options.placeholder=''] - Placeholder del campo de entrada.
+   * @returns {Promise<SweetAlertResult>} Resultado de la interacción del usuario con el valor ingresado.
    */
   input: ({ title, inputLabel, placeholder = '' }) => {
     return Swal.fire({
@@ -147,14 +151,10 @@ export const Notifier = {
       placeholder,
       showCancelButton: true,
       confirmButtonText: 'Guardar',
-       // --- INICIO DEL CAMBIO ---
-      // Le pasamos un objeto de clases más completo.
-      // Fusionamos nuestras clases base con una específica para el input.
       customClass: {
         ...swalCustomClasses,
-        input: 'swal-input-custom' // <-- NUEVA CLASE PARA EL CAMPO DE TEXTO
+        input: 'swal-input-custom' // Clase específica para el campo de texto de SweetAlert
       },
-      // --- FIN DEL CAMBIO ---
       inputValidator: (value) => {
         if (!value || value.trim() === '') {
           return '¡Este campo es requerido!';
