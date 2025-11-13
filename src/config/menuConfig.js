@@ -61,3 +61,17 @@ export const banksSubMenuLinks = [
   { to: "/bancos/transacciones", label: "Transacciones Bancarias" },
   { to: "/bancos/reportes", label: "Reportes" },
 ];
+
+export const accountingSubMenuLinks = [
+  { to: '/contabilidad/gestion-catalogo', label: 'Gestión de Catálogo' },
+  { to: '/contabilidad/transacciones', label: 'Transacciones' },
+  // { to: '/contabilidad/estados-financieros', label: 'Estados Financieros' },
+];
+
+export const financialStatementsSubMenuLinks = [
+  { to: '/contabilidad/estados-financieros/libro-diario', label: 'Libro Diario' },
+  { to: '/contabilidad/estados-financieros/libro-mayor', label: 'Libro Mayor' },
+  { to: '/contabilidad/estados-financieros/balance-comprobacion', label: 'Balance de Comprobación' },
+  { to: '/contabilidad/estados-financieros/balance-general', label: 'Balance General' },
+  { to: '/contabilidad/estados-financieros/estado-resultados', label: 'Estado de Resultados' },
+];

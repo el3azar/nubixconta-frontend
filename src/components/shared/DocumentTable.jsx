@@ -1,15 +1,11 @@
-// src/components/shared/DocumentTable.jsx
-
 import React from 'react';
 import { DocumentActions } from './DocumentActions';
-import { formatDate } from '../../utils/dateFormatter';
 
-// Aceptar 'index' como prop
+// --- CAMBIO 1: DocumentTableRow AHORA ACEPTA 'index' ---
 const DocumentTableRow = ({ doc, columns, actionsProps, styles, showRowActions, index }) => {
-  // La lógica para el estilo de la fila y las acciones aún necesita saber el estado.
-  // Asegúrate de que los accesores de estado existan en tus documentos.
-  const status = doc.creditNoteStatus || doc.saleStatus || doc.purchaseStatus || doc.status; // Añadido doc.status para Este Modulo
-  const id = doc.idPurchase || doc.idNotaCredit || doc.saleId || doc.id; // Añadido doc.id
+  const status = doc.status || doc.creditNoteStatus || doc.saleStatus || doc.purchaseStatus || doc.incomeTaxStatus;
+  
+
 
    let rowClass = '';
   if (status === 'APLICADA') {
@@ -69,21 +65,33 @@ export const DocumentTable = ({ documents, isLoading, isError, error, actionsPro
   if (isError) return <tr><td colSpan={colSpan} className="text-center text-danger p-4"><strong>Error:</strong> {error.response?.data?.message || error.message}</td></tr>;
   if (!documents || documents.length === 0) return <tr><td colSpan={colSpan} className="text-center">{emptyMessage}</td></tr>;
 
-  return (
-    <> {/* Fragmento necesario para envolver múltiples <tr> */}
-      {documents.map((doc, index) => (
-        <DocumentTableRow
-          // La key es CRÍTICA aquí. Usamos doc.id o un ID específico si existe, de lo contrario, index.
-          key={doc.id || doc.idPurchase || doc.idNotaCredit || doc.saleId || index}
-          doc={doc}
-          index={index} // Pasa el 'index' a DocumentTableRow
-          columns={columns}
-          actionsProps={actionsProps}
-          styles={styles}
-          showRowActions={showRowActions}
-          renderActionsCell={renderActionsCell} // Asegúrate de pasar esto si lo usa DocumentActions
-        />
-      ))}
-    </>
-  );
+  // Función helper para obtener una clave única y fiable.
+  const getUniqueKey = (doc, index) => {
+    // 1. Se da prioridad a los IDs únicos y específicos de cada módulo.
+    const key = doc.id || // Para Transacciones Contables, Bancos, etc.
+                doc.saleId ||
+                doc.idPurchase ||
+                doc.idNotaCredit ||
+                doc.idPurchaseCreditNote ||
+                doc.idIncomeTax ||
+                doc.idBankTransaction ||
+                doc.idBankEntry;
+    
+    // 2. Si por alguna razón NINGÚN ID está presente, se usa el índice como último recurso.
+    //    Se añade un prefijo para evitar colisiones con IDs numéricos (ej. 'fallback-0').
+    return key !== undefined && key !== null ? key : `fallback-${index}`;
+  };
+
+  // --- CAMBIO 3: EL .map() AHORA PASA EL 'index' Y USA EL 'index' COMO FALLBACK KEY ---
+  return documents.map((doc, index) => (
+    <DocumentTableRow
+      key={getUniqueKey(doc, index)}
+      doc={doc}
+      index={index} // Pasamos el 'index' como prop
+      columns={columns}
+      actionsProps={actionsProps}
+      styles={styles}
+      showRowActions={showRowActions} 
+    />
+  ));
 };

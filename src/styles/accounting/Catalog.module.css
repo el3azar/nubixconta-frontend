@@ -1,0 +1,228 @@
+/* src/styles/accounting/Catalog.module.css */
+
+/* --- Contenedor Principal --- */
+.viewWrapper {
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Paneles --- */
+.panelsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+@media (min-width: 992px) {
+  .panelsContainer {
+    flex-direction: row;
+  }
+}
+
+.panel {
+  flex: 1;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 20px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.panel h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #343a40;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+/* --- Estilos para los Árboles (sin cambios) --- */
+:global(.tree-wrapper) {
+  height: 500px;
+  overflow-y: auto;
+  border: none;
+  margin-bottom: 20px;
+}
+:global(.rc-tree-treenode) {
+  padding: 5px 0;
+}
+:global(.rc-tree-node-content-wrapper:hover) {
+  background-color: #f1f3f5;
+}
+:global(.rc-tree-treenode:not(.rc-tree-treenode-leaf) .rc-tree-title) {
+  font-weight: 500;
+  color: #212529;
+}
+:global(.rc-tree-treenode-leaf .rc-tree-title) {
+  font-weight: 400;
+  color: #495057;
+}
+:global(.title-inactive) {
+  color: #95a5a6;
+  text-decoration: line-through;
+  font-style: italic;
+}
+:global(.node-title) {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+:global(.edit-node-button) {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 15px;
+  border: 1px solid #ced4da;
+  background-color: #ffffff;
+  color: #495057;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+:global(.rc-tree-treenode:hover .edit-node-button) {
+  opacity: 1;
+}
+:global(.edit-node-button:hover) {
+  background-color: #3498db;
+  color: white;
+  border-color: #3498db;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+
+/* ======================================================= */
+/* === SECCIÓN DE BOTONES ACTUALIZADA === */
+/* ======================================================= */
+
+/* --- Botón de Activar (Estilo Primario) --- */
+.activateButton {
+  background-color: #10031C;
+  color: #fff;
+  border: 2px solid #10031C;
+  padding: 0.6rem 1.5rem;
+  border-radius: 50px; /* Estilo píldora */
+  font-weight: 500;
+  width: 100%; /* Ocupa todo el ancho del panel */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  gap: 8px; /* Espacio para el spinner */
+}
+
+.activateButton:hover:not(:disabled) {
+  background-color: transparent;
+  color: #10031C;
+}
+
+/* --- Botón de Desactivar (Estilo Destructivo) --- */
+.deactivateButton {
+  background-color: transparent; /* Rojo */
+  color: #000000;
+  border: 2px solid #10031C;
+  padding: 0.6rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 500;
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  margin-top: 10px;
+  gap: 8px;
+}
+
+.deactivateButton:hover:not(:disabled) {
+  background-color: #10031C;
+  color: #ffffff;
+}
+
+/* --- Estado Deshabilitado (Común para ambos botones) --- */
+.activateButton:disabled,
+.deactivateButton:disabled {
+  background-color: #bdc3c7;
+  border-color: #bdc3c7;
+  color: #fff;
+  cursor: not-allowed;
+  transform: none; /* Evita el efecto de hover */
+  box-shadow: none;
+}
+
+
+/* --- Estilo base para el contenedor del checkbox --- */
+/* Aumentamos un poco el área de clic y centramos */
+:global(.rc-tree-checkbox) {
+  padding: 2px;
+  margin: 0 6px 0 0;
+}
+
+/* --- Estilo para el checkbox INTERNO (el cuadrado) --- */
+:global(.rc-tree-checkbox-inner) {
+  /* Hacemos el checkbox un poco más grande */
+  width: 18px;
+  height: 18px;
+  /* Transición suave para todos los cambios */
+  transition: all 0.2s ease-in-out;
+  /* Borde por defecto para los deshabilitados */
+  border: 1.5px solid #d9d9d9;
+}
+
+/* --- ESTILO PARA CHECKBOXES DISPONIBLES (NO deshabilitados) --- */
+/* Este es el cambio principal: les damos un borde de color de acento */
+:global(.rc-tree-checkbox:not(.rc-tree-checkbox-disabled) .rc-tree-checkbox-inner) {
+  border-color: #3498db; /* Azul de acento */
+  background-color: #f8f9fa; /* Un fondo muy sutil para diferenciarlo del blanco puro */
+}
+
+/* --- Efecto HOVER para checkboxes disponibles --- */
+/* Al pasar el ratón, añadimos un "glow" y lo hacemos crecer un poco */
+:global(.rc-tree-checkbox:not(.rc-tree-checkbox-disabled):hover .rc-tree-checkbox-inner) {
+  transform: scale(1.1);
+  box-shadow: 0 0 8px rgba(52, 152, 219, 0.5); /* Sombra/glow azul */
+  border-color: #2980b9; /* Un azul un poco más oscuro */
+}
+
+/* --- Estilo para checkboxes MARCADOS --- */
+:global(.rc-tree-checkbox-checked .rc-tree-checkbox-inner) {
+  background-color: #3498db; /* Relleno azul al marcar */
+  border-color: #3498db;
+}
+
+/* --- Estilo para el checkmark (la palomita) --- */
+/* La hacemos un poco más gruesa para que resalte sobre el fondo azul */
+:global(.rc-tree-checkbox-checked .rc-tree-checkbox-inner::after) {
+  border-width: 2.5px;
+}
+
+/* --- Estilo para checkboxes DESHABILITADOS --- */
+/* Nos aseguramos de que se vean apagados y sin efectos de hover */
+:global(.rc-tree-checkbox-disabled .rc-tree-checkbox-inner) {
+  background-color: #f0f0f0;
+  border-color: #d9d9d9;
+}
+:global(.rc-tree-checkbox-disabled:hover .rc-tree-checkbox-inner) {
+  transform: none;
+  box-shadow: none;
+}
