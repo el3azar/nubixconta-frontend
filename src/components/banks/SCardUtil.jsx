@@ -1,26 +1,27 @@
 // src/components/banks/SCardUtil.jsx
-import React, { useState } from 'react'; // Elimina useEffect si no lo usas
-import styles from '../../styles/banks/Banks.module.css';
-import SelectBase from '../inventory/inventoryelements/SelectBase';
-import Boton from '../inventory/inventoryelements/Boton';
-import { useCatalogService } from '../../services/accounting/CatalogService'; // Importar el hook
+import React, { useState } from 'react';
+import styles from '../../styles/banks/Banks.module.css'; // Asegúrate que la ruta es correcta
+import SelectBase from '../inventory/inventoryelements/SelectBase'; // Asegúrate que la ruta es correcta
+import Boton from '../inventory/inventoryelements/Boton'; // Asegúrate que la ruta es correcta
+import { useCatalogService } from '../../services/accounting/CatalogService'; // Importar el hook, asegúrate que la ruta es correcta
 
-const SCardUtil = ({ onAddDetail }) => { // Ya no necesitas apiDataAccount aquí
-    const { searchCatalogs } = useCatalogService(); // Usar el servicio de catálogos
+const SCardUtil = ({ onAddDetail }) => { // onAddDetail es la función callback para el padre
+    const { searchCatalogs } = useCatalogService(); // Hook para buscar catálogos contables
 
-    const [selectedAccount, setSelectedAccount] = useState(null); // Objeto { value, label }
+    const [selectedAccount, setSelectedAccount] = useState(null); // Objeto { value, label } de la cuenta seleccionada
     const [description, setDescription] = useState('');
     const [debit, setDebit] = useState('');
     const [credit, setCredit] = useState('');
 
+    // Limpia los campos del formulario
     const handleClear = () => {
         setSelectedAccount(null);
         setDescription('');
         setDebit('');
         setCredit('');
-        // No hay necesidad de limpiar searchResults aquí, ya que SelectBase no las maneja directamente como estado.
     };
 
+    // Maneja el clic en el botón "Agregar" para añadir un asiento
     const handleAddClick = () => {
         const catalogIdValue = selectedAccount ? selectedAccount.value : null;
         const accountNameValue = selectedAccount ? selectedAccount.label : '';
@@ -28,7 +29,7 @@ const SCardUtil = ({ onAddDetail }) => { // Ya no necesitas apiDataAccount aquí
         const debitValue = Number(debit) || 0;
         const creditValue = Number(credit) || 0;
 
-        // Validaciones
+        // Validaciones básicas antes de añadir el detalle
         if (!catalogIdValue) {
             alert('Por favor, seleccione una cuenta contable.');
             return;
@@ -42,32 +43,31 @@ const SCardUtil = ({ onAddDetail }) => { // Ya no necesitas apiDataAccount aquí
             return;
         }
 
+        // Construye el objeto de detalle a añadir
         const detailToAdd = {
-            idCatalog: parseInt(catalogIdValue), // Convertir a número si el backend lo espera como int
-            accountName: accountNameValue, // Usar el label del objeto seleccionado
-            description: description || accountNameValue || 'Detalle de asiento',
+            idCatalog: parseInt(catalogIdValue), // Asegura que idCatalog sea un número entero
+            accountName: accountNameValue,       // Nombre de la cuenta para mostrar en la tabla
+            description: description || accountNameValue || 'Detalle de asiento', // Usa la descripción ingresada o el nombre de la cuenta
             debit: debitValue,
             credit: creditValue,
         };
 
         console.log("Añadiendo Detalle:", detailToAdd);
 
-        onAddDetail(detailToAdd); // Llamar a la función del padre
-        handleClear(); // Limpiar el formulario después de añadir
+        onAddDetail(detailToAdd); // Llama a la función del componente padre para añadir el detalle
+        handleClear();             // Limpia el formulario después de añadir
     };
 
-    // Esta es la función que SCardUtil le pasará a SelectBase como onSearchAsync
-    // SelectBase la llamará cada vez que el usuario escriba en el input.
+    // Función asíncrona que SelectBase usará para buscar cuentas contables
     const handleSearchAccounts = async (term) => {
-        // Puedes añadir una longitud mínima de búsqueda aquí también si quieres
-        // if (term.length < 2) return [];
-
         try {
-            const results = await searchCatalogs(term); // Llama a tu servicio real
-            return results; // Retorna los resultados en el formato {value, label}
+            const results = await searchCatalogs(term); // Llama al servicio real para buscar catálogos
+            // Los resultados deben venir en un formato que SelectBase entienda ({ value, label })
+            return results;
         } catch (error) {
             console.error("Error en la búsqueda de cuentas en SCardUtil:", error);
-            // Puedes usar Notifier.error aquí si quieres mostrar un mensaje al usuario
+            // Si tienes un Notifier, podrías usarlo aquí:
+            // Notifier.error("Error al buscar cuentas contables.");
             return []; // Devuelve un array vacío en caso de error
         }
     };
@@ -82,12 +82,11 @@ const SCardUtil = ({ onAddDetail }) => { // Ya no necesitas apiDataAccount aquí
                 <div className={TransFormGroup} style={{ gridColumn: 1 }}>
                     <label className={styles.formLabel}>Cuenta Contable:</label>
                     <SelectBase
-                        // Ahora le pasamos la función onSearchAsync
-                        onSearchAsync={handleSearchAccounts}
-                        value={selectedAccount} // Pasa el objeto seleccionado
-                        onChange={setSelectedAccount} // Actualiza el objeto seleccionado
+                        onSearchAsync={handleSearchAccounts} // Prop para la búsqueda asíncrona
+                        value={selectedAccount}             // Cuenta seleccionada (objeto { value, label })
+                        onChange={setSelectedAccount}       // Actualiza la cuenta seleccionada
                         placeholder="Buscar y seleccionar una cuenta..."
-                        minimumInputLength={2} // Ejemplo: Requiere al menos 2 caracteres para buscar
+                        minimumInputLength={2}              // Requiere al menos 2 caracteres para buscar
                     />
                 </div>
 
@@ -109,7 +108,7 @@ const SCardUtil = ({ onAddDetail }) => { // Ya no necesitas apiDataAccount aquí
                         onChange={(e) => {
                             const val = e.target.value;
                             setDebit(val);
-                            if (parseFloat(val) > 0) setCredit(''); // Si hay débito, limpiar crédito
+                            if (parseFloat(val) > 0) setCredit(''); // Limpia Crédito si se ingresa Débito
                         }}
                     />
                 </div>
@@ -122,7 +121,7 @@ const SCardUtil = ({ onAddDetail }) => { // Ya no necesitas apiDataAccount aquí
                         onChange={(e) => {
                             const val = e.target.value;
                             setCredit(val);
-                            if (parseFloat(val) > 0) setDebit(''); // Si hay crédito, limpiar débito
+                            if (parseFloat(val) > 0) setDebit(''); // Limpia Débito si se ingresa Crédito
                         }}
                     />
                 </div>

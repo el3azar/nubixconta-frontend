@@ -1,4 +1,3 @@
-// src/components/inventory/inventoryelements/SelectBase.jsx
 import React from 'react';
 import AsyncSelect from 'react-select/async';
 import styles from "../../../styles/inventory/SelectBase.module.css"; // Asegúrate de que este archivo exista y las clases sean correctas
@@ -25,49 +24,62 @@ const customStyles = {
 };
 
 const SelectBase = ({
-    value, // El valor seleccionado actualmente (objeto { value, label })
-    onChange, // Función para manejar el cambio de selección
+    value,
+    onChange,
     placeholder = "Escribe para buscar...",
     isDisabled = false,
-    onSearchAsync, // <<--- ¡NUEVA PROP! Aquí pasaremos la función de búsqueda real
-    minimumInputLength = 0, // Por defecto, puedes buscar desde el inicio, o poner 2 o 3
-    ...props // Para cualquier otra prop que quieras pasar a AsyncSelect
+    onSearchAsync, // Función para búsqueda asíncrona
+    options = [], // <--- Prop para opciones estáticas (con valor predeterminado)
+    minimumInputLength = 0,
+    ...props
 }) => {
 
     const loadOptions = async (inputValue, callback) => {
-        // Solo busca si la longitud del input es suficiente
-        if (inputValue.length < minimumInputLength) {
-            callback([]); // No hay opciones si el input es muy corto
-            return;
-        }
-
         if (onSearchAsync) {
+            // Lógica para búsqueda asíncrona
+            if (inputValue.length < minimumInputLength) {
+                callback([]);
+                return;
+            }
             try {
-                // Llama a la función asíncrona que viene de las props
-                const options = await onSearchAsync(inputValue);
-                callback(options); // Pasa las opciones a react-select/async
+                const fetchedOptions = await onSearchAsync(inputValue);
+                callback(fetchedOptions);
             } catch (error) {
-                console.error("Error al cargar opciones en SelectBase:", error);
-                callback([]); // En caso de error, no devuelve opciones
+                console.error("Error al cargar opciones en SelectBase (onSearchAsync):", error);
+                callback([]);
             }
         } else {
-            callback([]); // Si no hay función de búsqueda, no hay opciones
+            // Lógica para filtrar opciones estáticas si no hay onSearchAsync
+            const filteredOptions = options.filter(option =>
+                option.label.toLowerCase().includes(inputValue.toLowerCase())
+            );
+            callback(filteredOptions);
         }
     };
+
+    // `react-select/async` funciona mejor si `loadOptions` siempre está presente
+    // y la lógica de si es "asíncrono real" o "filtrado estático" está dentro de `loadOptions`.
+    // Para `defaultOptions`, si hay opciones estáticas, las pasamos.
+    // Si es una búsqueda asíncrona real, `defaultOptions` puede ser `false` o `[]`.
+    const isActuallyAsync = !!onSearchAsync;
 
     return (
         <AsyncSelect
             classNamePrefix="custom-select"
-            cacheOptions // Almacena en caché los resultados de búsqueda para el mismo término
-            loadOptions={loadOptions}
-            // defaultOptions={false} // No cargues opciones por defecto, espera la búsqueda.
-            // Si quieres que al abrir muestre algunas opciones sin escribir nada:
-            // defaultOptions={true} // Carga opciones al abrir, con un término vacío o el que defina onSearchAsync
+            // Solo cachea si realmente es una operación asíncrona de búsqueda.
+            // Si son opciones estáticas, no necesitamos cachearlas de esta forma.
+            cacheOptions={isActuallyAsync}
+            loadOptions={loadOptions} // Siempre pasamos loadOptions, que contiene la lógica
+            
+            // Si tenemos opciones estáticas, las usamos como defaultOptions.
+            // Si es una búsqueda asíncrona (onSearchAsync), no hay defaultOptions iniciales.
+            defaultOptions={options.length > 0 ? options : (isActuallyAsync ? [] : true)}
+            
             isClearable={!isDisabled}
             placeholder={placeholder}
             loadingMessage={() => "Buscando..."}
             noOptionsMessage={({ inputValue }) =>
-                inputValue.length < minimumInputLength
+                isActuallyAsync && inputValue.length < minimumInputLength
                     ? `Escribe al menos ${minimumInputLength} caracteres para buscar.`
                     : `No se encontraron resultados para "${inputValue}"`
             }

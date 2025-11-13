@@ -1,226 +1,386 @@
-// src/components/banks/NewBankTransaction.jsx
-import React, { useState } from "react";
-import Boton from "../inventory/inventoryelements/Boton";
-import SelectBase from "../inventory/inventoryelements/SelectBase"; // Asegúrate de que este SelectBase es el que usas para apiDataTipo
-import { useNavigate } from "react-router-dom";
-import SubMenu from "../shared/SubMenu";
+// src/components/banks/BankTransactionsView.jsx
+import React, { useState, useEffect } from 'react';
+import SubMenu from '../shared/SubMenu';
 import { banksSubMenuLinks } from '../../config/menuConfig';
-import SCardUtil from './SCardUtil'; // El formulario de detalle
-import { DocumentTable } from '../shared/DocumentTable';
 import styles from '../../styles/banks/Banks.module.css';
-import { bankTransactionService } from '../../services/banks/banksService';
+import { formatDate } from '../../utils/dateFormatter';
+import { useNavigate } from "react-router-dom";
+
+// --- IMPORTS ACTUALIZADOS ---
+import { bankTransactionService } from '../../services/banks/banksService'; // Servicio para 'Este Módulo'
+import { useBankEntriesService } from '../../services/banks/BankEntriesService'; // Importa el NUEVO servicio
 import { Notifier } from '../../utils/alertUtils';
 
-// NewBankTransaction ya no necesita la prop apiDataCuenta
-// const NewBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
-const NewBankTransaction = ({ apiDataTipo }) => { // Solo apiDataTipo
+//imports especificos de la vista
+import SearchCardBank from './SearchCardBank';
+import { DocumentTable } from '../shared/DocumentTable';
+import Boton from '../inventory/inventoryelements/Boton';
 
-    const navigate = useNavigate();
+// Las columnas para 'Este Módulo' (BankTransactionsView original)
+export const thisModuleColumns = [
+    { header: 'Correlativo', accessor: 'correlative', style: { width: '80px', textAlign: 'center' } },
+    { header: 'No. de asiento', accessor: 'seatNumber', style: { width: '100px', textAlign: 'center' } },
+    { header: 'Fecha de transacción', accessor: 'transactionDate', cell: (doc) => formatDate(doc.transactionDate), style: { width: '130px' } },
+    { header: 'Modulo de origen', accessor: 'originModule', style: { width: '120px' } },
+    { header: 'Cuenta bancaria', accessor: 'bankAccountName', style: { width: '150px' } },
+    { header: 'No. de referencia', accessor: 'referenceNumber', style: { width: '130px', textAlign: 'center' } },
+    { header: 'Descripcion de la transaccion', accessor: 'description', style: { flexGrow: 1 } },
+    { header: 'Cargo', accessor: 'debit', cell: (doc) => `$${doc.debit ? doc.debit.toFixed(2) : '0.00'}`, style: { width: '100px', textAlign: 'right', fontWeight: 'bold' } },
+    { header: 'Abono', accessor: 'credit', cell: (doc) => `$${doc.credit ? doc.credit.toFixed(2) : '0.00'}`, style: { width: '100px', textAlign: 'right', fontWeight: 'bold' } },
+];
 
-    const [header, setHeader] = useState({
-        transactionDate: '',
-        receiptNumber: '',
-        description: '',
-        transactionType: null, // Debería ser un objeto { value, label } si viene de SelectBase
-        companyId: 1 // 🛑 ¡Obtén esto del contexto de usuario real!
-    });
+const BankTransactionsView = ({ apiDataCodigo }) => {
 
-    const [bankEntries, setBankEntries] = useState([]);
+  const [accountName, setAccountName] = useState('');
+    const [dateFrom, setDateFrom] = useState('');
+    const [dateTo, setDateTo] = useState('');
+
+    const [transactions, setTransactions] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const detailColumns = [
-        { header: 'Cuenta', accessor: 'accountName' }, // Mostrar el nombre de la cuenta
-        { header: 'Descripción', accessor: 'description' },
-        { header: 'Debe', accessor: 'debit', cell: (doc) => `$${(doc.debit || 0).toFixed(2)}`, className: styles.textAlignRight },
-        { header: 'Haber', accessor: 'credit', cell: (doc) => `$${(doc.credit || 0).toFixed(2)}`, className: styles.textAlignRight },
-        {
-            header: 'Acciones',
-            accessor: 'actions',
-            className: styles.textAlignCenter,
-            cell: (doc, index) => (
-                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                    <Boton color="rojo" title="Eliminar" size="icon" forma="pastilla" onClick={() => handleDeleteDetail(index)}>
-                        <i className="bi bi-trash"></i>
-                    </Boton>
-                </div>
-            )
-        }
+    const [activeModule, setActiveModule] = useState('ESTE_MODULO'); // Estado para controlar qué módulo está activo
+    const navigate = useNavigate();
+
+    // --- INSTANCIA DEL NUEVO SERVICIO ---
+    const { listAllBankEntries } = useBankEntriesService();
+
+    // Las columnas para el endpoint de bank-entries (Otros Módulos)
+    // Se adaptan a la estructura de tus datos JSON
+    const otherModuleColumns = [
+        { header: 'Correlativo', accessor: 'id', style: { width: '80px', textAlign: 'center' } },
+        { header: 'No. de asiento', accessor: 'id', style: { width: '100px', textAlign: 'center' } }, // Usamos id como asiento por ahora
+        { header: 'Fecha de transacción', accessor: 'date', cell: (doc) => formatDate(doc.date), style: { width: '130px' } },
+        { header: 'Modulo de origen', accessor: 'collection.moduleType', style: { width: '120px' } }, // Acceder a nested object
+        { header: 'Cuenta bancaria', accessor: 'accountName', style: { width: '150px' } },
+        { header: 'No. de referencia', accessor: 'collection.reference', style: { width: '130px', textAlign: 'center' } }, // Acceder a nested object
+        { header: 'Descripcion de la transaccion', accessor: 'description', style: { flexGrow: 1 } },
+        { header: 'Cargo', accessor: 'debit', cell: (doc) => `$${doc.debit ? doc.debit.toFixed(2) : '0.00'}`, style: { width: '100px', textAlign: 'right', fontWeight: 'bold' } },
+        { header: 'Abono', accessor: 'credit', cell: (doc) => `$${doc.credit ? doc.credit.toFixed(2) : '0.00'}`, style: { width: '100px', textAlign: 'right', fontWeight: 'bold' } },
     ];
 
-    const handleAddDetail = (newDetail) => {
-        setBankEntries(prevEntries => [...prevEntries, newDetail]);
-    };
-
-    const handleDeleteDetail = (indexToDelete) => {
-        if (window.confirm(`¿Está seguro de eliminar esta línea?`)) {
-            setBankEntries(prev => prev.filter((_, index) => index !== indexToDelete));
-        }
-    };
-
-    console.log("Current bankEntries state:", bankEntries);
-
-    const totalDebe = bankEntries.reduce((sum, item) => sum + (Number(item.debit) || 0), 0);
-    const totalHaber = bankEntries.reduce((sum, item) => sum + (Number(item.credit) || 0), 0);
-    const balance = totalDebe - totalHaber;
-
-    const handleSaveTransaction = async () => {
-        if (!header.transactionDate || !header.description || !header.transactionType) {
-            Notifier.warning('Complete los campos del encabezado: Fecha, Descripción y Tipo.');
-            return;
-        }
-        if (bankEntries.length < 2) {
-            Notifier.warning('La transacción debe tener al menos dos asientos (partida doble).');
-            return;
-        }
-        if (balance !== 0) {
-            Notifier.error(`La partida no cuadra. Balance: $${balance.toFixed(2)}`);
-            return;
-        }
-
+    const loadTransactions = async () => {
         setIsLoading(true);
         setError(null);
+        setTransactions([]); // Limpiar datos previos
 
         try {
-            const transactionData = {
-                transactionDate: header.transactionDate,
-                receiptNumber: header.receiptNumber,
-                description: header.description,
-                // Asegúrate de enviar solo el 'value' del tipo de transacción
-                transactionType: header.transactionType ? header.transactionType.value : null,
-                companyId: header.companyId,
-                bankEntries: bankEntries.map(entry => ({
-                    idCatalog: entry.idCatalog,
-                    description: entry.description,
-                    debit: entry.debit,
-                    credit: entry.credit,
-                })) // Mapear para enviar solo lo que el backend espera
-            };
+            const filters = { accountName, dateFrom, dateTo };
 
-            console.log("Enviando a la API:", transactionData);
-            await bankTransactionService.create(transactionData);
-
-            Notifier.success('Transacción registrada con éxito!');
-            navigate('/bancos/transacciones');
+            if (activeModule === 'ESTE_MODULO') {
+                // Lógica existente para 'Este Módulo'
+                const data = await bankTransactionService.listAll(filters);
+                const mappedData = data.map(tx => ({
+                    id: tx.idBankTransaction,
+                    correlative: tx.idBankTransaction,
+                    transactionDate: tx.transactionDate,
+                    referenceNumber: tx.receiptNumber,
+                    description: tx.description,
+                    amount: tx.totalAmount,
+                    status: tx.accountingTransactionStatus
+                }));
+                setTransactions(mappedData);
+            } else if (activeModule === 'OTROS_MODULOS') {
+                // --- NUEVA LÓGICA PARA 'OTROS MÓDULOS' ---
+                const data = await listAllBankEntries(filters); // Usar el nuevo servicio
+                // Los datos ya vienen con la estructura que esperamos, solo los asignamos
+                setTransactions(data);
+            }
 
         } catch (err) {
-            console.error("Error al guardar:", err);
-            setError('Error al guardar la transacción.');
-            const backendError = err.response?.data?.message || err.message || 'Error desconocido.';
-            Notifier.error(`Error al guardar: ${backendError}`);
+            console.error("Error al cargar transacciones:", err);
+            setError("No se pudieron cargar las transacciones.");
+            Notifier.error("Error al cargar datos.");
         } finally {
             setIsLoading(false);
         }
     };
+    
 
-    const handleReturnTransaction = () => {
-        navigate('/bancos/transacciones');
-    }
 
-    const handleHeaderChange = (e) => {
-        const { name, value } = e.target;
-        setHeader(prev => ({ ...prev, [name]: value }));
+    useEffect(() => {
+        loadTransactions();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeModule]); // Se recarga si cambias entre "Este Módulo" y "Otros", o si cambian los filtros
+
+    const handleNew = () => {
+        navigate('/bancos/transacciones/nueva');
     };
+
+    const handleEdit = (doc) => {
+        navigate(`/bancos/transacciones/editar/${doc.id}`);
+    };
+
+    const handleView = (doc) => {
+        navigate(`/bancos/transacciones/ver/${doc.id}`);
+    };
+
+    const handleDelete = async (doc) => {
+        if (window.confirm(`¿Está seguro de eliminar la transacción "${doc.referenceNumber}"?`)) {
+            try {
+                // Solo aplica para 'Este Módulo' si tienes un delete para bankTransactionService
+                if (activeModule === 'ESTE_MODULO') {
+                    await bankTransactionService.delete(doc.id);
+                    Notifier.success("Transacción eliminada con éxito.");
+                    loadTransactions();
+                } else {
+                    Notifier.info("La eliminación no está disponible para 'Otros Módulos' en esta vista.");
+                }
+            } catch (err) {
+                console.error("Error al eliminar:", err);
+                Notifier.error("Error al eliminar la transacción.");
+            }
+        }
+    };
+
+    const handleApprove = async (doc) => {
+        if (window.confirm(`¿Está seguro de aplicar la transacción "${doc.referenceNumber}"?`)) {
+            try {
+                // Solo aplica para 'Este Módulo'
+                if (activeModule === 'ESTE_MODULO') {
+                    await bankTransactionService.apply(doc.id);
+                    Notifier.success("Transacción aplicada con éxito.");
+                    loadTransactions();
+                } else {
+                    Notifier.info("La aplicación no está disponible para 'Otros Módulos' en esta vista.");
+                }
+            } catch (err) {
+                console.error("Error al aplicar:", err);
+                Notifier.error(err.message || "Error al aplicar la transacción.");
+            }
+        }
+    };
+
+    const handleCancel = async (doc) => {
+        if (window.confirm(`¿Está seguro de anular la transacción "${doc.referenceNumber}"?`)) {
+            try {
+                // Solo aplica para 'Este Módulo'
+                if (activeModule === 'ESTE_MODULO') {
+                    await bankTransactionService.annul(doc.id);
+                    Notifier.success("Transacción anulada con éxito.");
+                    loadTransactions();
+                } else {
+                    Notifier.info("La anulación no está disponible para 'Otros Módulos' en esta vista.");
+                }
+            } catch (err) {
+                console.error("Error al anular:", err);
+                Notifier.error(err.message || "Error al anular la transacción.");
+            }
+        }
+    };
+
+    // Columnas para 'Este Módulo' (BankTransactionsView original)
+    const bankTransactionColumns = [
+        {
+            header: 'Correlativo',
+            accessor: 'correlative',
+            style: { width: '80px', textAlign: 'center' }
+        },
+        {
+            header: 'Fecha de transacción',
+            accessor: 'transactionDate',
+            cell: (doc) => formatDate(doc.transactionDate),
+            style: { width: '130px' }
+        },
+        {
+            header: 'No. de referencia',
+            accessor: 'referenceNumber',
+            style: { width: '130px', textAlign: 'center' }
+        },
+        {
+            header: 'Descripción de la transacción',
+            accessor: 'description',
+            style: { flexGrow: 1 }
+        },
+        {
+            header: 'Estado',
+            accessor: 'status',
+            style: { width: '90px', textAlign: 'center' },
+            cell: (doc) => {
+                let className = '';
+                if (doc.status === 'PENDIENTE') className = styles.statusPending;
+                if (doc.status === 'APLICADA') className = styles.statusApplied;
+                if (doc.status === 'ANULADA') className = styles.statusAnnulled;
+                return <span className={className}>{doc.status}</span>;
+            }
+        },
+        {
+            header: 'Monto',
+            accessor: 'amount',
+            cell: (doc) => `$${doc.amount ? doc.amount.toFixed(2) : '0.00'}`,
+            style: { width: '120px', textAlign: 'right', fontWeight: 'bold' }
+        },
+        {
+        
+            header: 'Acciones',
+            accessor: 'actions',
+            style: { width: '210px', textAlign: 'center' },
+            cell: (doc) => {
+                if (doc.status === 'PENDIENTE') {
+                    return (
+                        <div className="d-flex gap-1 justify-content-center flex-wrap">
+                            <Boton color="blanco" title="Ver Detalles" size="icon" forma="pastilla" onClick={() => handleView(doc)}>
+                                <i className="bi bi-eye"></i>
+                            </Boton>
+                            <Boton color="rojo" title="Eliminar" size="icon" forma="pastilla" onClick={() => handleDelete(doc)}>
+                                <i className="bi bi-trash"></i>
+                            </Boton>
+                            <Boton color="verde" title="Aplicar" size="icon" forma="pastilla" onClick={() => handleApprove(doc)}>
+                                <i className="bi bi-check-circle"></i>
+                            </Boton>
+                            <Boton color="morado" title="Editar" size="icon" forma="pastilla" onClick={() => handleEdit(doc)}>
+                                <i className="bi bi-pencil-square mb-2 me-2 mt-2 ms-2"></i>
+                            </Boton>
+                        </div>
+                    );
+                } else if (doc.status === 'APLICADA') {
+                    return (
+                        <div className="d-flex gap-1 justify-content-center flex-wrap">
+                            <Boton color="blanco" title="Ver Detalles" size="icon" forma="pastilla" onClick={() => handleView(doc)}>
+                                <i className="bi bi-eye"></i>
+                            </Boton>
+                            <Boton color="rojo" title="Anular" size="icon" forma="pastilla" onClick={() => handleCancel(doc)}>
+                                <i className="bi bi-x-circle"></i>
+                            </Boton>
+                        </div>
+                    );
+                } 
+                return null;
+            }
+        }
+    ];
+
+    const isEsteModulo = activeModule === 'ESTE_MODULO';
+    // Se eligen las columnas dinámicamente
+    const currentColumns = isEsteModulo ? bankTransactionColumns : otherModuleColumns;
+
+    const handleSearch = () => {
+        loadTransactions();
+    };
+
+    const handleClear = () => {
+        setAccountName('');
+        setDateFrom('');
+        setDateTo('');
+        setTransactions([]);
+        setError(null);
+    };
+
+    const handleOrderByState = () => {
+        // Solo tiene sentido ordenar por estado para "Este Módulo"
+        if (activeModule === 'ESTE_MODULO') {
+            const sorted = [...transactions].sort((a, b) => {
+                const statusOrder = { 'PENDIENTE': 1, 'APLICADA': 2, 'ANULADA': 3 };
+                return (statusOrder[a.status] || 999) - (statusOrder[b.status] || 999);
+            });
+            setTransactions(sorted);
+            Notifier.info('Ordenado por estado.');
+        } else {
+            Notifier.info('La opción "Ordenar por Estado" solo aplica para "Este Módulo".');
+        }
+    };
+
+    const handleOrderByDate = () => {
+        const sorted = [...transactions].sort((a, b) =>
+            new Date(b.transactionDate || b.date) - new Date(a.transactionDate || a.date)
+        );
+        setTransactions(sorted);
+        Notifier.info('Ordenado por fecha.');
+    };
+
 
     return (
         <>
             <div>
                 <SubMenu links={banksSubMenuLinks} />
             </div>
-            <div>
-                <h2>Nueva Transacción de Banco</h2>
-            </div>
-            <div className="mb-3">
-                <Boton color="morado" forma="pastilla" onClick={handleReturnTransaction}>
-                    <i className="bi bi-arrow-left me-2"></i> Volver
-                </Boton>
+            <div className={styles.title}>
+                <h2>Gestión de Transacciones Bancarias</h2>
             </div>
 
-            <div className={styles.searchCard}>
-                <h3 className={styles.h2Izq}>Encabezado de la Transacción</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: '18px' }}>
-                    <div className={styles['trans-form-group']}>
-                        <label className={styles.formLabel}>Fecha:</label>
-                        <input type="date" name="transactionDate" value={header.transactionDate} onChange={handleHeaderChange} />
-                    </div>
-                    <div className={styles['trans-form-group']}>
-                        <label className={styles.formLabel}>No. de Referencia:</label>
-                        <input type="text" name="receiptNumber" placeholder="Ej. CH-001" value={header.receiptNumber} onChange={handleHeaderChange} />
-                    </div>
-                    <div className={styles['trans-form-group']}>
-                        <label className={styles.formLabel}>Tipo (ENTRADA/SALIDA):</label>
-                        {/* Asume que este SelectBase es compatible con apiData y devuelve { value, label } */}
-                        <SelectBase
-                            apiData={apiDataTipo} // Este SelectBase sí usa apiData
-                            value={header.transactionType}
-                            onChange={(value) => setHeader(prev => ({ ...prev, transactionType: value }))}
-                            placeholder="Seleccione el tipo"
-                            // Aquí no necesitarías onSearchAsync porque apiDataTipo es una lista estática
-                        />
-                    </div>
-                    <div className={styles['trans-form-group']} style={{ gridColumn: '1 / span 3' }}>
-                        <label className={styles.formLabel}>Descripción General:</label>
-                        <input type="text" name="description" placeholder="Descripción de la transacción" value={header.description} onChange={handleHeaderChange} />
-                    </div>
-                </div>
-            </div>
-
-            {/* --- SCardUtil YA NO RECIBE apiDataAccount --- */}
-            <SCardUtil
-                onAddDetail={handleAddDetail}
+            <SearchCardBank
+               accountName={accountName}
+                onAccountNameChange={setAccountName}
+                startDate={dateFrom}
+                onStartDateChange={setDateFrom}
+                endDate={dateTo}
+                onEndDateChange={setDateTo}
+                handleSearch={handleSearch}
+                handleClear={handleClear}
             />
 
-            <div className="d-flex justify-content-between align-items-center mt-4 mb-3">
-                <h3>Detalle de la Transacción (Asientos)</h3>
+            <div className='d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 mb-3'>
+                <div className="d-flex gap-2 flex-wrap">
+                    <Boton
+                        color={isEsteModulo ? 'morado' : 'blanco'}
+                        forma="pastilla"
+                        onClick={() => setActiveModule('ESTE_MODULO')}
+                    >
+                        Este Modulo
+                    </Boton>
+                    <Boton
+                        color={!isEsteModulo ? 'morado' : 'blanco'}
+                        forma="pastilla"
+                        onClick={() => setActiveModule('OTROS_MODULOS')}
+                    >
+                        Otros Modulos
+                    </Boton>
+                </div>
+
+                <div className="d-flex gap-2 flex-wrap">
+                    {isEsteModulo && (
+                        <Boton color="morado" forma="pastilla" onClick={handleNew}>
+                            <i className="bi bi-plus-circle me-2"></i>
+                            Nueva
+                        </Boton>
+                    )}
+
+                    {/* Mostrar "Ordenar por Estado" solo para "Este Módulo" */}
+                    {isEsteModulo && (
+                        <Boton color="blanco" forma="pastilla" onClick={handleOrderByState}>
+                            Ordenar Por Estado
+                        </Boton>
+                    )}
+
+                    <Boton color="blanco" forma="pastilla" onClick={handleOrderByDate}>
+                        Ordenar Por Fecha
+                    </Boton>
+                </div>
             </div>
 
             <div className={styles.tablaWrapper}>
                 <table className={styles.tabla}>
-                    <thead className={styles.table_header}>
-                        <tr>
-                            {detailColumns.map(col => (
-                                <th key={col.header} className={col.className}>{col.header}</th>
+                    <thead>
+                        <tr className={styles.table_header}>
+                            {currentColumns.map(col => (
+                                <th key={col.header} style={col.style}>{col.header}</th>
                             ))}
+                            {/* La columna de acciones solo para "Este Módulo" */}
+                          
                         </tr>
                     </thead>
                     <tbody>
                         <DocumentTable
-                            documents={bankEntries}
-                            columns={detailColumns}
+                            documents={transactions}
+                            columns={currentColumns}
+                            // showRowActions debe ser true para 'Este Modulo' y false para 'Otros Modulos'
+                            showRowActions={isEsteModulo}
                             styles={styles}
-                            showRowActions={false}
-                            emptyMessage="Añada asientos a la transacción."
+                            isLoading={isLoading}
+                            isError={!!error}
+                            error={error ? "Error al cargar datos" : null}
+                            emptyMessage={isEsteModulo
+                                ? "No se encontraron transacciones. Pruebe a cambiar los filtros."
+                                : "No se encontraron entradas bancarias de otros módulos. Pruebe a cambiar los filtros."
+                            }
+                            // Pasar `renderActionsCell` solo si es 'Este Módulo'
+                            renderActionsCell={isEsteModulo ? (doc) => bankTransactionColumns.find(c => c.accessor === 'actions').cell(doc) : undefined}
                         />
-                        <tr className={styles.tableTotalRow} style={{ backgroundColor: '#bcb7dd', fontWeight: 'bold' }}>
-                            <td colSpan={2}>Total</td>
-                            <td className={styles.textAlignRight}>${(totalDebe || 0).toFixed(2)}</td>
-                            <td className={styles.textAlignRight}>${(totalHaber || 0).toFixed(2)}</td>
-                            <td></td>
-                        </tr>
-                        <tr style={{ fontWeight: 'bold', backgroundColor: balance !== 0 ? '#ffcdd2' : '#c8e6c9' }}>
-                            <td colSpan={2}>Balance (Debe - Haber)</td>
-                            <td colSpan={2} className={styles.textAlignRight}>${(balance || 0).toFixed(2)}</td>
-                            <td>{balance !== 0 ? '¡No cuadra!' : '¡Cuadrado!'}</td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
-
-            {error && <div className="alert alert-danger mt-3">{error}</div>}
-            <div className="d-flex gap-2 flex-wrap mt-4 justify-content-end">
-                <Boton
-                    color="verde"
-                    forma="pastilla"
-                    onClick={handleSaveTransaction}
-                    disabled={isLoading}
-                >
-                    {isLoading ? 'Registrando...' : 'Registrar Transacción'}
-                </Boton>
-                <Boton color="rojo" forma="pastilla" onClick={handleReturnTransaction}>
-                    Cancelar
-                </Boton>
-            </div>
         </>
-    )
-}
-export default NewBankTransaction;
+    );
+};
+
+export default BankTransactionsView;

@@ -11,10 +11,13 @@ const DocumentTableRow = ({ doc, columns, actionsProps, styles, showRowActions, 
   const status = doc.creditNoteStatus || doc.saleStatus || doc.purchaseStatus || doc.status; // Añadido doc.status para Este Modulo
   const id = doc.idPurchase || doc.idNotaCredit || doc.saleId || doc.id; // Añadido doc.id
 
-  const rowClass = showRowActions
-    ? (status === 'APLICADA' ? 'table-success' : status === 'ANULADA' ? 'table-danger' : '')
-    : undefined;
-
+   let rowClass = '';
+  if (status === 'APLICADA') {
+    rowClass = styles.rowApplied; 
+  } else if (status === 'ANULADA') {
+    rowClass = styles.rowAnnulled; 
+  }
+  
   return (
     // La key ya no va en el <tr> aquí, sino en el .map() de DocumentTable
     <tr className={rowClass}>
