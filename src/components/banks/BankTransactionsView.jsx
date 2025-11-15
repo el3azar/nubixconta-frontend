@@ -62,14 +62,21 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
     const loadTransactions = async () => {
         setIsLoading(true);
         setError(null);
-        setTransactions([]); // Limpiar datos previos
+        // No limpiamos las transacciones aquí para que no parpadee la tabla al buscar
 
         try {
-            const filters = { accountName, dateFrom, dateTo };
-
             if (activeModule === 'ESTE_MODULO') {
-                // Lógica existente para 'Este Módulo'
-                const data = await bankTransactionService.listAll(filters);
+                // 1. Prepara el objeto de filtros con los nombres correctos
+                const filters = { 
+                    query: accountName, 
+                    startDate: dateFrom, 
+                    endDate: dateTo 
+                };
+
+                // 2. Llama a la nueva función del servicio
+                const data = await bankTransactionService.search(filters);
+                
+                // 3. El mapeo de datos sigue siendo el mismo, ¡perfecto!
                 const mappedData = data.map(tx => ({
                     id: tx.idBankTransaction,
                     correlative: tx.idBankTransaction,
@@ -81,9 +88,8 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
                 }));
                 setTransactions(mappedData);
             } else if (activeModule === 'OTROS_MODULOS') {
-                // --- NUEVA LÓGICA PARA 'OTROS MÓDULOS' ---
-                const data = await listAllBankEntries(filters); // Usar el nuevo servicio
-                // Los datos ya vienen con la estructura que esperamos, solo los asignamos
+                // La lógica para otros módulos no necesita cambios
+                const data = await listAllBankEntries({ accountName, dateFrom, dateTo }); 
                 setTransactions(data);
             }
 
@@ -115,16 +121,23 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
         navigate(`/bancos/transacciones/ver/${doc.id}`);
     };
 
-    const handleDelete = async (doc) => {
-        if (window.confirm(`¿Está seguro de eliminar la transacción "${doc.referenceNumber}"?`)) {
+   const handleDelete = async (doc) => {
+        // 1. Llama a Notifier.confirm con el formato correcto (un objeto)
+        const result = await Notifier.confirm({
+            title: '¿Estás seguro?',
+            text: `Esta acción eliminará la transacción "${doc.referenceNumber}". No se puede revertir.`,
+            confirmButtonText: 'Sí, eliminar'
+        });
+
+        // 2. Revisa la propiedad "isConfirmed" del resultado
+        if (result.isConfirmed) {
             try {
-                // Solo aplica para 'Este Módulo' si tienes un delete para bankTransactionService
                 if (activeModule === 'ESTE_MODULO') {
                     await bankTransactionService.delete(doc.id);
                     Notifier.success("Transacción eliminada con éxito.");
                     loadTransactions();
                 } else {
-                    Notifier.info("La eliminación no está disponible para 'Otros Módulos' en esta vista.");
+                    Notifier.info("La eliminación no está disponible para 'Otros Módulos'.");
                 }
             } catch (err) {
                 console.error("Error al eliminar:", err);
@@ -134,15 +147,20 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
     };
 
     const handleApprove = async (doc) => {
-        if (window.confirm(`¿Está seguro de aplicar la transacción "${doc.referenceNumber}"?`)) {
+        const result = await Notifier.confirm({
+            title: 'Confirmar Aplicación',
+            text: `¿Deseas aplicar la transacción "${doc.referenceNumber}"?`,
+            confirmButtonText: 'Sí, aplicar'
+        });
+
+        if (result.isConfirmed) {
             try {
-                // Solo aplica para 'Este Módulo'
                 if (activeModule === 'ESTE_MODULO') {
                     await bankTransactionService.apply(doc.id);
                     Notifier.success("Transacción aplicada con éxito.");
                     loadTransactions();
                 } else {
-                    Notifier.info("La aplicación no está disponible para 'Otros Módulos' en esta vista.");
+                    Notifier.info("La aplicación no está disponible para 'Otros Módulos'.");
                 }
             } catch (err) {
                 console.error("Error al aplicar:", err);
@@ -152,15 +170,20 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
     };
 
     const handleCancel = async (doc) => {
-        if (window.confirm(`¿Está seguro de anular la transacción "${doc.referenceNumber}"?`)) {
+        const result = await Notifier.confirm({
+            title: 'Confirmar Anulación',
+            text: `¿Deseas anular la transacción "${doc.referenceNumber}"?`,
+            confirmButtonText: 'Sí, anular'
+        });
+
+        if (result.isConfirmed) {
             try {
-                // Solo aplica para 'Este Módulo'
                 if (activeModule === 'ESTE_MODULO') {
                     await bankTransactionService.annul(doc.id);
                     Notifier.success("Transacción anulada con éxito.");
                     loadTransactions();
                 } else {
-                    Notifier.info("La anulación no está disponible para 'Otros Módulos' en esta vista.");
+                    Notifier.info("La anulación no está disponible para 'Otros Módulos'.");
                 }
             } catch (err) {
                 console.error("Error al anular:", err);
@@ -168,6 +191,7 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
             }
         }
     };
+
 
     // Columnas para 'Este Módulo' (BankTransactionsView original)
     const bankTransactionColumns = [
@@ -363,8 +387,10 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
                         <DocumentTable
                             documents={transactions}
                             columns={currentColumns}
-                            // showRowActions debe ser true para 'Este Modulo' y false para 'Otros Modulos'
+                            // Mantenemos showRowActions para que los colores de las filas sigan funcionando
                             showRowActions={isEsteModulo}
+                            // ¡AQUÍ ESTÁ LA MAGIA! Le decimos que NO renderice sus acciones genéricas
+                            disableGenericActions={true} 
                             styles={styles}
                             isLoading={isLoading}
                             isError={!!error}
@@ -373,8 +399,8 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
                                 ? "No se encontraron transacciones. Pruebe a cambiar los filtros."
                                 : "No se encontraron entradas bancarias de otros módulos. Pruebe a cambiar los filtros."
                             }
-                            // Pasar `renderActionsCell` solo si es 'Este Módulo'
-                            renderActionsCell={isEsteModulo ? (doc) => bankTransactionColumns.find(c => c.accessor === 'actions').cell(doc) : undefined}
+                            // Esto ya no es necesario, ya que la columna de acciones está en 'currentColumns'
+                            // renderActionsCell={isEsteModulo ? (doc) => bankTransactionColumns.find(c => c.accessor === 'actions').cell(doc) : undefined}
                         />
                     </tbody>
                 </table>

@@ -1,4 +1,3 @@
-// src/components/accounting/catalog/EditAccountModal.jsx
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { useCatalogService } from '../../../services/accounting/CatalogService';
