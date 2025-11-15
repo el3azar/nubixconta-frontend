@@ -1,0 +1,54 @@
+/* src/styles/shared/ReportDateFilter.module.css */
+.filterForm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: flex-end;
+  margin-bottom: 2rem;
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  border: 1px solid #e0e0e0;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup label {
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+  color: #555;
+  font-weight: 500;
+}
+
+.formGroup input {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.filterButton {
+  padding: 0.7rem 1.5rem;
+  background-color: #10031C; /* Morado principal */
+  color: white;
+  border: 2px solid #10031C;
+  border-radius: 50px; /* Estilo píldora */
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-weight: 500;
+}
+
+.filterButton:hover:not(:disabled) {
+  background-color: transparent;
+  color: #10031C;
+}
+
+.filterButton:disabled {
+  background-color: #bdc3c7;
+  border-color: #bdc3c7;
+  cursor: not-allowed;
+}

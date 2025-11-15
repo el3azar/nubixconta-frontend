@@ -1,0 +1,398 @@
+
+.container {
+  min-height: 60vh;
+  color: #000;
+  width: 79.5rem;
+}
+
+.titulo {
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+}
+label{
+  color:#000
+}
+
+/* Filtro de fechas */
+.buscador {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  background-color: #8581B0;
+  padding: 1.2rem;
+  border-radius: 15px;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+/* --- NUEVA REGLA --- */
+/* Estilo para el título agregado (Objetivo 2) */
+.tarjetaTitulo {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #000;
+  margin: 0 0 0.5rem 0; /* Espacio debajo del título */
+  padding: 0;
+  text-align: left;
+}
+
+/* --- NUEVA REGLA --- */
+/* Contenedor para cada fila de filtros (Objetivo 3) */
+.fila {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap; /* Para que los elementos se muevan hacia abajo si no caben */
+  gap: 2rem; /* Espacio entre grupos (ej. fecha y detalle) */
+}
+
+
+/* --- NUEVA REGLA --- */
+/* Wrapper para alinear el botón de búsqueda a la derecha */
+.btnWrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem; /* Espacio sobre el botón */
+}
+
+.filtroGrupo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.filtroGrupo label {
+  color: #000;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.filtroGrupo input[type="date"] {
+  padding: 0.6rem;
+  border: none;
+  border-radius: 15px;
+  font-size: 1rem;
+}
+
+.btnBuscar {
+  background-color: #10031C;
+  color: white;
+  padding: 0.7rem 1.7rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.btnBuscar:hover {
+  background: transparent;
+  color: #10031C;
+  border-color: #10031C; 
+  border: 2px solid;
+}
+
+/* Botón Nueva debajo del filtro */
+.botonNuevaWrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.btnNueva {
+  background-color: #10031C;
+  color: white;
+  padding: 0.6rem 1rem;
+  
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btnNueva:hover {
+   background: transparent;
+  color: #10031C;
+  border-color: #10031C; 
+  border: 2px solid;
+}
+
+/* Tabla con scroll */
+.tablaWrapper {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #bbb;
+  border-radius: 12px;
+  background-color: white;
+  margin-top: 1rem;
+}
+
+/* Tabla general */
+.tabla {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.95rem;
+
+}
+
+/* Encabezado */
+.tabla thead {
+  background-color: #2E2C50;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.tabla thead th {
+  padding: .8rem 1rem;
+  font-weight: bold;
+  text-align: center;
+  color: #fff;
+  border-bottom: 1px solid #ccc;
+}
+
+/* Celdas */
+.tabla td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid #ddd;
+  white-space: nowrap;
+  vertical-align: top;
+  height: 60px; /* o ajusta según lo que necesites */
+}
+/*Clasifica las Filas por estado  */
+.row-green {
+  background-color: #d6f5d6;
+}
+
+.row-red {
+  background-color: #f8cccc;
+}
+
+.row-neutral {
+  background-color: #f2f2f2;
+}
+
+/* Añade bordes redondeados solo a esquinas exteriores */
+.tabla thead tr th:first-child {
+  border-top-left-radius: 12px;
+}
+.tabla thead tr th:last-child {
+  border-top-right-radius: 12px;
+}
+.tabla tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 12px;
+}
+.tabla tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 12px;
+}
+
+.icono {
+  cursor: pointer;
+  font-size: 1rem;
+  color: #444;
+  transition: color 0.2s;
+}
+
+.icono:hover {
+  color: #000;
+}
+
+/* Para el texto de descripción colapsado */
+.tabla td span {
+  max-width: 150px;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+/* Para botón de expandir */
+.tabla td button {
+  vertical-align: middle;
+}
+
+ /*estilos para mostrar la descripcion y que se expanda la fila*/
+.descripcionCell {
+  max-width: 240px;
+  min-width: 180px;
+  padding-right: 0;
+  vertical-align: top;
+  height: 20px;
+  overflow: hidden;
+  position: relative;
+}
+
+.descripcionWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  height: 100%;
+  width: 100%;
+  white-space: normal;
+}
+
+.descripcionWrapper span {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+  padding-right: 1.5rem; /* deja espacio para la flecha */
+}
+
+.expandida {
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+
+.toggleBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #444;
+  position: absolute;
+  top: 6px;
+  right: 4px;
+  padding: 0;
+  z-index: 2;
+}
+
+.toggleBtn:hover {
+  color: #000;
+}
+
+.fechaGrupo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; 
+}
+
+.fechaGrupo label {
+  font-weight: 500;
+  color: #000;
+}
+
+.fechaGrupo input[type="date"] {
+  padding: 0.6rem 8rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  min-width: 160px;
+  height: auto;
+  border: none;
+}
+
+/* ===============================================
+ === REGLAS AGREGADAS PARA NIVEL DE DETALLE === 
+===============================================
+*/
+
+/* 1. Contenedor para el grupo "Nivel de detalle" */
+.detalleGrupo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Espacio entre los elementos */
+  flex-wrap: wrap; /* Para que se ajuste en pantallas pequeñas */
+}
+
+/* 2. La etiqueta principal "Nivel de detalle:" */
+.detalleGrupo > label {
+  font-weight: 500;
+  color: #000;
+  font-size: 1rem;
+  margin-right: 0.5rem; /* Espacio extra después de la etiqueta principal */
+}
+
+/* 3. Contenedor para cada par de (radio + label) */
+/* (Recomiendo agruparlos en un div en tu JSX) */
+.radioOpcion {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem; /* Espacio pequeño entre el radio y su texto */
+}
+
+/* 4. Estilo para los botones de radio */
+.detalleGrupo input[type="radio"] {
+  width: 1.15em;
+  height: 1.15em;
+  cursor: pointer;
+}
+
+/* 5. Estilo para las etiquetas "Resumido" y "Detallado" */
+.detalleGrupo .radioOpcion label {
+  font-weight: 500;
+  color: #000;
+  font-size: 1rem;
+}
+
+/* --- RESPONSIVE --- */
+
+/* Contenedor general en pantallas pequeñas */
+@media (max-width: 1024px) {
+  .container {
+    width: 100%;
+    padding: 0 1rem;
+  }
+
+  .buscador {
+    align-items: stretch;
+  }
+
+  /* --- NUEVA REGLA RESPONSIVE --- */
+  /* Hace que los grupos (fecha, detalle) dentro de una fila se apilen en móvil */
+  .fila {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .filtroGrupo, .fechaGrupo, .detalleGrupo{
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  /* (Regla de .detalleGrupo > label ya funciona) */
+  
+  /* Esta regla se asegura que las opciones de radio
+     se vean bien en la columna */
+  .radioOpcion {
+    padding: 0.5rem 0; /* Añade espacio vertical en móvil */
+  }
+
+  .fechaGrupo input[type="date"] {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .btnBuscar {
+    width: 100%;
+    text-align: center;
+  }
+  /* --- MODIFICADO --- */
+  /* Hacemos que el wrapper del botón ocupe todo el ancho */
+  .btnWrapper {
+    justify-content: stretch; /* El botón se estirará */
+  }
+
+  .botonNuevaWrapper {
+    justify-content: center;
+  }
+
+  .btnNueva {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* --- TABLA RESPONSIVE --- */
+@media (max-width: 900px) {
+  .tablaWrapper {
+    overflow-x: auto;
+  }
+
+  .tabla {
+    width: 900px; /* fuerza ancho mínimo para scroll horizontal */
+  }
+}

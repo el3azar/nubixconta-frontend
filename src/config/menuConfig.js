@@ -33,13 +33,6 @@ export const AccountPayableSubMenuLinks = [
   { to: '/cuentas/pagos/estado_cuenta', label: 'Estado de Cuenta' },
 
 ];
-// En el futuro, cuando añadas más módulos, simplemente los agregas aquí:
-/*
-export const purchasesSubMenuLinks = [
-  { to: '/compras/proveedores', label: 'Proveedores' },
-  { to: '/compras/ordenes', label: 'Órdenes de Compra' },
-];
-*/
 
 /**
  * Enlaces para el submenú de navegación del módulo de Compras.
@@ -72,6 +65,6 @@ export const financialStatementsSubMenuLinks = [
   { to: '/contabilidad/estados-financieros/libro-diario', label: 'Libro Diario' },
   { to: '/contabilidad/estados-financieros/libro-mayor', label: 'Libro Mayor' },
   { to: '/contabilidad/estados-financieros/balance-comprobacion', label: 'Balance de Comprobación' },
-  { to: '/contabilidad/estados-financieros/balance-general', label: 'Balance General' },
   { to: '/contabilidad/estados-financieros/estado-resultados', label: 'Estado de Resultados' },
+  { to: '/contabilidad/estados-financieros/balance-general', label: 'Balance General' },
 ];

@@ -1,0 +1,99 @@
+.resultsContainer {
+  position: relative;
+  min-height: 250px;
+}
+
+.loadingOverlay {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(248, 249, 250, 0.85);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; z-index: 10; border-radius: 8px;
+}
+
+.asientoWrapper {
+  background-color: #fdfdff;
+  margin-bottom: 2rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.asientoWrapper:hover {
+  box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+}
+
+.asientoHeader {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.asientoHeader h4 {
+  margin: 0; font-size: 1.2rem; color: #10031C; font-weight: 600;
+}
+
+.asientoHeader span {
+  font-size: 1rem; color: #49207B; font-weight: 500;
+  background-color: #e6e4eb; padding: 0.25rem 0.75rem; border-radius: 50px;
+}
+
+.tableResponsive { width: 100%; overflow-x: auto; }
+.reportTable { width: 100%; min-width: 600px; border-collapse: collapse; }
+
+.reportTable th, .reportTable td {
+  padding: 1rem 1.5rem; text-align: left;
+  border-bottom: 1px solid #f0f0f0;
+}
+.reportTable tr:last-child td { border-bottom: none; }
+
+.reportTable th {
+  background-color: #ffffff; font-weight: 500; color: #343a40;
+  font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+/* --- INICIO: ESTILO DE FILAS ELEGANTE --- */
+
+/* Filas con colores alternos para mejor legibilidad */
+.detailRow:nth-child(even) {
+  background-color: #f9f9fc;
+}
+.detailRow:nth-child(odd) {
+  background-color: #fdfdff;
+}
+
+.detailRow {
+  /* Preparamos un borde transparente para que no haya "salto" en el hover */
+  border-left: 3px solid transparent;
+  transition: background-color 0.2s ease, border-left-color 0.2s ease;
+}
+
+.detailRow:hover {
+  background-color: #f4f2f9; /* El morado suave que te gustó */
+  border-left-color: #49207B; /* El acento morado fino en el borde */
+}
+
+/* --- FIN: ESTILO DE FILAS ELEGANTE --- */
+
+.textRight {
+  text-align: right;
+  font-family: 'Courier New', Courier, monospace;
+}
+.reportSectionTitle {
+  color: #10031C; /* Mismo color que el título principal */
+  font-weight: 700;
+  text-align: center;
+  margin-top: 3rem; /* Espacio generoso arriba (mt-5) */
+  margin-bottom: 1.5rem; /* Espacio abajo (mb-4) */
+}
+
+/* --- FIN DE LA NUEVA CLASE --- */
+
+.textRight {
+  text-align: right;
+  font-family: 'Courier New', Courier, monospace;
+}
