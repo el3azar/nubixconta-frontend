@@ -13,22 +13,25 @@ import api from '../api'; // Importa la instancia de Axios configurada
  * @param {string} [filters.dateFrom] - Fecha en formato 'YYYY-MM-DD'
  * @param {string} [filters.dateTo] - Fecha en formato 'YYYY-MM-DD'
  */
-const listAllTransactions = (filters = {}) => {
-  // 1. Prepara los parámetros (¡ya no hay conversión!)
+
+const searchTransactions = (filters = {}) => {
+  // 1. Prepara los parámetros con los nombres que espera el backend.
   const params = {
-    idCatalog: filters.idCatalog,
-    dateFrom: filters.dateFrom,
-    dateTo: filters.dateTo,
+    query: filters.query,
+    startDate: filters.startDate,
+    endDate: filters.endDate,
   };
 
-  // 2. Limpia los parámetros que sean nulos o vacíos
+  // 2. Limpia los parámetros que sean nulos, undefined o vacíos.
+  //    Esto asegura que no enviemos, por ejemplo, "query=" si el campo está vacío.
   Object.keys(params).forEach(key => {
-    if (!params[key]) {
+    if (params[key] === null || params[key] === undefined || params[key] === '') {
       delete params[key];
     }
   });
 
-  return api.get("/bank-transactions", { params }).then(response => response.data);
+  // 3. Apunta al nuevo endpoint '/search' y pasa los parámetros.
+  return api.get("/bank-transactions/search", { params }).then(response => response.data);
 };
 
 /**
@@ -83,11 +86,11 @@ const annulTransaction = (id) => {
 
 // --- Exportamos todas las funciones en un solo objeto ---
 export const bankTransactionService = {
-  listAll: listAllTransactions,
   getById: getTransactionById,
   create: createTransaction,
   update: updateTransaction,
   delete: deleteTransaction,
   apply: applyTransaction,
-  annul: annulTransaction
+  annul: annulTransaction,
+  search: searchTransactions,
 };

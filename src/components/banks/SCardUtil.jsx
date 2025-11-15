@@ -1,19 +1,18 @@
 // src/components/banks/SCardUtil.jsx
 import React, { useState } from 'react';
-import styles from '../../styles/banks/Banks.module.css'; // Asegúrate que la ruta es correcta
-import SelectBase from '../inventory/inventoryelements/SelectBase'; // Asegúrate que la ruta es correcta
-import Boton from '../inventory/inventoryelements/Boton'; // Asegúrate que la ruta es correcta
-import { useCatalogService } from '../../services/accounting/CatalogService'; // Importar el hook, asegúrate que la ruta es correcta
+import AsyncSelect from 'react-select/async'; // 1. CAMBIO: Usamos AsyncSelect directamente
+import styles from '../../styles/banks/Banks.module.css';
+import Boton from '../inventory/inventoryelements/Boton';
+import { useCatalogService } from '../../services/accounting/CatalogService';
 
-const SCardUtil = ({ onAddDetail }) => { // onAddDetail es la función callback para el padre
-    const { searchCatalogs } = useCatalogService(); // Hook para buscar catálogos contables
+const SCardUtil = ({ onAddDetail }) => {
+    const { searchCatalogs } = useCatalogService();
 
-    const [selectedAccount, setSelectedAccount] = useState(null); // Objeto { value, label } de la cuenta seleccionada
+    const [selectedAccount, setSelectedAccount] = useState(null);
     const [description, setDescription] = useState('');
     const [debit, setDebit] = useState('');
     const [credit, setCredit] = useState('');
 
-    // Limpia los campos del formulario
     const handleClear = () => {
         setSelectedAccount(null);
         setDescription('');
@@ -21,54 +20,48 @@ const SCardUtil = ({ onAddDetail }) => { // onAddDetail es la función callback 
         setCredit('');
     };
 
-    // Maneja el clic en el botón "Agregar" para añadir un asiento
     const handleAddClick = () => {
-        const catalogIdValue = selectedAccount ? selectedAccount.value : null;
-        const accountNameValue = selectedAccount ? selectedAccount.label : '';
-
-        const debitValue = Number(debit) || 0;
-        const creditValue = Number(credit) || 0;
-
-        // Validaciones básicas antes de añadir el detalle
-        if (!catalogIdValue) {
+        // La validación ahora usa los datos completos del objeto selectedAccount
+        if (!selectedAccount) {
             alert('Por favor, seleccione una cuenta contable.');
             return;
         }
+        const debitValue = Number(debit) || 0;
+        const creditValue = Number(credit) || 0;
+
         if (debitValue === 0 && creditValue === 0) {
             alert('Debe ingresar un valor en Débito o Crédito.');
             return;
         }
-        if (debitValue > 0 && creditValue > 0) {
-            alert('No puede ingresar valores en Débito y Crédito a la vez.');
-            return;
-        }
 
-        // Construye el objeto de detalle a añadir
         const detailToAdd = {
-            idCatalog: parseInt(catalogIdValue), // Asegura que idCatalog sea un número entero
-            accountName: accountNameValue,       // Nombre de la cuenta para mostrar en la tabla
-            description: description || accountNameValue || 'Detalle de asiento', // Usa la descripción ingresada o el nombre de la cuenta
+            idCatalog: selectedAccount.value, // Usamos 'value' que contiene el ID
+            accountName: selectedAccount.name, // Usamos 'name' que pasamos en el mapeo
+            description: description || selectedAccount.name,
             debit: debitValue,
             credit: creditValue,
         };
 
-        console.log("Añadiendo Detalle:", detailToAdd);
-
-        onAddDetail(detailToAdd); // Llama a la función del componente padre para añadir el detalle
-        handleClear();             // Limpia el formulario después de añadir
+        onAddDetail(detailToAdd);
+        handleClear();
     };
 
-    // Función asíncrona que SelectBase usará para buscar cuentas contables
-    const handleSearchAccounts = async (term) => {
+    // 2. CORRECCIÓN: Esta es la función clave. Ahora mapea los resultados.
+    const loadAccountOptions = async (inputValue) => {
+        if (!inputValue || inputValue.length < 2) return [];
         try {
-            const results = await searchCatalogs(term); // Llama al servicio real para buscar catálogos
-            // Los resultados deben venir en un formato que SelectBase entienda ({ value, label })
-            return results;
+            const accounts = await searchCatalogs(inputValue);
+            // Mapeamos los resultados al formato { value, label } que AsyncSelect necesita
+            return accounts.map(acc => ({
+                value: acc.id,
+                label: `${acc.accountCode} - ${acc.accountName}`,
+                // También puedes pasar datos adicionales para usarlos después
+                code: acc.accountCode,
+                name: acc.accountName,
+            }));
         } catch (error) {
-            console.error("Error en la búsqueda de cuentas en SCardUtil:", error);
-            // Si tienes un Notifier, podrías usarlo aquí:
-            // Notifier.error("Error al buscar cuentas contables.");
-            return []; // Devuelve un array vacío en caso de error
+            console.error("Error buscando cuentas", error);
+            return [];
         }
     };
 
@@ -77,16 +70,20 @@ const SCardUtil = ({ onAddDetail }) => { // onAddDetail es la función callback 
     return (
         <div className={styles.searchCard}>
             <h3 className={styles.h2Izq}>Añadir Asiento (Línea de Detalle)</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 3fr repeat(2, 1fr) auto', gap: '18px', alignItems: 'start' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 3fr repeat(2, 1fr) auto', gap: '18px', alignItems: 'flex-end' }}>
 
                 <div className={TransFormGroup} style={{ gridColumn: 1 }}>
                     <label className={styles.formLabel}>Cuenta Contable:</label>
-                    <SelectBase
-                        onSearchAsync={handleSearchAccounts} // Prop para la búsqueda asíncrona
-                        value={selectedAccount}             // Cuenta seleccionada (objeto { value, label })
-                        onChange={setSelectedAccount}       // Actualiza la cuenta seleccionada
-                        placeholder="Buscar y seleccionar una cuenta..."
-                        minimumInputLength={2}              // Requiere al menos 2 caracteres para buscar
+                    {/* 3. CAMBIO: Reemplazamos SelectBase por AsyncSelect con sus props estándar */}
+                    <AsyncSelect
+                        key={selectedAccount ? selectedAccount.value : 'acct-select'}
+                        cacheOptions
+                        defaultOptions
+                        loadOptions={loadAccountOptions} // Prop para la búsqueda asíncrona
+                        value={selectedAccount}
+                        onChange={setSelectedAccount}
+                        placeholder="Buscar por código o nombre..."
+                        isClearable
                     />
                 </div>
 
@@ -95,6 +92,7 @@ const SCardUtil = ({ onAddDetail }) => { // onAddDetail es la función callback 
                     <input
                         type="text"
                         placeholder="Descripción de la línea"
+                        className={styles.formInput} // Añadí una clase para consistencia
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                     />
@@ -104,11 +102,11 @@ const SCardUtil = ({ onAddDetail }) => { // onAddDetail es la función callback 
                     <input
                         type="number"
                         placeholder="0.00"
+                        className={styles.formInput} // Añadí una clase para consistencia
                         value={debit}
                         onChange={(e) => {
-                            const val = e.target.value;
-                            setDebit(val);
-                            if (parseFloat(val) > 0) setCredit(''); // Limpia Crédito si se ingresa Débito
+                            setDebit(e.target.value);
+                            if (parseFloat(e.target.value) > 0) setCredit('');
                         }}
                     />
                 </div>
@@ -117,16 +115,16 @@ const SCardUtil = ({ onAddDetail }) => { // onAddDetail es la función callback 
                     <input
                         type="number"
                         placeholder="0.00"
+                        className={styles.formInput} // Añadí una clase para consistencia
                         value={credit}
                         onChange={(e) => {
-                            const val = e.target.value;
-                            setCredit(val);
-                            if (parseFloat(val) > 0) setDebit(''); // Limpia Débito si se ingresa Crédito
+                            setCredit(e.target.value);
+                            if (parseFloat(e.target.value) > 0) setDebit('');
                         }}
                     />
                 </div>
 
-                <div style={{ gridColumn: 5, alignSelf: 'end', display: 'flex', gap: '8px', paddingBottom: '5px' }}>
+                <div style={{ gridColumn: 5, display: 'flex', gap: '8px' }}>
                     <Boton color="morado" forma="pastilla" onClick={handleAddClick}>
                         <i className="bi bi-plus me-2"></i> Agregar
                     </Boton>

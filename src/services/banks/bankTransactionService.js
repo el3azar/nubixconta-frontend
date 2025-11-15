@@ -19,9 +19,17 @@ const getAuthHeader = (token) => {
 export const useBankTransactionService = () => {
     const { token } = useAuth();
 
-    // ... (la función createBankTransaction permanece igual)
+    
     const createBankTransaction = async (transactionData) => {
-        // ...
+        try {
+            // SOLUCIÓN: Llama al endpoint "/full" para crear la transacción completa
+            const response = await axios.post(`${API_URL}/full`, transactionData, getAuthHeader(token));
+            return response.data;
+        } catch (error) {
+            console.error('Error creating full bank transaction:', error);
+            // Re-lanza el error para que el componente que lo llama pueda manejarlo
+            throw error;
+        }
     };
 
     // --- FUNCIÓN DE FILTRADO CORREGIDA Y ROBUSTA ---
