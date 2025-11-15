@@ -33,3 +33,40 @@ export const formatDate = (dateString) => {
     return 'Error al formatear'; 
   }
 };
+
+
+// =================================================================
+// == NUEVAS FUNCIONES AÑADIDAS (NO ROMPEN NADA)
+// =================================================================
+
+/**
+ * Formateador de moneda centralizado.
+ * @param {number | string} value - El valor numérico a formatear.
+ * @returns {string} El valor formateado como moneda.
+ */
+export const formatCurrency = (value) => {
+  const number = Number(value);
+  if (isNaN(number)) {
+    return '$0.00';
+  }
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(number);
+};
+
+/**
+ * Formatea una fecha string (ISO) a un formato legible con hora (ej. "29/10/2025 09:36 PM").
+ * Usado en el Libro Mayor.
+ * @param {string} dateString - La fecha en formato ISO 8601.
+ * @returns {string} La fecha formateada o 'N/A'.
+ */
+export const formatDateTime = (dateString) => {
+  if (!dateString) return 'N/A';
+  try {
+    const date = parseISO(dateString);
+    return isValid(date) ? format(date, 'dd/MM/yyyy h:mm a') : 'Fecha inválida';
+  } catch (error) {
+    return 'Error de fecha';
+  }
+};

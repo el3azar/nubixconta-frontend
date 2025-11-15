@@ -1,147 +1,113 @@
-import React, { useState } from "react";
-import SubMenu from '../../shared/SubMenu';
-import ViewContainer from '../../shared/ViewContainer';
+// src/components/accounting/financial-statements/LibroDiario.jsx
+import React, { useState, useMemo } from 'react';
+import { useAccountingReports } from '../../../hooks/useAccountingReports';
 import { financialStatementsSubMenuLinks } from '../../../config/menuConfig';
-
-import AccFilterCardBase from '../accounting-reports/acc-elements/accFilterCardBase.jsx'; 
-import ReportHeader from '../accounting-reports/acc-elements/reportHeader.jsx';
-import ReportBody from '../accounting-reports/acc-elements/reportBody.jsx';
-import ReportSigns from '../accounting-reports/acc-elements/reportSigns.jsx';
-import Boton from '../../../components/inventory/inventoryelements/Boton.jsx';
-import { BsFileEarmarkExcel, BsFileEarmarkPdf } from 'react-icons/bs';
-import { Notifier } from '../../../utils/alertUtils';
+import { formatCurrency, formatDate } from '../../../utils/dateFormatter';
+import ViewContainer from '../../shared/ViewContainer';
+import SubMenu from '../../shared/SubMenu';
+import AccountingReportFilter from '../../shared/AccountingReportFilter';
+import AccountingReportActions from '../../shared/AccountingReportActions';
+import styles from '../../../styles/accounting/reportsStyles/LibroDiario.module.css';
 
 const LibroDiario = () => {
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  
-  const [datosReporte, setDatosReporte] = useState(null);
-  const [cargando, setCargando] = useState(false);
+  const [filters, setFilters] = useState({});
+  const { data: movimientos, isError, error, isFetching } = useAccountingReports('libroDiario', filters);
 
-  const handleSearch = async () => {
-    setCargando(true);
+  const asientosContables = useMemo(() => {
+    if (!movimientos) return [];
     
-    // (Simulación de datos ACTUALIZADA para la tabla)
-    setTimeout(() => {
-      const dataSimulada = {
-        encabezado: {
-          empresa: "Tu Empresa, S.A. de C.V.",
-          reporte: "Libro Diario",
-          periodo: `Del ${startDate || 'YYYY-MM-DD'} al ${endDate || 'YYYY-MM-DD'} en dolares de Estados Unidos`
-        },
-        partidas: [
-          {
-            id: 'P-001', fecha: '2025-01-05', descripcion: 'Venta de servicios',
-            detalles: [
-              { codigo: '1101', cuenta: 'Caja General', debe: 1130, haber: 0 },
-              { codigo: '4101', cuenta: 'Ingresos por Servicios', debe: 0, haber: 1000 },
-              { codigo: '2105', cuenta: 'IVA Débito Fiscal', debe: 0, haber: 130 }
-            ],
-            total_debe: 1130, total_haber: 1130
-          },
-          {
-            id: 'P-002', fecha: '2025-01-06', descripcion: 'Compra de papelería',
-            detalles: [
-              { codigo: '5101', cuenta: 'Gastos de Administración', debe: 100, haber: 0 },
-              { codigo: '1106', cuenta: 'IVA Crédito Fiscal', debe: 13, haber: 0 },
-              { codigo: '1101', cuenta: 'Caja General', debe: 0, haber: 113 }
-            ],
-            total_debe: 113, total_haber: 113
-          }
-        ],
-        totalesPeriodo: {
-          total_debe: 1243,
-          total_haber: 1243
-        }
-      };
+    const grouped = movimientos.reduce((acc, mov) => {
+      const uniqueKey = `${mov.documentId}-${mov.documentType}`;
       
-      setDatosReporte(dataSimulada);
-      setCargando(false);
-    }, 2000);
-  };
-  // --- 4. La lógica específica de esta vista (reportes) se queda aquí ---
-    const handleGenerateExcel = async () => {
-      const result = await Notifier.input({
-        title: 'Nombre del Archivo',
-        inputLabel: 'Ingresa el nombre para tu reporte de Excel:',
-        placeholder: 'Ej: Reporte_Movimientos_Enero'
-      });
-      if (result.isConfirmed && result.value) {
-        generateProductMovementsExcel(result.value, movimientosDeReporte, user, company);
-        Notifier.success('Reporte de Excel generado con éxito.');
-      }
-  };
-
-  const handleGeneratePdf = async () => {
-    const result = await Notifier.input({
-      title: 'Nombre del Archivo',
-      inputLabel: 'Ingresa el nombre para tu reporte PDF:',
-      placeholder: 'Ej: Reporte_Movimientos_Enero'
-    });
-    if (result.isConfirmed && result.value) {
-      generateProductMovementsPDF(result.value, movimientosDeReporte, user, company);
-      Notifier.success('Reporte PDF generado con éxito.');
-    }
-  };
+      if (!acc[uniqueKey]) {
+        acc[uniqueKey] = { 
+          id: mov.documentId, 
+          type: mov.documentType, 
+          date: mov.accountingDate, 
+          details: [] 
+        };
+      }
+      
+      acc[uniqueKey].details.push(mov);
+      return acc;
+    }, {});
+    
+    return Object.values(grouped);
+  }, [movimientos]);
 
   return (
-    <div>
+    <>
       <SubMenu links={financialStatementsSubMenuLinks} />
-      <ViewContainer>
-        <h1 className="text-center">Libro Diario</h1>
-        
-        <AccFilterCardBase 
-          titulo="Personalización de Reporte"
-          startDate={startDate}
-          endDate={endDate}
-          onStartDateChange={setStartDate}
-          onEndDateChange={setEndDate}
-          onSearch={handleSearch}
-          
-          // Omitimos 'onNivelDetalleChange' y el Libro Diario
-          // no mostrará los radios. ¡Perfecto!
-        />
+      <ViewContainer title="Libro Diario">
+        <AccountingReportFilter onFilter={setFilters} isLoading={isFetching} />
 
-        <div className='d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 mb-3'>
-          {/* Lado Izquierdo: Nuevos botones de filtro por origen */}
-          <div className="d-flex gap-2 flex-wrap mb-2 mb-md-0">
-              <p>RESULTADOS</p>
-          </div>
-  
-          {/* Lado Derecho: Botones de generación de reportes */}
-          <div className="d-flex gap-2 flex-wrap">
-            <Boton color="morado" forma="pastilla" onClick={handleGeneratePdf}>
-              Generar Reporte en PDF
-              <BsFileEarmarkPdf size={19} className='ms-2'/>
-            </Boton>
-            <Boton color="morado" forma="pastilla" onClick={handleGenerateExcel}>
-              Generar Reporte en Excel
-              <BsFileEarmarkExcel size={19} className='ms-2'/>
-            </Boton>
-          </div>
-        </div>
+        {filters.startDate && (
+          <div>
+            {asientosContables.length > 0 && (
+              <>
+                <h3 className={styles.reportSectionTitle}>Resultados del Reporte</h3>
+                <div className="mb-4">
+                  <AccountingReportActions reportData={movimientos} />
+                </div>
+              </>
+            )}
 
-        {cargando && <div>Cargando...</div>}
-        {/* --- ¡AQUÍ ESTÁ LA IMPLEMENTACIÓN COMPLETA! --- */}
-        {!cargando && datosReporte && (
-          <div className="reporte-wrapper" style={{marginTop: '2rem'}}>
-            
-            <ReportHeader 
-              empresa={datosReporte.encabezado.empresa}
-              reporte={datosReporte.encabezado.reporte}
-              periodo={datosReporte.encabezado.periodo}
-            />
+            <div className={styles.resultsContainer}>
+              {isFetching && <div className={styles.loadingOverlay}>Generando Reporte...</div>}
+              {isError && <p className="text-danger text-center">Error al cargar: {error.message}</p>}
+              
+              {!isFetching && asientosContables.length === 0 && (
+                <div className="text-center mt-4">
+                  <p>No se encontraron asientos contables para el período seleccionado.</p>
+                </div>
+              )}
 
-            <ReportBody 
-              partidas={datosReporte.partidas} 
-              totalesPeriodo={datosReporte.totalesPeriodo}
-            />
-
-            <ReportSigns />
+              {!isFetching && asientosContables.map(asiento => (
+                <div key={`${asiento.id}-${asiento.type}`} className={styles.asientoWrapper}>
+                  <div className={styles.asientoHeader}>
+                    <h4>Asiento Contable #{asiento.id}</h4>
+                    <span>{asiento.type} - {formatDate(asiento.date)}</span>
+                  </div>
+                  <div className={styles.tableResponsive}>
+                    <table className={styles.reportTable}>
+                      <thead>
+                        {/* --- CAMBIO 1: SE AÑADE LA COLUMNA "NOMBRE DE CUENTA" Y SE AJUSTA LA DE DESCRIPCIÓN --- */}
+                        <tr>
+                          <th>Cod. Cuenta</th>
+                          <th>Nombre de Cuenta</th>
+                          <th>Descripción</th>
+                          <th className={styles.textRight}>Debe</th>
+                          <th className={styles.textRight}>Haber</th>
+                        </tr>
+                        {/* --- FIN DEL CAMBIO 1 --- */}
+                      </thead>
+                      <tbody>
+                        {asiento.details.map((mov, index) => (
+                          <tr key={index} className={styles.detailRow}>
+                            {/* --- CAMBIO 2: SE UTILIZAN LOS NUEVOS CAMPOS DEL BACKEND --- */}
+                            <td>{mov.accountCode}</td>
+                            <td>{mov.accountName}</td>
+                            <td>{mov.description}</td>
+                            <td className={styles.textRight}>{formatCurrency(mov.debe)}</td>
+                            <td className={styles.textRight}>{formatCurrency(mov.haber)}</td>
+                            {/* --- FIN DEL CAMBIO 2 --- */}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
+        {!filters.startDate && (
+             <div className="text-center mt-5 pt-5">
+              <p>Por favor, seleccione un rango de fechas para generar el reporte.</p>
+            </div>
+        )}
       </ViewContainer>
-    </div>
+    </>
   );
 };
 

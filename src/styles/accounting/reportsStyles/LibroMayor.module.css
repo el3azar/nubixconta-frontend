@@ -1,0 +1,201 @@
+/* src/styles/accounting/reportsStyles/LibroMayor.module.css */
+
+/* --- Contenedor principal de filtros --- */
+.filterWrapper {
+  background-color: #f7f5fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  border: 1px solid #dcd9e7;
+}
+
+.filterInputsRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.filterGroup label {
+  color: #10031C;
+}
+
+.accountSelector {
+  min-width: 250px;
+}
+
+.filterActionsRow {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* --- INICIO DE LA CORRECCIÓN: Estilos de Botones Independientes --- */
+
+/* Botón Primario (Generar Reporte) */
+.actionButton {
+  background-color: #10031C;
+  color: #fff;
+  border: 2px solid #10031C;
+  padding: 0.6rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.actionButton:hover:not(:disabled) {
+  background-color: transparent;
+  color: #10031C;
+}
+
+.actionButton:disabled {
+  background-color: #bdc3c7;
+  border-color: #bdc3c7;
+  color: #fff;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Botón Secundario (Limpiar) - Ahora es un estilo completo e independiente */
+.secondaryButton {
+  background-color: transparent;
+  color: #10031C;
+  border: 2px solid #10031C;
+  padding: 0.6rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.secondaryButton:hover {
+  background-color: #10031C;
+  color: #fff;
+}
+/* --- FIN DE LA CORRECCIÓN --- */
+
+
+@media (max-width: 992px) {
+  .filterInputsRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- (El resto del archivo CSS permanece sin cambios) --- */
+.resultsContainer {
+  position: relative;
+}
+
+.loadingOverlay {
+  position: absolute; inset: 0; background-color: rgba(255, 255, 255, 0.8);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; z-index: 10;
+}
+
+.reportHeader {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 1.5rem; padding: 1rem;
+  background-color: #f0eefc;
+  border-radius: 8px;
+}
+
+.reportTitle {
+  font-weight: 600; color: #10031C; margin: 0;
+}
+
+.accordionItem {
+  border: 1px solid #dcd9e7;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  transition: box-shadow 0.3s ease;
+}
+.accordionItem:hover {
+  box-shadow: 0 4px 10px rgba(73, 32, 123, 0.08);
+}
+
+.accordionHeader, .accordionHeaderStatic {
+  display: flex; align-items: center; width: 100%;
+  padding: 1rem 1.25rem; text-align: left;
+  background-color: transparent;
+  border: none;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.accordionHeader:hover {
+  background-color: #f7f5fa;
+}
+
+.accordionHeaderStatic {
+  background-color: #e9ecef; font-size: 0.9rem;
+  color: #495057; font-weight: bold;
+  border-radius: 8px 8px 0 0;
+  border-bottom: 1px solid #dcd9e7;
+}
+
+.accountInfo {
+  flex: 1; min-width: 0;
+}
+.accountInfo strong {
+  color: #49207B;
+}
+
+.totals {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  width: 450px; flex-shrink: 0; text-align: right;
+  gap: 1rem;
+}
+.totals > span {
+  text-align: right;
+}
+
+.saldo {
+  font-weight: bold;
+}
+
+.arrow {
+  margin-left: 1rem; transition: transform 0.3s ease;
+  color: #49207B;
+}
+.arrow.open {
+  transform: rotate(180deg);
+}
+
+.arrowPlaceholder {
+  width: calc(1rem + 1em); flex-shrink: 0;
+}
+
+.accordionContent {
+  padding: 0 1rem 1rem 1rem;
+  border-top: 1px solid #e9ecef;
+  background-color: #fdfdff;
+}
+
+.detailsTable {
+  width: 100%; border-collapse: collapse;
+}
+.detailsTable td {
+  padding: 0.75rem; border: 1px solid #e9ecef;
+}
+
+.detailsTable thead th {
+  padding: 0.75rem; border: 1px solid #e9ecef;
+  font-weight: 600; color: #495057;
+  background-color: #f8f9fa;
+}
+
+.textRight {
+  text-align: right;
+}

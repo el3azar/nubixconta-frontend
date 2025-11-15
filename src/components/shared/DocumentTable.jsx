@@ -1,25 +1,30 @@
 import React from 'react';
 import { DocumentActions } from './DocumentActions';
+import { formatDate } from '../../utils/dateFormatter'; // Mantenemos las importaciones necesarias
 
-// --- CAMBIO 1: DocumentTableRow AHORA ACEPTA 'index' ---
 const DocumentTableRow = ({ doc, columns, actionsProps, styles, showRowActions, index }) => {
-  const status = doc.status || doc.creditNoteStatus || doc.saleStatus || doc.purchaseStatus || doc.incomeTaxStatus;
+  // Mantenemos la lógica de detección de estado mejorada para todos los módulos
+  const status = doc.status || doc.creditNoteStatus || doc.saleStatus || doc.purchaseStatus || doc.incomeTaxStatus || doc.bankTransactionStatus;
   
+  // Mantenemos la definición del ID para evitar el ReferenceError
+  const id = doc.id || doc.saleId || doc.idPurchase || doc.idNotaCredit || doc.idPurchaseCreditNote || doc.idIncomeTax || doc.idBankTransaction || doc.idBankEntry;
 
-
-   let rowClass = '';
+  // --- SOLUCIÓN: Usamos las clases de Bootstrap que sí funcionan ---
+  // En lugar de usar 'styles.rowApplied', volvemos a las clases 'table-success' y 'table-danger'
+  // de tu versión anterior, ya que estas sí tienen estilos definidos globalmente.
+  let rowClass = '';
   if (status === 'APLICADA') {
-    rowClass = styles.rowApplied; 
+    rowClass = 'table-success'; 
   } else if (status === 'ANULADA') {
-    rowClass = styles.rowAnnulled; 
+    rowClass = 'table-danger'; 
   }
   
   return (
-    // La key ya no va en el <tr> aquí, sino en el .map() de DocumentTable
+    // Ahora 'rowClass' tendrá 'table-success' o 'table-danger' y los colores se aplicarán
     <tr className={rowClass}>
       {columns.map((col) => {
+        // Mantenemos toda la lógica de renderizado avanzada para las celdas
         let cellContent;
-        // Manejo de accessor anidado para 'collection.moduleType' y 'collection.reference'
         if (col.accessor && col.accessor.includes('.')) {
           const parts = col.accessor.split('.');
           let current = doc;
@@ -32,9 +37,8 @@ const DocumentTableRow = ({ doc, columns, actionsProps, styles, showRowActions, 
           cellContent = doc[col.accessor];
         }
 
-        // Si col.cell está definido, úsalo. Este es el punto principal de la extensión.
         if (col.cell) {
-          cellContent = col.cell(doc, index); // Pasa `doc` y `index` a la función `cell`
+          cellContent = col.cell(doc, index);
         } else if (col.accessor === 'amount' || col.accessor === 'debit' || col.accessor === 'credit') {
           const num = typeof cellContent === 'number' ? cellContent : 0;
           cellContent = `$${num.toFixed(2)}`;
@@ -43,8 +47,8 @@ const DocumentTableRow = ({ doc, columns, actionsProps, styles, showRowActions, 
         }
 
         return (
-          // Usar una key única para cada celda
-          <td key={`${id || index}-${col.accessor}`} style={col.style || {}} className={col.className || styles.textAlignCenter}>
+          // Mantenemos la corrección de la 'key' para evitar warnings en la consola
+          <td key={`${id || index}-${col.accessor || col.header}`} style={col.style || {}} className={col.className || styles.textAlignCenter}>
             {cellContent ?? ''}
           </td>
         );
@@ -58,17 +62,17 @@ const DocumentTableRow = ({ doc, columns, actionsProps, styles, showRowActions, 
   );
 };
 
-export const DocumentTable = ({ documents, isLoading, isError, error, actionsProps, styles, columns, showRowActions, emptyMessage, renderActionsCell }) => {
+
+// El resto del componente no necesita cambios
+export const DocumentTable = ({ documents, isLoading, isError, error, actionsProps, styles, columns, showRowActions, emptyMessage }) => {
   const colSpan = columns.length + (showRowActions ? 1 : 0);
 
   if (isLoading) return <tr><td colSpan={colSpan} className="text-center">Cargando documentos...</td></tr>;
   if (isError) return <tr><td colSpan={colSpan} className="text-center text-danger p-4"><strong>Error:</strong> {error.response?.data?.message || error.message}</td></tr>;
   if (!documents || documents.length === 0) return <tr><td colSpan={colSpan} className="text-center">{emptyMessage}</td></tr>;
 
-  // Función helper para obtener una clave única y fiable.
   const getUniqueKey = (doc, index) => {
-    // 1. Se da prioridad a los IDs únicos y específicos de cada módulo.
-    const key = doc.id || // Para Transacciones Contables, Bancos, etc.
+    const key = doc.id ||
                 doc.saleId ||
                 doc.idPurchase ||
                 doc.idNotaCredit ||
@@ -77,17 +81,14 @@ export const DocumentTable = ({ documents, isLoading, isError, error, actionsPro
                 doc.idBankTransaction ||
                 doc.idBankEntry;
     
-    // 2. Si por alguna razón NINGÚN ID está presente, se usa el índice como último recurso.
-    //    Se añade un prefijo para evitar colisiones con IDs numéricos (ej. 'fallback-0').
     return key !== undefined && key !== null ? key : `fallback-${index}`;
   };
 
-  // --- CAMBIO 3: EL .map() AHORA PASA EL 'index' Y USA EL 'index' COMO FALLBACK KEY ---
   return documents.map((doc, index) => (
     <DocumentTableRow
       key={getUniqueKey(doc, index)}
       doc={doc}
-      index={index} // Pasamos el 'index' como prop
+      index={index}
       columns={columns}
       actionsProps={actionsProps}
       styles={styles}
