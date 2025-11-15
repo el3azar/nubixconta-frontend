@@ -1,0 +1,107 @@
+/* Wrapper for the table, matching user's existing style */
+.tablaWrapper {
+  max-height: 600px; /* Un poco más de alto para el reporte */
+  overflow-y: auto;
+  border: 1px solid #bbb;
+  border-radius: 12px;
+  background-color: white;
+  margin-top: 1rem;
+  color: #000;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.95rem;
+}
+
+/* Encabezado (tomado de tu CSS) */
+.tabla thead {
+  background-color: #2E2C50; 
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.tabla thead th {
+  padding: .8rem 1rem;
+  font-weight: bold;
+  text-align: center;
+  color: #fff;
+  border-bottom: 1px solid #ccc;
+}
+.tabla thead th:first-child { border-top-left-radius: 12px; }
+.tabla thead th:last-child { border-top-right-radius: 12px; }
+
+/* Celdas generales */
+.tabla td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid #ddd;
+  vertical-align: top;
+}
+
+/* --- Estilos de Filas Específicos para Libro Diario --- */
+
+/* Fila de Encabezado de Partida (Fecha, ID, Descripción) */
+.filaHeaderPartida {
+  background-color: #f4f4f4; /* Fondo gris claro */
+}
+.descripcionHeader {
+  font-weight: bold;
+}
+
+/* Fila de Detalle (Cuentas) */
+.filaDetallePartida {
+  background-color: #fff;
+}
+.cuentaDetalle {
+  padding-left: 2.5rem !important; /* Sangría para las cuentas */
+}
+
+/* Alineación de montos a la derecha */
+.monto {
+  text-align: right;
+  font-family: 'Courier New', Courier, monospace; /* Opcional: para números */
+}
+
+/* Fila de Total de Partida */
+.filaTotalPartida {
+  background-color: #f9f9f9;
+  border-bottom: 2px solid #aaa !important; /* Borde grueso para separar partidas */
+}
+.totalPartidaLabel {
+  text-align: right;
+  font-style: italic;
+  font-weight: 500;
+  padding-right: 1rem;
+}
+.totalMonto {
+  font-weight: bold;
+  text-align: right;
+  font-family: 'Courier New', Courier, monospace;
+}
+        
+/* Fila de Total del Período (al final) */
+.filaTotalPeriodo {
+  background-color: #e0e0e0; /* Fondo más oscuro */
+  border-top: 2px solid #000;
+}
+.totalPeriodoLabel {
+  text-align: right;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+.totalMontoFinal {
+  font-weight: bold;
+  font-size: 1.1rem;
+  text-align: right;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+/* Celda para cuando no hay datos */
+.noDataCell {
+  text-align: center;
+  padding: 2rem;
+  font-style: italic;
+  color: #555;
+}

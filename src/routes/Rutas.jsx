@@ -293,10 +293,6 @@ export default function Rutas({ catalogoCuentas, tiposTransaccion }) {
                   <Route path="/cuentas/pagos" element={<AccountsPayable />} />
                   <Route path="/cuentas/pagos/reportes" element={<AccountsPayableReport />} />
                   <Route path="/cuentas/pagos/estado_cuenta" element={<AccountsPayableAccount/>} />
-
-                  
-
-
                 
                   {/* --- Rutas para bancos --- */}
 
