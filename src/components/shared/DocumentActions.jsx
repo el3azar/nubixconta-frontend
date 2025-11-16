@@ -22,7 +22,6 @@ import React from 'react';
 import { FaEye, FaPen, FaTrashAlt, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 export const DocumentActions = ({
   doc,
-  id,
   onEdit,
   onDelete,
   onApprove,
@@ -34,8 +33,9 @@ export const DocumentActions = ({
   styles
 }) => {
      // 1. Determina propiedades genéricas del documento
-  const status = doc.saleStatus || doc.creditNoteStatus;
-
+//status es para transacciones contables
+  const status = doc.status || doc.purchaseStatus || doc.saleStatus || doc.creditNoteStatus || doc.incomeTaxStatus;
+  const id = doc.id || doc.idPurchase || doc.idNotaCredit || doc.saleId || doc.idPurchaseCreditNote || doc.idIncomeTax;
   // --- FUNCIÓN HELPER PARA BOTONES REPETITIVOS ---
   const renderButton = (title, icon, onClick, isDisabled = false) => (
     <button

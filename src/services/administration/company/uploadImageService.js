@@ -5,8 +5,8 @@ const UPLOAD_PRESET = import.meta.env.VITE_UPLOAD_PRESET
 UPLOAD_PRESET;
 
 /**
- * @param {File} imageFile El archivo de imagen a subir.
- * @returns {Promise<string>} La URL segura de la imagen subida.
+ * @param {File} imageFile 
+ * @returns {Promise<string>} 
  */
 export const uploadImageToCloudinary = async (imageFile) => {
   if (!imageFile) {

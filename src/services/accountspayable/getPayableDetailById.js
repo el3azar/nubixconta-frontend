@@ -1,0 +1,21 @@
+import axios from "axios";
+
+const BASE_URL = "http://localhost:8080/api/v1/payment-details";
+
+export const getPayableDetailById = async (id) => {
+  try {
+    const token = sessionStorage.getItem("nubix_token");
+
+    const response = await axios.get(`${BASE_URL}/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener el PayableDetail por ID:", error);
+    throw new Error("No se pudo obtener la información del pago.");
+  }
+};

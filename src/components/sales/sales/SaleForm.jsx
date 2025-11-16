@@ -36,8 +36,8 @@ export default function SaleForm(props) {
     handleEditLine,
     handleDeleteLine
   } = formLogic;
-  
-  const { register, handleSubmit, watch, formState: { errors } } = formMethods;
+
+  const { register, control, handleSubmit, watch, formState: { errors } } = formMethods;
   // --- FIN DE LA CORRECCIÓN DEFINITIVA ---
   const onValidationError = (validationErrors) => {
     console.error('Validación de Zod falló (Venta):', validationErrors);
@@ -102,9 +102,14 @@ export default function SaleForm(props) {
   return (
     <main className={styles.container}>
       <h1 className={styles.title}>{props.title}</h1>
-      <DocumentCustomerInfo client={props.client} isLoading={props.isLoadingClient} />
+      <DocumentCustomerInfo entity={props.client} isLoading={props.isLoadingClient}  />
       <form onSubmit={handleSubmit(handleFormSubmit, onValidationError)}>
-        <DocumentHeader register={register} errors={errors}>
+         <DocumentHeader 
+          register={register}
+          control={control} // <-- AÑADIR ESTA LÍNEA
+          errors={errors}
+          descriptionFieldName="saleDescription"
+        >
            <>
     <label className="form-label">Tipo de Ítem</label>
     <select 

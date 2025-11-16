@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useCompany } from '../context/CompanyContext';
-import { AccountingService } from '../services/accounting/AccountingService';
+import { useAccountingViewerService } from '../services/accounting/AccountingService';
 
 export const useAccountingModal = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDocInfo, setSelectedDocInfo] = useState(null);
   const { company } = useCompany();
-  const { getAccountingEntry } = AccountingService();
+  const { getAccountingEntry } = useAccountingViewerService();
 
   // La query para buscar los datos del asiento.
   const queryResult = useQuery({
@@ -18,20 +18,45 @@ export const useAccountingModal = () => {
   });
 
   // Función que otros componentes llamarán para ABRIR el modal.
-  const openAccountingModal = (doc) => {
-    // Determina el tipo y el ID a partir del objeto que se le pasa.
-    const type = doc.saleId ? 'venta' :
-                 doc.idNotaCredit ? 'nota-credito' :
-                 doc.purchaseId ? 'compra' : // Ejemplo para el futuro
-                 'desconocido';
+ const openAccountingModal = (doc) => {
+    console.log("Documento recibido para asiento contable:", doc);
     
-    const id = doc.saleId || doc.idNotaCredit || doc.purchaseId;
+    // --- INICIO DE LA CORRECCIÓN: Lógica de detección mejorada ---
+    let type = 'desconocido';
+    let id = null;
+
+    if (doc.saleStatus) {
+      type = 'venta';
+      id = doc.saleId;
+    } else if (doc.purchaseStatus) {
+      type = 'compra';
+      id = doc.idPurchase;
+    } else if (doc.creditNoteStatus && doc.sale) {
+      type = 'nota-credito';
+      id = doc.idNotaCredit;
+    } else if (doc.creditNoteStatus && doc.purchase) {
+      // Esta es la nueva condición que identifica nuestro documento.
+      type = 'nota-credito-compra';
+      id = doc.idPurchaseCreditNote; // Usamos el ID correcto.
+    }else if (doc.incomeTaxStatus) {
+      type = 'retencion-isr';
+      id = doc.idIncomeTax;
+    } else if (doc.moduleType === 'CONTABILIDAD' || doc.moduleType === 'CONTABILIDAD_MANUAL') {
+      type = 'transaccion-contable'; // Un nuevo tipo que el servicio aprenderá a manejar.
+      id = doc.id;
+    }
+    // --- FIN DE LA CORRECCIÓN ---
+
+    console.log(`Documento identificado como tipo: ${type}, ID: ${id}`);
     
-    if (type !== 'desconocido') {
+    if (type !== 'desconocido' && id) {
       setSelectedDocInfo({ type, id });
       setIsModalOpen(true);
+    } else {
+      console.error("No se pudo determinar el tipo de documento para el asiento contable.", doc);
     }
   };
+
 
   // Función para CERRAR el modal.
   const closeAccountingModal = () => {

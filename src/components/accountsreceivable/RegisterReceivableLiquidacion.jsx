@@ -163,7 +163,7 @@ const handleRegistrar = async () => {
               value={metodoPago}
               onChange={(e) => setMetodoPago(e.target.value)}
             >
-              <option>Transacción</option>
+              <option>Transferencia</option>
               <option>Tarjeta</option>
               <option>Remesa</option>
             </select>

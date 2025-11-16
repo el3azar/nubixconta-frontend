@@ -15,6 +15,7 @@ export const fetchCollections = async () => {
     }
 };
 
+
 // Endpoint para la vista de Ventas Resumidas (Sales Summary)
 export const fetchSalesSummary = async () => {
     try {

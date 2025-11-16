@@ -1,0 +1,24 @@
+.encabezado {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #000; /* Asegura que el texto sea negro */
+}
+
+.encabezado h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.encabezado h3 {
+  font-size: 1.3rem;
+  font-weight: 500; /* Un peso más ligero que el título principal */
+  margin: 0.25rem 0;
+}
+
+.encabezado h4 {
+  font-size: 1.1rem;
+  font-weight: normal;
+  font-style: italic; /* El período se ve bien en itálica */
+  margin: 0;
+}

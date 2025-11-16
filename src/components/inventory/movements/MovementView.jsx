@@ -151,17 +151,27 @@ const MovementView = () => {
       accessorKey: 'customerName',
       size: 200,
       minSize: 150,
+      cell: ({ row }) => row.original.customerName || '-',
+    },
+     { 
+      header: 'Proveedor', 
+      accessorKey: 'supplierName',
+      size: 200,
+      cell: ({ row }) => row.original.supplierName || '-',
+      minSize: 150,
     },
     { header: 'Módulo Origen', accessorKey: 'originModule' },
+    { header: 'Documento Origen', accessorKey: 'originDocument' },
     {
       header: 'Acciones',
       id: 'acciones',
+      size: 180, 
       cell: ({ row }) => {
         const movement = row.original;
         const isManual = movement.originModule.includes('Manual');
 
         return (
-          <div className="d-flex gap-2 justify-content-center flex-wrap">
+          <div className="d-flex gap-2 justify-content-center">
             {isManual && movement.status === 'PENDIENTE' && (
               <>
                 <Boton color="morado" title="Editar" onClick={() => handleOpenEditModal(movement)} size="icon">

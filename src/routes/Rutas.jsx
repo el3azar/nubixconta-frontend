@@ -31,6 +31,7 @@ import DashboardInventory from '../components/inventory/DashBoardInventory';
 import CompanyManagementView from '../components/administration/companyMangment/CompanyManagementView';
 import UserManagementDashboard from '../components/administration/userManagement/UserManagementDashboard';
 import ChangeHistory from '../components/administration/changeHistory/ChangeHistory'
+import AccessLogs from '../components/administration/changeHistory/AccessLogs';
 import { CompanyDataProvider } from '../components/administration/companyMangment/CompanyDataContext';
 import { AuthProvider } from '../context/AuthContext';
 import RegisterCompanyView from '../components/administration/companyMangment/RegisterCompanyView';
@@ -38,6 +39,7 @@ import EditCompanyView from '../components/administration/companyMangment/EditCo
 import ViewCompanyDetails from '../components/administration/companyMangment/ViewCompanyDetails';
 import AccountsReceivable from '../components/accountsreceivable/AccountsReceivable';
 import AccountsReceivableMenu from '../components/accountsreceivable/AccountsReceivableMenu';
+import AccountsPayableMenu from '../components/accountspayable/AccountsPayableMenu';
 import AccountsReceivableReport from '../components/accountsreceivable/AccountsReceivableReport'; 
 import AccountsReceivableAccount from '../components/accountsreceivable/AccountsReceivableAccount'; 
 import DeactivatedCompaniesView from '../components/administration/companyMangment/DeactivatedCompaniesView';
@@ -47,18 +49,60 @@ import NewCreditNote from '../components/sales/creditnote/NewCreditNote';
 import EditCreditNote from '../components/sales/creditnote/EditCreditNote';
 import SalesReport from '../components/sales/reports/SalesReport';
 import UserCompaniesDashboard from '../components/administration/userManagement/UserCompaniesDashboard';
-import AccessLogs from '../components/administration/changeHistory/AccessLogs';
 
 import MovementView from '../components/inventory/movements/MovementView';
 import ProductView from '../components/inventory/products/ProductView';
 import DesableProductView from '../components/inventory/products/DesableProductView';
 import MovementListView from '../components/inventory/movements/MovementListView';
 import DetailedSalesView from '../components/accountsreceivable/DetailedSalesView';
+import DashBoardPurchases from '../components/purchases/DashBoardPurchases'; 
+import ViewSuppliers from '../components/purchases/supplier/ViewSuppliers';
+import NewSupplier from '../components/purchases/supplier/NewSupplier';
+import EditSupplier from '../components/purchases/supplier/EditSupplier';
+import DesactivatedSupplier from '../components/purchases/supplier/DesactivatedSupplier';
+import Purchases from '../components/purchases/purchases/Purchases';
+import NewPurchase from '../components/purchases/purchases/NewPurchase';
+import EditPurchase from '../components/purchases/purchases/EditPurchase';
+import ScrollToTop from '../components/shared/ScrollToTop';
+import DetailedPayableTable from '../components/accountspayable/DetailedPayableTable';
+import DetailedPayableView from '../components/accountspayable/DetailedPayableView';
+import AccountsPayable from '../components/accountspayable/AccountsPayable';
+import AccountsPayableReport from '../components/accountspayable/AccountsPayableReport';
+import AccountPayableStatement from '../components/accountspayable/AccountsPayableAccount';
+import AccountsPayableAccount from '../components/accountspayable/AccountsPayableAccount';
+import PurchaseCreditNotes from '../components/purchases/creditnote/PurchaseCreditNotes'; // Asumiendo la ruta
+import NewPurchaseCreditNote from '../components/purchases/creditnote/NewPurchaseCreditNote';
+import EditPurchaseCreditNote from '../components/purchases/creditnote/EditPurchaseCreditNote';
+import DashboardBanks from '../components/banks/DashboardBanks';
+import BankTransactionsView from '../components/banks/BankTransactionsView';
+import BankReportsView from '../components/banks/BankReportsView';
+import Pruebas from '../components/banks/pruebas';
+import NewBankTransaction from '../components/banks/NewBankTransaction';
+import EditBankTransaction from '../components/banks/EditBankTransaction';
+import ViewBankTransaction from '../components/banks/ViewBankTransaction';
 
-export default function Rutas() {
+import IncomeTax from '../components/purchases/incometax/IncomeTax';
+import NewIncomeTax from '../components/purchases/incometax/NewIncomeTax';
+import EditIncomeTax from '../components/purchases/incometax/EditIncomeTax';
+
+import PurchasesReport from '../components/purchases/reports/PurchasesReport';
+import DashBoardContabilidad from '../components/accounting/DashBoardAccounting';
+import GestionCatalogoPage from '../components/accounting/catalog/GestionCatalogoPage';
+import AccountingTransactionsView from '../components/accounting/accounting-transaction/AccountingTransactionsView';
+import NewAccountingTransaction from '../components/accounting/accounting-transaction/NewAccountingTransaction';
+import EditAccountingTransaction from '../components/accounting/accounting-transaction/EditAccountingTransaction';
+
+
+import LibroDiario from '../components/accounting/financial-statements/LibroDiario';
+import LibroMayor from '../components/accounting/financial-statements/LibroMayor';
+import BalanceComprobacion from '../components/accounting/financial-statements/BalanceComprobacion';
+import BalanceGeneral from '../components/accounting/financial-statements/BalanceGeneral';
+import EstadoResultados from '../components/accounting/financial-statements/EstadoResultados';
+
+export default function Rutas({ catalogoCuentas, tiposTransaccion }) {
   return (
     <BrowserRouter>
-     {/* --- PASO 2: AÑADIR EL COMPONENTE TOASTER AQUÍ --- */}
+      <ScrollToTop />
       {/* Lo configuramos una sola vez con tu paleta de colores. */}
       {/* Estará disponible para toda la aplicación. */}
       <Toaster
@@ -87,14 +131,12 @@ export default function Rutas() {
         }}
       />
       {/* --- FIN DEL BLOQUE AÑADIDO --- */}
-   
+
        <AuthProvider> {/* 1. AuthProvider envuelve TODO */}
           <CompanyProvider> {/* 2. CompanyProvider envuelve las rutas */}
             <Routes>
               {/* Ruta pública de login (no requiere layout ni contexto) */}
               <Route path='/' element={<Login />} />
-
-             
 
                 {/* Selección de empresa (asistente) - sin layout */}
                 <Route path="/empresas" element={<DashBoardEmpresas />} />
@@ -106,10 +148,10 @@ export default function Rutas() {
                   {/* Cada opción principal del panel de administración debe agregarse aquí */}
                     {/* Rutas para el usuario*/}
 
-             <Route path="/admin" element={<DashBoardGeneralAdmin />} />
-             <Route path="/admin/empresas-contabilidad" element={<DashBoardEmpresas />} />
-             <Route path="/admin/usuarios" element={<UserManagementDashboard />} />
-             <Route path="/administration/users/:userId/companies" element={<UserCompaniesDashboard/>} />
+                <Route path="/admin" element={<DashBoardGeneralAdmin />} />
+                <Route path="/admin/empresas-contabilidad" element={<DashBoardEmpresas />} />
+                <Route path="/admin/usuarios" element={<UserManagementDashboard />} />
+                <Route path="/administration/users/:userId/companies" element={<UserCompaniesDashboard/>} />
 
 
                   {/* Rutas extras que necesites en gestion de usuarios */}
@@ -169,17 +211,11 @@ export default function Rutas() {
                 <Route path="/ventas/notas-credito" element={<CreditNote />} />
                 <Route path="/ventas/nueva-nota-credito/:clientId" element={<NewCreditNote />} />
                 <Route path="/ventas/editar-nota-credito/:creditNoteId" element={<EditCreditNote />} />
-                
 
 
                   <Route path="/ventas/reportes" element={<SalesReport />} />
 
-
-
-                  {/* 
-                  <Route path="/ventas/asiento-contable" element={<AccountingEntry />} />
-
-      */}
+                  {/* <Route path="/ventas/asiento-contable" element={<AccountingEntry />} />*/}
                   <Route path="/ventas/reportes" element={<div>Reportes</div>}/>
 
                   {/* FIN RUTAS VENTAS*/}
@@ -192,7 +228,7 @@ export default function Rutas() {
                   <Route path="/cuentas/visualizar_ventas" element={<DetailedSalesView/>} />
                   {/* Rutas extras que necesites en CXC */}
 
-        
+
                   {/* Rutas extras que necesites en Inventario */}
 
                   {/* Ruta comodín: muestra mensaje o componente personalizado para errores */}
@@ -217,12 +253,73 @@ export default function Rutas() {
 
 
                    {/* --- AÑADE LAS NUEVAS RUTAS AQUÍ --- */}
-                  <Route path="/compras" element={<div>Dashboard de Compras</div>} />
-                  <Route path="/cuentas-por-pagar" element={<div>Dashboard de Cuentas por Pagar</div>} />
-                  <Route path="/bancos" element={<div>Dashboard de Bancos</div>} />
-                  <Route path="/contabilidad" element={<div>Dashboard de Contabilidad</div>} />
+                  <Route path="/compras" element={<DashBoardPurchases />} />
+                  <Route path="/compras/proveedores" element={<ViewSuppliers />} />
+                  <Route path="/compras/proveedores/nuevo" element={<NewSupplier />} />
+                  <Route path="/compras/proveedores/editar/:id" element={<EditSupplier />} />
+                  <Route path="/compras/proveedores/desactivados" element={<DesactivatedSupplier />} />
+
+
+                 {/* Rutas para la gestión de Compras */}
+                  <Route path="/compras/compras" element={<Purchases />} />
+                  <Route path="/compras/nueva/:supplierId" element={<NewPurchase />} />
+                  <Route path="/compras/editar/:purchaseId" element={<EditPurchase />} />
+
+
+                  {/* Ruta para la vista principal de la tabla */}
+                <Route path="/compras/notas-credito" element={<PurchaseCreditNotes />} />
+
+                {/* Ruta para el formulario de nueva NC. Recibe el ID del proveedor */}
+                <Route path="/compras/nueva-nota-credito/:supplierId" element={<NewPurchaseCreditNote />} />
+
+                {/* Ruta para el formulario de edición. Recibe el ID de la NC */}
+                <Route path="/compras/editar-nota-credito/:creditNoteId" element={<EditPurchaseCreditNote />} />
+
+
+
+                <Route path="/compras/isr" element={<IncomeTax />} />
+                <Route path="/compras/isr/nuevo/:supplierId" element={<NewIncomeTax />} />
+                <Route path="/compras/isr/editar/:id" element={<EditIncomeTax />} />
+
+
+                <Route path="/compras/reportes" element={<PurchasesReport />} />
+
+
+
+                     {/* --- Rutas para cuentas por pagar --- */}
+
+                  <Route path="/cuentas-por-pagar" element={<AccountsPayableMenu/>} />
+                  <Route path="/cuentas/visualizar_pagos" element={<DetailedPayableView/>} />
+                  <Route path="/cuentas/pagos" element={<AccountsPayable />} />
+                  <Route path="/cuentas/pagos/reportes" element={<AccountsPayableReport />} />
+                  <Route path="/cuentas/pagos/estado_cuenta" element={<AccountsPayableAccount/>} />
+                
+                  {/* --- Rutas para bancos --- */}
+
+           
+                  <Route path="/bancos" element={<DashboardBanks/>} />
+                  <Route path="/bancos/transacciones" element={<BankTransactionsView/>} />
+                  <Route path="/bancos/reportes" element={<BankReportsView />} />
+                  <Route path="/bancos/pruebas" element={<Pruebas />} />
+                  <Route path="/bancos/transacciones/nueva" element={<NewBankTransaction apiDataCuenta={catalogoCuentas} apiDataTipo={tiposTransaccion} />} />
+                  <Route path="/bancos/transacciones/editar/:id" element={<EditBankTransaction apiDataCuenta={catalogoCuentas} apiDataTipo={tiposTransaccion} />} />
+                  <Route path="/bancos/transacciones/ver/:id" element={<ViewBankTransaction apiDataTipo={tiposTransaccion} />} />
+
+
+                   <Route path="/contabilidad" element={<DashBoardContabilidad />} />
+                  <Route path="/contabilidad/gestion-catalogo" element={<GestionCatalogoPage />} />
                   {/* --- FIN DE LAS NUEVAS RUTAS --- */}
 
+                    <Route path="/contabilidad/transacciones" element={<AccountingTransactionsView />} />
+                  <Route path="/contabilidad/transacciones/nueva" element={<NewAccountingTransaction />} />
+                  <Route path="/contabilidad/transacciones/editar/:id" element={<EditAccountingTransaction />} />
+
+
+                  <Route path="/contabilidad/estados-financieros/libro-diario" element={<LibroDiario />} />
+                  <Route path="/contabilidad/estados-financieros/libro-mayor" element={<LibroMayor />} />
+                  <Route path="/contabilidad/estados-financieros/balance-comprobacion" element={<BalanceComprobacion />} />
+                  <Route path="/contabilidad/estados-financieros/balance-general" element={<BalanceGeneral />} />
+                  <Route path="/contabilidad/estados-financieros/estado-resultados" element={<EstadoResultados />} />
 
 
                   {/* Ruta comodín: muestra Dashboard general (puedes personalizar para un 404) */}

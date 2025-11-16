@@ -20,16 +20,51 @@ export const inventorySubMenuLinks = [
 
 
 export const AccountReceivableSubMenuLinks = [
-  { to: '/cuentas/cobros', label: 'cobros' },
-  {to:'/cuentas/visualizar_ventas', label: 'Visualizacion de ventas'},
-  { to: '/cuentas/reportes', label: 'Reporte' },
-  { to: '/cuentas/estado_cuenta', label: 'Estado de cuenta' },
-  
+  { to: '/cuentas/cobros', label: 'Cobros' },
+  { to: '/cuentas/visualizar_ventas', label: 'Visualización de Ventas' },
+  { to: '/cuentas/reportes', label: 'Reportes' },
+  { to: '/cuentas/estado_cuenta', label: 'Estado de Cuenta' },
+
 ];
-// En el futuro, cuando añadas más módulos, simplemente los agregas aquí:
-/*
+export const AccountPayableSubMenuLinks = [
+  { to: '/cuentas/pagos', label: 'Pagos' },
+  { to: '/cuentas/visualizar_pagos', label: 'Visualización de compras' },
+  { to: '/cuentas/pagos/reportes', label: 'Reportes' },
+  { to: '/cuentas/pagos/estado_cuenta', label: 'Estado de Cuenta' },
+
+];
+
+/**
+ * Enlaces para el submenú de navegación del módulo de Compras.
+ * Se utilizará en los componentes de vista principal de este módulo.
+ */
 export const purchasesSubMenuLinks = [
-  { to: '/compras/proveedores', label: 'Proveedores' },
-  { to: '/compras/ordenes', label: 'Órdenes de Compra' },
+  { to: "/compras/proveedores", label: "Proveedores" },
+  { to: "/compras/compras", label: "Compras" },
+  { to: "/compras/notas-credito", label: "Notas de Crédito" },
+  { to: "/compras/isr", label: "Impuesto sobre la Renta" },
+  { to: "/compras/reportes", label: "Reportes" },
 ];
-*/
+
+/**
+ * Enlaces para el submenú de navegación del módulo de bancos.
+ * Se utilizará en los componentes de vista principal de este módulo.
+ */
+export const banksSubMenuLinks = [
+  { to: "/bancos/transacciones", label: "Transacciones Bancarias" },
+  { to: "/bancos/reportes", label: "Reportes" },
+];
+
+export const accountingSubMenuLinks = [
+  { to: '/contabilidad/gestion-catalogo', label: 'Gestión de Catálogo' },
+  { to: '/contabilidad/transacciones', label: 'Transacciones' },
+  // { to: '/contabilidad/estados-financieros', label: 'Estados Financieros' },
+];
+
+export const financialStatementsSubMenuLinks = [
+  { to: '/contabilidad/estados-financieros/libro-diario', label: 'Libro Diario' },
+  { to: '/contabilidad/estados-financieros/libro-mayor', label: 'Libro Mayor' },
+  { to: '/contabilidad/estados-financieros/balance-comprobacion', label: 'Balance de Comprobación' },
+  { to: '/contabilidad/estados-financieros/estado-resultados', label: 'Estado de Resultados' },
+  { to: '/contabilidad/estados-financieros/balance-general', label: 'Balance General' },
+];
