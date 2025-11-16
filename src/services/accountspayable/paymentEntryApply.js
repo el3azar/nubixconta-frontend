@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8080/api/v1/payment-entry/from-detail";
+const BASE_URL = `${import.meta.env.VITE_API_URL}/api/v1/payment-entry/from-detail`;
 
 export const applyPaymentEntry = async (paymentDetailId) => {
   const token = sessionStorage.getItem("nubix_token");

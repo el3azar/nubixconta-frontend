@@ -1,6 +1,6 @@
 import axios from 'axios';
 //Este enpoint trae todos los registros asociados a accounts-receivable
-const BASE_URL = 'http://localhost:8080/api/v1/accounts-payable';
+const BASE_URL = `${import.meta.env.VITE_API_URL}/api/v1/accounts-payable`;
 
 // Endpoint para la vista de Liquidaciones (Collections)
 export const fetchPayableDetails = async () => {

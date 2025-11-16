@@ -1,7 +1,7 @@
 
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/v1/auth'; 
+const API_URL = `${import.meta.env.VITE_API_URL}/api/v1/auth`;  
 
 /**
  * Función para enviar la petición de logout al backend.

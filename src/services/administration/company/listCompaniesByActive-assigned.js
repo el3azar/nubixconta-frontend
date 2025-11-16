@@ -1,6 +1,6 @@
 import axios from "axios";
 //Este enpoint trae el listado de todas las cuentas activas y asignadas
-const API_URL = "http://localhost:8080/api/v1/companies/active-assigned";
+const API_URL = `${import.meta.env.VITE_API_URL}/api/v1/companies/active-assigned`;
 export const getCompaniesActiveAndAssigned = async () => {
   try {
     const token = sessionStorage.getItem("nubix_token");

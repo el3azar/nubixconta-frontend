@@ -7,7 +7,7 @@ const ROLE_KEY = "nubix_role";
 const ACCESS_LOG_ID_KEY = "nubix_access_log_id";
 
 const api = axios.create({
-  baseURL: 'http://localhost:8080/api/v1' // Tu URL base del backend
+  baseURL: `${import.meta.env.VITE_API_URL}/api/v1` // URL base dinámica desde .env
 });
 
 // --- 2. INTERCEPTOR DE PETICIÓN (CORREGIDO) ---

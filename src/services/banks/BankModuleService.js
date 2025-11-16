@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 
 // Endpoint base para las entradas de banco, al que le añadiremos /bank
-const API_URL = 'http://localhost:8080/api/v1/bank-entries/bank';
+const API_URL = `${import.meta.env.VITE_API_URL}/api/v1/bank-entries/bank`;
 
 const getAuthHeader = (token) => ({
   headers: {

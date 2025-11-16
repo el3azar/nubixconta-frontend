@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8080/api/v1/accounts-receivable/search-by-customer";
+const API_URL = `${import.meta.env.VITE_API_URL}/api/v1/accounts-receivable/search-by-customer`;
 
 export const getAccountStatementsByCustomer = async (filters) => {
   try {
