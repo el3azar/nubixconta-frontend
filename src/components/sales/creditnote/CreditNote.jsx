@@ -58,6 +58,7 @@ export default function CreditNote() {
         columns={creditNoteColumns}
         FilterComponent={DefaultFilterComponent}
         ActionsComponent={DefaultActionsComponent}
+        showLegend={true} 
       />
     </>
   );

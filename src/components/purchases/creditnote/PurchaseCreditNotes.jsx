@@ -61,6 +61,7 @@ export default function PurchaseCreditNotes() {
           columns={creditNoteColumns}
           FilterComponent={DefaultFilterComponent}
           ActionsComponent={DefaultActionsComponent}
+          showLegend={true} 
         />
       </ViewContainer>
     </>

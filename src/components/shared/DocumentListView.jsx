@@ -24,7 +24,8 @@ export const DocumentListView = ({
   ActionsComponent, // PROP: El componente que renderizará los botones de acción (Nuevo, Ordenar, etc.)
   initialFetchEnabled = true, // <-- NUEVA PROP: true por defecto
   showRowActions = true, // <-- NUEVA PROP: true por defecto
-  emptyListMessage = "No hay documentos para mostrar." // <-- NUEVA PROP: mensaje por defecto
+  emptyListMessage = "No hay documentos para mostrar.", // <-- NUEVA PROP: mensaje por defecto
+ showLegend = false
 }) => {
   // --- 1. LÓGICA DE HOOKS Y ESTADO (SIN CAMBIOS) ---
   const queryClient = useQueryClient();
@@ -217,6 +218,24 @@ const handleDelete = async (id) => {
           />
         )}
       </div>
+
+      {/* --- INICIO DE LA MODIFICACIÓN: Renderizado condicional --- */}
+      {showLegend && (
+        <div className={styles.legendWrapper}>
+          <div className={styles.legendContainer}>
+              <span className={styles.legendItem}>
+                  <span className={`${styles.colorBox} ${styles.colorPending}`}></span> Pendiente
+              </span>
+              <span className={styles.legendItem}>
+                  <span className={`${styles.colorBox} ${styles.colorApplied}`}></span> Aplicada
+              </span>
+              <span className={styles.legendItem}>
+                  <span className={`${styles.colorBox} ${styles.colorCancelled}`}></span> Anulada
+              </span>
+          </div>
+        </div>
+      )}
+      {/* --- FIN DE LA MODIFICACIÓN --- */}
 
       <div className={styles.tableWrapper}>
         <table className="table table-hover align-middle">

@@ -51,6 +51,7 @@ export default function AccountingTransactionsView() {
           FilterComponent={DefaultFilterComponent}      // Se usa el filtro de fechas estándar
           ActionsComponent={DefaultActionsComponent}    // Se usan las acciones estándar (Nuevo, Ordenar)
           initialFetchEnabled={true}
+          showLegend={true} 
         />
         {/* --- FIN DE LA CORRECCIÓN --- */}
       </ViewContainer>
