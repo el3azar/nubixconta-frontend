@@ -45,8 +45,7 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
     // --- INSTANCIA DEL NUEVO SERVICIO ---
     const { listAllBankEntries } = useBankEntriesService();
 
-    // Las columnas para el endpoint de bank-entries (Otros Módulos)
-    // Se adaptan a la estructura de tus datos JSON
+    // Las columnas para el endpoint de bank-entries
     const otherModuleColumns = [
         { header: 'Correlativo', accessor: 'id', style: { width: '80px', textAlign: 'center' } },
         { header: 'No. de asiento', accessor: 'id', style: { width: '100px', textAlign: 'center' } }, // Usamos id como asiento por ahora
@@ -62,7 +61,7 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
     const loadTransactions = async () => {
         setIsLoading(true);
         setError(null);
-        // No limpiamos las transacciones aquí para que no parpadee la tabla al buscar
+    
 
         try {
             if (activeModule === 'ESTE_MODULO') {
@@ -106,8 +105,8 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
 
     useEffect(() => {
         loadTransactions();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [activeModule]); // Se recarga si cambias entre "Este Módulo" y "Otros", o si cambian los filtros
+        
+    }, [activeModule]);
 
     const handleNew = () => {
         navigate('/bancos/transacciones/nueva');
@@ -122,7 +121,7 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
     };
 
    const handleDelete = async (doc) => {
-        // 1. Llama a Notifier.confirm con el formato correcto (un objeto)
+       
         const result = await Notifier.confirm({
             title: '¿Estás seguro?',
             text: `Esta acción eliminará la transacción "${doc.referenceNumber}". No se puede revertir.`,
@@ -193,7 +192,7 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
     };
 
 
-    // Columnas para 'Este Módulo' (BankTransactionsView original)
+
     const bankTransactionColumns = [
         {
             header: 'Correlativo',
@@ -387,9 +386,7 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
                         <DocumentTable
                             documents={transactions}
                             columns={currentColumns}
-                            // Mantenemos showRowActions para que los colores de las filas sigan funcionando
                             showRowActions={isEsteModulo}
-                            // ¡AQUÍ ESTÁ LA MAGIA! Le decimos que NO renderice sus acciones genéricas
                             disableGenericActions={true} 
                             styles={styles}
                             isLoading={isLoading}
@@ -399,8 +396,7 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
                                 ? "No se encontraron transacciones. Pruebe a cambiar los filtros."
                                 : "No se encontraron entradas bancarias de otros módulos. Pruebe a cambiar los filtros."
                             }
-                            // Esto ya no es necesario, ya que la columna de acciones está en 'currentColumns'
-                            // renderActionsCell={isEsteModulo ? (doc) => bankTransactionColumns.find(c => c.accessor === 'actions').cell(doc) : undefined}
+                           
                         />
                     </tbody>
                 </table>
