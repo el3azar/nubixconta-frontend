@@ -5,13 +5,11 @@ import { manualMovementSchema } from '../../../schemas/inventoryMovementSchema';
 import { useActiveProducts } from '../../../hooks/useProductQueries';
 import SelectBase from '../inventoryelements/SelectBase';
 import Boton from '../inventoryelements/Boton';
-//import Swal from 'sweetalert2'
 import { Notifier } from '../../../utils/alertUtils';
 
 const MovementFormModal = ({ show, onClose, onSave, initialData = null }) => {
   const isCreateMode = !initialData;
 
-  // --- LÓGICA DE DATOS PARA SELECTORES ---
   const { data: activeProducts = [], isLoading: isLoadingProducts } = useActiveProducts();
   
   const opcionesDeProducto = useMemo(() => activeProducts.map(p => ({
@@ -24,7 +22,6 @@ const MovementFormModal = ({ show, onClose, onSave, initialData = null }) => {
     { value: 'SALIDA', label: 'Salida' },
   ], []);
 
-  // --- LÓGICA DEL FORMULARIO con React Hook Form ---
   const { register, handleSubmit, control, formState: { errors }, reset } = useForm({
     resolver: zodResolver(manualMovementSchema),
     defaultValues: {
@@ -35,12 +32,13 @@ const MovementFormModal = ({ show, onClose, onSave, initialData = null }) => {
     }
   });
 
-  // Efecto para poblar/resetear el formulario
   useEffect(() => {
     if (show) {
       if (isCreateMode) {
         reset({ productId: null, movementType: null, quantity: '', description: '' });
       } else {
+        // Verificado contra DTOs: `initialData` es un `MovementResponseDTO`
+        // `initialData.product` es un `MovementProductInfoDTO` que contiene `productId`
         const productoInicial = opcionesDeProducto.find(p => p.value === initialData.product.productId);
         const tipoInicial = opcionesDeTipo.find(t => t.value === initialData.movementType);
         
@@ -55,9 +53,11 @@ const MovementFormModal = ({ show, onClose, onSave, initialData = null }) => {
   }, [show, initialData, isCreateMode, reset, opcionesDeProducto, opcionesDeTipo]);
 
   const onSubmit = (data) => {
+    // La data ya está transformada por Zod para coincidir con `ManualMovementCreateDTO`
     if (isCreateMode) {
       onSave(data);
     } else {
+      // El payload para actualizar también coincide con `ManualMovementUpdateDTO`
       onSave({ id: initialData.movementId, payload: data });
     }
   };
@@ -69,8 +69,6 @@ const MovementFormModal = ({ show, onClose, onSave, initialData = null }) => {
         confirmButtonText: 'Sí, cancelar',
         cancelButtonText: 'No, continuar'
     });
-
-    // Si el usuario confirma, cerramos el modal
     if (result.isConfirmed) {
         onClose();
     }
@@ -80,9 +78,6 @@ const MovementFormModal = ({ show, onClose, onSave, initialData = null }) => {
     return null;
   }
   
-  // ===================================================================
-  // == JSX COMPLETO Y FIEL A TUS DISEÑOS ORIGINALES
-  // ===================================================================
   return (
     <div className={`modal fade ${show ? 'show d-block' : ''}`} tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
       <div className="modal-dialog modal-lg modal-dialog-centered">
@@ -95,7 +90,8 @@ const MovementFormModal = ({ show, onClose, onSave, initialData = null }) => {
                   <label className="form-label">Código de producto</label>
                   <Controller name="productId" control={control}
                     render={({ field }) => (
-                      <SelectBase apiData={opcionesDeProducto} value={field.value} onChange={field.onChange} placeholder="Buscar producto..." isLoading={isLoadingProducts}/>
+                      // --- CORRECCIÓN FINAL Y VERIFICADA: La prop correcta es 'options' ---
+                      <SelectBase options={opcionesDeProducto} value={field.value} onChange={field.onChange} placeholder="Buscar producto..." isLoading={isLoadingProducts}/>
                     )}
                   />
                   {errors.productId && <div className="text-danger mt-1">{errors.productId.message}</div>}
@@ -104,7 +100,7 @@ const MovementFormModal = ({ show, onClose, onSave, initialData = null }) => {
                   <label className="form-label">Tipo de movimiento</label>
                   <Controller name="movementType" control={control}
                     render={({ field }) => (
-                      <SelectBase apiData={opcionesDeTipo} value={field.value} onChange={field.onChange} placeholder="Seleccionar tipo..." />
+                      <SelectBase options={opcionesDeTipo} value={field.value} onChange={field.onChange} placeholder="Seleccionar tipo..." />
                     )}
                   />
                   {errors.movementType && <div className="text-danger mt-1">{errors.movementType.message}</div>}
