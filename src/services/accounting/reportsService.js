@@ -53,10 +53,17 @@ export const useReportsService = () => {
     return response.data;
   }, [token]);
 
+   const getBalanceGeneral = useCallback(async (endDate) => {
+    const endpoint = `${BASE_URL}/reports/balance-general?endDate=${endDate}`;
+    const response = await axios.get(endpoint, getAuthHeader(token));
+    return response.data;
+  }, [token]);
+
   return {
     getLibroDiario,
     getLibroMayor,
     getBalanzaComprobacion,
     getEstadoResultados,
+    getBalanceGeneral,
   };
 };

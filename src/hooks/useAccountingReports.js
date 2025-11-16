@@ -6,16 +6,26 @@ import { useCompany } from '../context/CompanyContext';
 const REPORTS_QUERY_KEY = 'accountingReports';
 
 export const useAccountingReports = (reportType, filters) => {
-  // --- INICIO DE LA MODIFICACIÓN ---
-  const { getLibroDiario, getLibroMayor, getBalanzaComprobacion, getEstadoResultados } = useReportsService();
-  // --- FIN DE LA MODIFICACIÓN ---
+  // --- INICIO DE LA CORRECCIÓN ---
+  // Añadimos getBalanceGeneral a la desestructuración.
+  const { 
+    getLibroDiario, 
+    getLibroMayor, 
+    getBalanzaComprobacion, 
+    getEstadoResultados, 
+    getBalanceGeneral 
+  } = useReportsService();
+  // --- FIN DE LA CORRECCIÓN ---
+
   const { company } = useCompany();
   
   const isEnabled = !!company?.id && !!reportType && (
     (reportType === 'libroMayor' && ((!!filters.startDate && !!filters.endDate) || !!filters.catalogId)) ||
-    // --- INICIO DE LA MODIFICACIÓN ---
-    ((reportType === 'libroDiario' || reportType === 'balanzaComprobacion' || reportType === 'estadoResultados') && (!!filters.startDate && !!filters.endDate))
-    // --- FIN DE LA MODIFICACIÓN ---
+    (
+      ['libroDiario', 'balanzaComprobacion', 'estadoResultados'].includes(reportType) && 
+      (!!filters.startDate && !!filters.endDate)
+    ) ||
+    (reportType === 'balanceGeneral' && !!filters.endDate)
   );
 
   return useQuery({
@@ -31,11 +41,13 @@ export const useAccountingReports = (reportType, filters) => {
       if (reportType === 'balanzaComprobacion') {
         return getBalanzaComprobacion(filters.startDate, filters.endDate);
       }
-      // --- INICIO DE LA MODIFICACIÓN ---
       if (reportType === 'estadoResultados') {
         return getEstadoResultados(filters.startDate, filters.endDate);
       }
-      // --- FIN DE LA MODIFICACIÓN ---
+      if (reportType === 'balanceGeneral') {
+        // Ahora esta función sí está definida en este scope.
+        return getBalanceGeneral(filters.endDate);
+      }
       return Promise.resolve(null);
     },
 

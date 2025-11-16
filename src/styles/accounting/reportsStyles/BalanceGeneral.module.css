@@ -1,0 +1,123 @@
+.filterWrapper {
+    background-color: #f7f5fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border: 1px solid #dcd9e7;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 1.5rem;
+}
+
+.filterGroup {
+    min-width: 250px;
+}
+.filterGroup label {
+    color: #10031C;
+}
+
+.filterActions {
+    display: flex;
+    gap: 1rem;
+}
+
+.actionButton, .secondaryButton {
+    border: 2px solid #10031C;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+}
+.actionButton { background-color: #10031C; color: #fff; }
+.actionButton:hover:not(:disabled) { background-color: transparent; color: #10031C; }
+.actionButton:disabled { background-color: #bdc3c7; border-color: #bdc3c7; cursor: not-allowed; }
+.secondaryButton { background-color: transparent; color: #10031C; }
+.secondaryButton:hover { background-color: #10031C; color: #fff; }
+
+.reportContainer {
+    position: relative;
+    background-color: #fff;
+    padding: 2.5rem;
+    margin-top: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+}
+.reportActionsHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: #f0eefc;
+    border-radius: 8px;
+}
+.resultsTitle { font-weight: 600; color: #10031C; margin: 0; }
+.reportHeader {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.line {
+    display: grid;
+    grid-template-columns: 100px 1fr 150px 150px; /* Código | Concepto | Detalle | Total */
+    gap: 1rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+.line:last-child {
+    border-bottom: none;
+}
+
+.code, .concept, .detail, .total {
+    display: flex;
+    align-items: center;
+}
+
+.detail, .total {
+    text-align: right;
+    justify-content: flex-end;
+}
+
+.category {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #10031C;
+    margin-top: 1.5rem;
+}
+.subcategory {
+    font-weight: bold;
+}
+.account {
+    color: #495057;
+}
+.account .concept {
+    padding-left: 2rem;
+}
+
+.subtotal .concept, .grandTotal .concept {
+    font-weight: bold;
+    justify-content: flex-end;
+}
+.grandTotal .total {
+    font-size: 1.1rem;
+    border-top: 1px solid #343a40;
+    border-bottom: 2px solid #343a40;
+}
+.balanceCheckContainer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 1.5rem;
+    color: #198754;
+    font-size: 1.1rem;
+}
+.balanceCheckIcon {
+    margin-right: 0.5rem;
+}

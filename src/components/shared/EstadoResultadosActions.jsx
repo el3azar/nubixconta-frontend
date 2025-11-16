@@ -1,3 +1,4 @@
+// src/components/shared/EstadoResultadosActions.jsx
 import React from 'react';
 import { FaFilePdf, FaFileExcel } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
@@ -28,24 +29,28 @@ const EstadoResultadosActions = ({ reportData, filters }) => {
                 const colTotal = pageWidth - margin;
                 let y = 15;
 
-                const printHeader = () => {
-                    doc.setFont("helvetica", "bold"); doc.setFontSize(16); doc.text(companyName, pageWidth / 2, y, { align: 'center' }); y += 7;
-                    doc.setFont("helvetica", "normal"); doc.setFontSize(12); doc.text("Estado de Resultados", pageWidth / 2, y, { align: 'center' }); y += 6;
-                    doc.setFontSize(10); doc.text(`Del ${formatDate(filters.startDate)} al ${formatDate(filters.endDate)}`, pageWidth / 2, y, { align: 'center' }); y += 12;
-                    doc.setDrawColor(30); doc.line(margin, y, pageWidth - margin, y); y += 8;
-                };
-
+                // --- Encabezado PDF Completo ---
+                doc.setFont("helvetica", "bold"); doc.setFontSize(16); doc.text(companyName, pageWidth / 2, y, { align: 'center' }); y += 7;
+                doc.setFont("helvetica", "normal"); doc.setFontSize(12); doc.text("Estado de Resultados", pageWidth / 2, y, { align: 'center' }); y += 6;
+                doc.setFontSize(10); doc.text(`Del ${formatDate(filters.startDate)} al ${formatDate(filters.endDate)}`, pageWidth / 2, y, { align: 'center' });
+                
+                doc.setFontSize(9);
+                doc.text(`Generado por: ${userName}`, pageWidth - margin, 22, { align: 'right' });
+                doc.text(`Fecha: ${new Date().toLocaleDateString()}`, pageWidth - margin, 28, { align: 'right' });
+                
+                y += 8;
+                doc.setDrawColor(30); doc.line(margin, y, pageWidth - margin, y); y += 8;
+                
+                // --- Funciones Helper para Imprimir ---
                 const printSectionTitle = (title) => {
                     doc.setFont("helvetica", "bold"); doc.setFontSize(11);
                     doc.text(title, colConcept, y); y += 7;
                 };
-                
                 const printLine = (label, amount) => {
                     doc.setFont("helvetica", "normal"); doc.setFontSize(10);
                     doc.text(label, colConcept + 5, y);
                     doc.text(formatCurrency(amount), colTotal, y, { align: 'right' }); y += 6;
                 };
-                
                 const printTotal = (label, amount, hasTopLine = true) => {
                     doc.setFont("helvetica", "bold"); doc.setFontSize(10);
                     const amountText = formatCurrency(amount);
@@ -57,39 +62,23 @@ const EstadoResultadosActions = ({ reportData, filters }) => {
                     doc.text(label, colConcept, y);
                     doc.text(amountText, colTotal, y, { align: 'right' }); y += 8;
                 };
-
                 const printSubtotal = (label, amount) => {
                     doc.setFont("helvetica", "bold"); doc.setFontSize(11);
                     doc.text(label, colConcept, y);
                     doc.text(formatCurrency(amount), colTotal, y, { align: 'right' }); y += 10;
                 };
-                
-                // --- INICIO DE LA CORRECCIÓN DEFINITIVA ---
                 const printFinalResult = (label, amount) => {
-                    doc.setFont("helvetica", "bold");
-                    doc.setFontSize(11); // Tamaño consistente
-                    
+                    doc.setFont("helvetica", "bold"); doc.setFontSize(11);
                     const amountText = formatCurrency(amount);
                     const textWidth = doc.getTextWidth(amountText);
                     doc.setDrawColor(30);
-
-                    // Se calcula la posición de la línea INFERIOR
                     const bottomLineY = y + 2.5;
-                    
-                    // Se dibuja ÚNICAMENTE la línea inferior
                     doc.line(colTotal - textWidth - 2, bottomLineY, colTotal, bottomLineY);
-                    
-                    // Opcional: Si quieres una LÍNEA DOBLE, descomenta la siguiente línea
-                    // doc.line(colTotal - textWidth - 2, bottomLineY + 0.5, colTotal, bottomLineY + 0.5);
-
                     doc.text(label, colConcept, y);
-                    doc.text(amountText, colTotal, y, { align: 'right' });
-                    y += 8;
+                    doc.text(amountText, colTotal, y, { align: 'right' }); y += 8;
                 };
-                // --- FIN DE LA CORRECCIÓN DEFINITIVA ---
 
-                // Build PDF Document
-                printHeader();
+                // --- Construcción del Cuerpo del PDF ---
                 printSectionTitle("Ingresos de Operación");
                 reportData.ingresosOperacionales.forEach(item => printLine(`${item.accountCode} - ${item.accountName}`, item.totalPeriodo));
                 printTotal("Total Ingresos", reportData.totalIngresosOperacionales);
@@ -138,9 +127,11 @@ const EstadoResultadosActions = ({ reportData, filters }) => {
                 return row;
             };
             
+            // --- Encabezado Excel Completo ---
             worksheet.mergeCells('A1:C1'); worksheet.getCell('A1').value = companyName; worksheet.getCell('A1').font = { size: 16, bold: true }; worksheet.getCell('A1').alignment = { horizontal: 'center' };
             worksheet.mergeCells('A2:C2'); worksheet.getCell('A2').value = "Estado de Resultados"; worksheet.getCell('A2').font = { size: 14 }; worksheet.getCell('A2').alignment = { horizontal: 'center' };
             worksheet.mergeCells('A3:C3'); worksheet.getCell('A3').value = `Del ${formatDate(filters.startDate)} al ${formatDate(filters.endDate)}`; worksheet.getCell('A3').alignment = { horizontal: 'center' };
+            worksheet.mergeCells('A4:C4'); worksheet.getCell('A4').value = `Generado por: ${userName} | Fecha: ${new Date().toLocaleDateString()}`; worksheet.getCell('A4').alignment = { horizontal: 'center' };
             worksheet.addRow([]);
 
             addStyledRow(['Ingresos de Operación'], { bold: true });
@@ -153,7 +144,6 @@ const EstadoResultadosActions = ({ reportData, filters }) => {
 
             addStyledRow(['= UTILIDAD BRUTA', '', reportData.utilidadBruta], { bold: true, bgColor: 'FFE6E4EB' });
 
-            // --- INICIO DE LA CORRECCIÓN DE SINTAXIS ---
             addStyledRow(['(-) Gastos de Operación'], { bold: true });
             if (reportData.gastosVenta && reportData.gastosVenta.length > 0) {
                 addStyledRow(['  Gastos de Venta'], { bold: true, indent: 1 });
@@ -164,7 +154,6 @@ const EstadoResultadosActions = ({ reportData, filters }) => {
                 reportData.gastosAdministracion.forEach(g => addStyledRow([`${g.accountCode} - ${g.accountName}`, g.totalPeriodo], { indent: 2 }));
             }
             addStyledRow(['Total Gastos de Operación', '', reportData.totalGastosOperacionales], { bold: true, border: 'single' });
-            // --- FIN DE LA CORRECCIÓN DE SINTAXIS ---
 
             addStyledRow(['= UTILIDAD DE OPERACIÓN', '', reportData.utilidadOperacional], { bold: true, bgColor: 'FFE6E4EB' });
 
