@@ -31,6 +31,11 @@ const LibroDiario = () => {
       acc[uniqueKey].details.push(mov);
       return acc;
     }, {});
+
+    // Después de agrupar, iteramos sobre cada asiento para ordenar sus detalles.
+    Object.values(grouped).forEach(asiento => {
+        asiento.details.sort((a, b) => b.debe - a.debe);
+    });
     
     return Object.values(grouped);
   }, [movimientos]);

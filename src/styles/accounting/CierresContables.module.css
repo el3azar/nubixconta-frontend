@@ -1,0 +1,124 @@
+/* src/styles/accounting/CierresContables.module.css */
+
+.container {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #10031C;
+    margin: 0;
+}
+
+.yearSelector {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.yearSelector button {
+    background: none;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+.yearSelector button:hover {
+    background-color: #f0eefc;
+}
+
+.yearDisplay {
+    font-size: 1.5rem;
+    font-weight: 500;
+    min-width: 80px;
+    text-align: center;
+}
+
+.monthList {
+    list-style: none;
+    padding: 0;
+}
+
+.monthItem {
+    display: grid;
+    grid-template-columns: 1fr 100px 150px;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.monthItem:last-child {
+    border-bottom: none;
+}
+
+.monthName {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.status {
+    font-weight: bold;
+    padding: 0.25rem 0.5rem;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.statusOpen {
+    color: #198754;
+    background-color: #d1e7dd;
+}
+
+.statusClosed {
+    color: #dc3545;
+    background-color: #f8d7da;
+}
+
+.actionButton {
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.actionButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.closeButton {
+    background-color: #10031C;
+    color: white;
+}
+.closeButton:hover:not(:disabled) {
+    background-color: #49207B;
+}
+
+.reopenButton {
+    background-color: transparent;
+    border: 2px solid #10031C;
+    color: #10031C;
+}
+.reopenButton:hover:not(:disabled) {
+    background-color: #10031C;
+    color: white;
+}

@@ -1,7 +1,5 @@
-// src/components/accounting/DashBoardContabilidad.jsx
-
 import React from 'react';
-import { FaSitemap, FaFileInvoiceDollar, FaExchangeAlt } from "react-icons/fa";
+import { FaSitemap, FaFileInvoiceDollar, FaExchangeAlt, FaCalendarCheck } from "react-icons/fa"; 
 import DashboardCards from "../DashboardCards";
 import layoutStyles from "../../styles/mainLayout.module.css";
 
@@ -17,11 +15,15 @@ const accountingItems = [
     icon: FaExchangeAlt, 
     to: "/contabilidad/transacciones"
   },
+  {
+    label: "Cierre de Períodos",
+    icon: FaCalendarCheck,
+    to: "/contabilidad/cierres"
+  },
   { 
     label: "Estados Financieros", 
     icon: FaFileInvoiceDollar, 
-    // Apuntamos al primer reporte como página de inicio de la sección
-    to: "/contabilidad/estados-financieros/libro-diario" 
+    to: "/contabilidad/estados-financieros" // Ahora apunta a la nueva página de dashboard
   },
 ];
 

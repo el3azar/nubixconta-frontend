@@ -58,7 +58,8 @@ export const banksSubMenuLinks = [
 export const accountingSubMenuLinks = [
   { to: '/contabilidad/gestion-catalogo', label: 'Gestión de Catálogo' },
   { to: '/contabilidad/transacciones', label: 'Transacciones' },
-  // { to: '/contabilidad/estados-financieros', label: 'Estados Financieros' },
+  { to: '/contabilidad/cierres', label: 'Cierre de Períodos' },
+  { to: '/contabilidad/estados-financieros', label: 'Estados Financieros' },
 ];
 
 export const financialStatementsSubMenuLinks = [
