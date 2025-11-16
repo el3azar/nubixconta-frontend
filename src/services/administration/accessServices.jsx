@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const ACCESS_API = 'http://localhost:8080/api/v1/access-logs';
-const USERS_API   = 'http://localhost:8080/api/v1/users';
+const ACCESS_API = `${import.meta.env.VITE_API_URL}/api/v1/access-logs`;
+const USERS_API = `${import.meta.env.VITE_API_URL}/api/v1/users`;
 const token       = localStorage.getItem('token');
 //const HISTORY_API = 'https://nubixconta-backend-production.up.railway.app/api/v1/access-logs';
 //const USERS_API   = 'https://nubixconta-backend-production.up.railway.app/api/v1/users';

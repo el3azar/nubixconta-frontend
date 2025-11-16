@@ -2,7 +2,7 @@ import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
 
 // URL base para el módulo de compras
-const API_URL = "http://localhost:8080/api/v1/purchases";
+const API_URL = `${import.meta.env.VITE_API_URL}/api/v1/purchases`;
 
 // Función helper para incluir el JWT en las peticiones (idéntica a la de ventas)
 const getAuthHeader = (token) => ({

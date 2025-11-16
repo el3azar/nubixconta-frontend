@@ -2,7 +2,8 @@
 import axios from "axios";
 import { DateTime } from "luxon";
 
-const BASE_URL = "http://localhost:8080/api/v1/payment-details";
+const BASE_URL = `${import.meta.env.VITE_API_URL}/api/v1/payment-details`;
+
 
 export const editarLiquidacionCompra = async (id, {
   accountId,

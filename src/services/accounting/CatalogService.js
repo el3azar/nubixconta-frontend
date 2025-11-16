@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import { useCallback } from 'react'; // <-- 1. Importar useCallback
 
-const API_BASE_URL = 'http://localhost:8080/api/v1';
+const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api/v1`;
 
 const getAuthHeader = (token) => ({
     headers: {

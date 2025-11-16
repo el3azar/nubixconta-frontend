@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/v1/companies';
+const API_URL = `${import.meta.env.VITE_API_URL}/api/v1/companies`;
 
 export const updateCompanyService = async (id, updatedData) => {
   const token = sessionStorage.getItem('nubix_token'); // Asegúrate de que este sea el nombre correcto de tu token

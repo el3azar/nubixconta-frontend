@@ -5,7 +5,7 @@ import axios from "axios";
 // =========================================================================================
 
 // Define tu URL base de la API en un solo lugar para facilitar futuros cambios.
-const API_BASE_URL = "http://localhost:8080/api/v1/auth"; 
+const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api/v1/auth`;
 // const API_BASE_URL = "https://nubixconta-backend-production.up.railway.app/api/v1/auth";
 
 /**
