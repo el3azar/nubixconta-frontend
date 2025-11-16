@@ -91,13 +91,14 @@ import GestionCatalogoPage from '../components/accounting/catalog/GestionCatalog
 import AccountingTransactionsView from '../components/accounting/accounting-transaction/AccountingTransactionsView';
 import NewAccountingTransaction from '../components/accounting/accounting-transaction/NewAccountingTransaction';
 import EditAccountingTransaction from '../components/accounting/accounting-transaction/EditAccountingTransaction';
-
+import DashBoardFinancialStatements from '../components/accounting/financial-statements/DashBoardFinancialStatements';
 
 import LibroDiario from '../components/accounting/financial-statements/LibroDiario';
 import LibroMayor from '../components/accounting/financial-statements/LibroMayor';
 import BalanceComprobacion from '../components/accounting/financial-statements/BalanceComprobacion';
 import BalanceGeneral from '../components/accounting/financial-statements/BalanceGeneral';
 import EstadoResultados from '../components/accounting/financial-statements/EstadoResultados';
+import CierresContables from '../components/accounting/CierresContables';
 
 export default function Rutas({ catalogoCuentas, tiposTransaccion }) {
   return (
@@ -308,6 +309,8 @@ export default function Rutas({ catalogoCuentas, tiposTransaccion }) {
 
                    <Route path="/contabilidad" element={<DashBoardContabilidad />} />
                   <Route path="/contabilidad/gestion-catalogo" element={<GestionCatalogoPage />} />
+                  <Route path="/contabilidad/cierres" element={<CierresContables />} /> 
+                  <Route path="/contabilidad/estados-financieros" element={<DashBoardFinancialStatements />} />
                   {/* --- FIN DE LAS NUEVAS RUTAS --- */}
 
                     <Route path="/contabilidad/transacciones" element={<AccountingTransactionsView />} />
