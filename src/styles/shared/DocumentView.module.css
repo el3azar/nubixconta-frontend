@@ -207,6 +207,52 @@
   border-color: #4a4a6b;     /* Un borde ligeramente más claro que el fondo para una separación sutil */
 }
 
+.legendWrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+/* Contenedor principal de la leyenda (SIN FONDO) */
+.legendContainer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0; /* Solo padding vertical/horizontal para espaciado interno */
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #555; /* Texto un poco más oscuro para mejor contraste */
+}
+
+.colorBox {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border-radius: 4px;
+}
+
+/* CORRECCIÓN: 'Pendiente' ahora tiene un fondo gris suave */
+.colorPending {
+    background-color: #f8f9fa; /* Un gris muy claro, color de fondo de Bootstrap */
+    border: 1px solid #dee2e6; /* Borde gris estándar */
+}
+
+.colorApplied {
+    background-color: #d1e7dd;
+    border: 1px solid #a3cfbb;
+}
+
+.colorCancelled {
+    background-color: #f8d7da;
+    border: 1px solid #f1aeb5;
+}
+
 /*
  ==================================================================
  == INICIO: SECCIÓN DE MEDIA QUERIES GRANULARES (LA SOLUCIÓN)

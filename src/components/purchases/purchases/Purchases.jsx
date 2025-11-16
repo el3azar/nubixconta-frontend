@@ -55,6 +55,7 @@ export default function Purchases() {
           columns={purchasesColumns}
           FilterComponent={DefaultFilterComponent}
           ActionsComponent={DefaultActionsComponent}
+          showLegend={true} 
         />
       </ViewContainer>
     </div>

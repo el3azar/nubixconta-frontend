@@ -52,6 +52,8 @@ export const DefaultActionsComponent = ({listTitle, handleNew, setSortBy, sortBy
           </>
         )}
       </div>
+      
+
       <div className={styles.newButtonContainer}>
         <button type="button" className={styles.actionButton} onClick={handleNew}>
           <FaPlusCircle className="me-1" /> Nuevo
