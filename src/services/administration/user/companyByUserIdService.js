@@ -1,7 +1,7 @@
 // src/services/companyService.js
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/v1/companies';
+const API_URL = `${import.meta.env.VITE_API_URL}/api/v1/companies`;
 
 // Se mantiene la función auxiliar, aunque también podría estar dentro de la principal
 const getToken = () => {

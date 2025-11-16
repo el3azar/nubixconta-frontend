@@ -1,7 +1,7 @@
 export const searchProducts = async (code, name) => {
   try {
     const token = sessionStorage.getItem("nubix_token");
-    const response = await axios.get(`http://localhost:8080/api/v1/products`, {
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/products`, {
       params: { code, name },
       headers: { Authorization: `Bearer ${token}` },
     });

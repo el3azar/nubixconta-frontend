@@ -1,5 +1,5 @@
 // src/services/accountsreceivable/getCollectionEntryById.js
-const  API_BASE_URL = "http://localhost:8080/api";
+const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api`;
 
 export const getCollectionEntryById = async (id) => {
   const token = sessionStorage.getItem('nubix_token');

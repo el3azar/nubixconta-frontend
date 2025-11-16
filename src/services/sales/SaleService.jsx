@@ -3,7 +3,7 @@ import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
 
 // URL base para ventas
-const API_URL = "http://localhost:8080/api/v1/sales";
+const API_URL = `${import.meta.env.VITE_API_URL}/api/v1/sales`;
 
 // Función para incluir el JWT en las peticiones
 const getAuthHeader = (token) => ({

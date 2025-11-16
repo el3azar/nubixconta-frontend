@@ -1,7 +1,7 @@
 import axios from "axios";
 import { DateTime } from "luxon";
-const BASE_URL = 'http://localhost:8080/api/v1/payment-details/make-payment';
-const PURCHASE_DOCUMENT_URL = 'http://localhost:8080/api/v1/purchases/document';
+const BASE_URL = `${import.meta.env.VITE_API_URL}/api/v1/payment-details/make-payment`;
+const PURCHASE_DOCUMENT_URL = `${import.meta.env.VITE_API_URL}/api/v1/purchases/document`;
 
 export const settlementPayableService = async ({
   idPurchase,

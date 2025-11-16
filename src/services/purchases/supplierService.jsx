@@ -2,7 +2,7 @@ import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
 
 // 1. CAMBIO CLAVE: Apuntamos al endpoint de proveedores.
-const API_URL = "http://localhost:8080/api/v1/suppliers";
+const API_URL = `${import.meta.env.VITE_API_URL}/api/v1/suppliers`;
 
 /**
  * Hook personalizado para encapsular toda la lógica de comunicación

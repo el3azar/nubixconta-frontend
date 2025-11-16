@@ -1,6 +1,6 @@
 import axios from "axios";
 //Este enpoint trae el listado de todas las cuentas asignadas
-const API_URL = "http://localhost:8080/api/v1/companies/inactive";
+const API_URL = `${import.meta.env.VITE_API_URL}/api/v1/companies/inactive`;
 //const API_URL = "https://nubixconta-backend-production.up.railway.app/api/v1/companies";
 export const getCompaniesInactive= async () => {
   try {

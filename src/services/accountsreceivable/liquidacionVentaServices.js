@@ -1,6 +1,6 @@
 import axios from "axios";
 import { DateTime } from "luxon";
-const BASE_URL = 'http://localhost:8080/api/v1/collection-detail/register-payment';
+const BASE_URL = `${import.meta.env.VITE_API_URL}/api/v1/collection-detail/register-payment`;
 
 const BASE_URL_AR = 'http://localhost:8080/api/v1/accounts-receivable';
 const BASE_URL_CD = 'http://localhost:8080/api/v1/collection-detail';

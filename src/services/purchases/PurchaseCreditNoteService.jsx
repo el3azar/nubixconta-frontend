@@ -4,7 +4,7 @@ import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
 
 // URL base para el módulo de Notas de Crédito de Compras
-const API_URL = "http://localhost:8080/api/v1/purchase-credit-notes";
+const API_URL = `${import.meta.env.VITE_API_URL}/api/v1/purchase-credit-notes`;
 
 // Función helper para incluir el JWT en las peticiones (reutilizada)
 const getAuthHeader = (token) => ({

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const HISTORY_API = 'http://localhost:8080/api/v1/change-history';
-const USERS_API = 'http://localhost:8080/api/v1/users';
+const HISTORY_API = `${import.meta.env.VITE_API_URL}/api/v1/change-history`;
+const USERS_API = `${import.meta.env.VITE_API_URL}/api/v1/users`;
 
 const getToken = () => sessionStorage.getItem('nubix_token');
 
