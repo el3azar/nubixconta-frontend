@@ -54,6 +54,7 @@ export default function Sales() {
           columns={salesColumns}
           FilterComponent={DefaultFilterComponent}
           ActionsComponent={DefaultActionsComponent}
+          showLegend={true} 
         />
       </ViewContainer>
     </div>

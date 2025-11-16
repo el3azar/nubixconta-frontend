@@ -13,10 +13,12 @@ const DocumentTableRow = ({ doc, columns, actionsProps, styles, showRowActions, 
   // En lugar de usar 'styles.rowApplied', volvemos a las clases 'table-success' y 'table-danger'
   // de tu versión anterior, ya que estas sí tienen estilos definidos globalmente.
   let rowClass = '';
-  if (status === 'APLICADA') {
-    rowClass = 'table-success'; 
-  } else if (status === 'ANULADA') {
-    rowClass = 'table-danger'; 
+ if (showRowActions) {
+    if (status === 'APLICADA') {
+      rowClass = 'table-success'; 
+    } else if (status === 'ANULADA') {
+      rowClass = 'table-danger'; 
+    }
   }
   
   return (

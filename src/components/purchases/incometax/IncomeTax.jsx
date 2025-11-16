@@ -84,6 +84,7 @@ const IncomeTax = () => {
         newDocumentMessage="Redirigiendo para seleccionar un proveedor..."
         FilterComponent={DefaultFilterComponent} // Reutilizamos el filtro estándar
         ActionsComponent={DefaultActionsComponent} // Reutilizamos las acciones estándar
+        showLegend={true} 
       />
     </>
   );
