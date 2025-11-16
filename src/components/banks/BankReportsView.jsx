@@ -17,7 +17,7 @@ import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
-// --- IMPORTAR SERVICIOS NECESARIOS (ACTUALIZADO) ---
+// --- IMPORTAR SERVICIOS NECESARIOS ---//
 import { useBankModuleService } from '../../services/banks/BankModuleService'; // <-- Usamos el nuevo servicio para 'Este Modulo'
 import { useBankEntriesService } from '../../services/banks/BankEntriesService'; // <-- Este se mantiene para 'Otros Modulos'
 import { useCompany } from "../../context/CompanyContext";
@@ -41,7 +41,7 @@ const loadImageAsBase64 = (url) => {
   });
 };
 
-// --- DEFINICIÓN DE COLUMNAS PARA 'ESTE MODULO' (CORREGIDA) ---
+// --- DEFINICIÓN DE COLUMNAS PARA 'ESTE MODULO'  ---
 export const thisModuleReportColumns = [
     {
         header: 'Correlativo',
@@ -101,14 +101,14 @@ const BankReportsView = () => {
     const { user } = useAuth();
     const { company } = useCompany();
 
-    // --- INSTANCIAR LOS SERVICIOS CORRECTOS ---
+    // --- INSTANCIAR LOS SERVICIOS ---
     const { filterBankModuleEntries } = useBankModuleService(); // Para 'Este Modulo'
     const { listAllBankEntries } = useBankEntriesService();    // Para 'Otros Modulos'
 
     const isEsteModulo = activeReportMode === 'ESTE_MODULO';
     const currentColumns = isEsteModulo ? thisModuleReportColumns : otherModulesReportColumns;
 
-    // --- LÓGICA DE BÚSQUEDA COMPLETA Y CORREGIDA ---
+    // --- LÓGICA DE BÚSQUEDA COMPLETA Y  ---
     const handleSearch = useCallback(async () => {
         if (!accountName && !startDate && !endDate) {
             Notifier.info("Por favor, ingrese al menos un criterio de búsqueda.");
@@ -131,7 +131,7 @@ const BankReportsView = () => {
                 // Llamamos al nuevo servicio con el objeto de filtros
                 data = await filterBankModuleEntries(filters);
             } else {
-                // La lógica para 'Otros Módulos' no cambia
+                // La lógica para 'Otros Módulos' 
                 data = await listAllBankEntries(filters);
             }
             setReportData(data);

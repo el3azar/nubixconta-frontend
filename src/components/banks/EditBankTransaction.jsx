@@ -7,22 +7,26 @@ import { banksSubMenuLinks } from '../../config/menuConfig';
 import SCardUtil from './SCardUtil';
 import styles from '../../styles/banks/Banks.module.css';
 
-// --- NUEVOS IMPORTS ---
 import { bankTransactionService } from '../../services/banks/banksService';
 import { Notifier } from '../../utils/alertUtils';
 
-// Asumiendo que 'apiDataCuenta' es el catálogo contable
-const EditBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
+const EditBankTransaction = ({ apiDataCuenta }) => {
 
     const { id } = useParams();
     const navigate = useNavigate();
-
+            
+    const transactionTypesOptions = [
+        { value: 'TRANSFERENCIA', label: 'Transferencia' },
+        { value: 'EFECTIVO', label: 'Efectivo' },
+        { value: 'REMESA', label: 'Remesa' },
+    ];
+    
     // --- ESTADO DEL ENCABEZADO (Header) ---
     const [header, setHeader] = useState({
         transactionDate: '',
         receiptNumber: '',
         description: '',
-        transactionType: '', 
+        transactionType: null, 
         companyId: 1
     });
     
@@ -42,14 +46,13 @@ const EditBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
             try {
                 const data = await bankTransactionService.getById(id);
                 
-                // Encuentra el objeto completo del tipo de transacción para el Select
-                const tipoObjeto = apiDataTipo.find(tipo => tipo.value === data.transactionType);
+                const tipoObjeto = transactionTypesOptions.find(tipo => tipo.value === data.transactionType);
 
                 setHeader({
                     transactionDate: data.transactionDate.split('T')[0],
                     receiptNumber: data.receiptNumber,
                     description: data.description,
-                    transactionType: tipoObjeto || null, // Asigna el objeto encontrado
+                    transactionType: tipoObjeto || null,
                     companyId: data.companyId
                 });
                 setBankEntries(data.bankEntries);
@@ -71,12 +74,10 @@ const EditBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
         };
         
         loadData();
-    }, [id, navigate, apiDataTipo]);
+    }, [id, navigate]);
 
 
     // --- LÓGICA DE LA TABLA DE DETALLE ---
-    
-    // Esta constante ya no se usa para renderizar, pero es útil para saber el número de columnas
     const detailColumns = [
         { header: 'Cuenta', accessor: 'idCatalog' }, 
         { header: 'Descripción', accessor: 'description' },
@@ -90,20 +91,31 @@ const EditBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
         setBankEntries(prevEntries => [...prevEntries, newDetail]);
     };
 
-    const handleDeleteDetail = (indexToDelete) => {
+    // --- CAMBIO PRINCIPAL: Lógica de eliminación con Notifier ---
+    const handleDeleteDetail = async (indexToDelete) => {
         if (!isEditable) return; 
-        if (window.confirm(`¿Está seguro de eliminar esta línea?`)) {
+
+        // Usamos Notifier.confirm y esperamos la respuesta
+        const result = await Notifier.confirm({
+            title: '¿Confirmar eliminación?',
+            text: 'Esta acción eliminará la línea del asiento.',
+            confirmButtonText: 'Sí, eliminar'
+        });
+
+        // Verificamos explícitamente .isConfirmed
+        if (result.isConfirmed) {
             setBankEntries(prev => prev.filter((_, index) => index !== indexToDelete));
+            Notifier.info('Línea de asiento eliminada.');
         }
     };
+    // --- FIN CAMBIO ---
 
     // Cálculo de Totales
     const totalDebe = bankEntries.reduce((sum, item) => sum + (Number(item.debit) || 0), 0);
     const totalHaber = bankEntries.reduce((sum, item) => sum + (Number(item.credit) || 0), 0);
     const balance = totalDebe - totalHaber;
 
-    // --- LÓGICA DE GUARDADO (ACTUALIZACIÓN) ---
-
+    // --- LÓGICA DE GUARDADO  ---
     const handleUpdateTransaction = async () => {
         if (!isEditable) {
             Notifier.error('No se puede guardar una transacción que no está PENDIENTE.');
@@ -185,14 +197,12 @@ const EditBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
                         <input type="text" name="receiptNumber" placeholder="Ej. CH-001" value={header.receiptNumber} onChange={handleHeaderChange} disabled={!isEditable} />
                     </div>
                     <div className={styles['trans-form-group']}>
-                        <label className={styles.formLabel}>Tipo (ENTRADA/SALIDA):</label>
                         <SelectBase
-                            // <-- CORRECCIÓN 1: Se cambió 'apiData' por 'options'
-                            options={apiDataTipo} 
+                            options={transactionTypesOptions} 
                             value={header.transactionType}
-                            onChange={(value) => setHeader(prev => ({ ...prev, transactionType: value }))}
+                            onChange={(selectedOption) => setHeader(prev => ({ ...prev, transactionType: selectedOption }))}
                             placeholder="Seleccione el tipo"
-                            disabled={!isEditable}
+                            isDisabled={!isEditable} // Corregido: SelectBase usa 'isDisabled' usualmente
                         />
                     </div>
                     <div className={styles['trans-form-group']} style={{ gridColumn: '1 / span 3' }}>
@@ -217,18 +227,17 @@ const EditBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
                 <table className={styles.tabla}>
                     <thead className={styles.table_header}>
                         <tr>
-                            {/* Los encabezados se generan dinámicamente */}
                             {detailColumns.map(col => (
                                 <th key={col.header} className={col.className}>{col.header}</th>
                             ))}
                         </tr>
                     </thead>
                     <tbody>
-                        {/* <-- CORRECCIÓN 2: Se reemplaza <DocumentTable> por un mapeo directo --> */}
+                        {/* --- RENDERING MANUAL DE LA TABLA PARA ACTUALIZACIÓN VISUAL CORRECTA --- */}
                         {bankEntries.length > 0 ? (
                             bankEntries.map((entry, index) => (
                                 <tr key={index}>
-                                    <td>{entry.idCatalog}</td>
+                                    <td>{entry.idCatalog}</td> 
                                     <td>{entry.description}</td>
                                     <td className={styles.textAlignRight}>${(Number(entry.debit) || 0).toFixed(2)}</td>
                                     <td className={styles.textAlignRight}>${(Number(entry.credit) || 0).toFixed(2)}</td>
@@ -255,7 +264,6 @@ const EditBankTransaction = ({ apiDataCuenta, apiDataTipo }) => {
                                 </td>
                             </tr>
                         )}
-                        {/* <-- FIN DE LA CORRECCIÓN 2 --> */}
 
                         <tr className={styles.tableTotalRow} style={{ backgroundColor: '#bcb7dd', fontWeight: 'bold' }}>
                             <td colSpan={2}>Total</td> 

@@ -1,7 +1,5 @@
-// src/services/banksService.js
-import api from '../api'; // Importa la instancia de Axios configurada
 
-// --- YA NO NECESITAMOS LA FUNCIÓN toApiDate ---
+import api from '../api'; 
 
 // -------------------------------------------------------------
 // --- SERVICIOS DEL MÓDULO DE BANCOS ---

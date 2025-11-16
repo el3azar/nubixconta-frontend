@@ -362,14 +362,12 @@ basado en accountsreceivable/AccountReceivableAccount.module.css
 /* ESTILOS DE FORMULARIO - TRANSACCIÓN (Usando prefijo 'trans-') */
 /* ==================================== */
 
-/* 🛑 CLASE NUEVA Y CLAVE: Define el contenedor vertical de Label e Input */
+
 .trans-form-group {
   display: flex;
   flex-direction: column; /* Alineación vertical (Label encima del Input) */
   gap: 0.3rem; /* Pequeña separación entre label e input */
 }
-
-/* 🛑 Estilos para los Labels dentro de los grupos */
 .trans-form-group label {
   font-weight: bold;
   color: #000;
@@ -377,7 +375,7 @@ basado en accountsreceivable/AccountReceivableAccount.module.css
   margin-bottom: 0.3rem;
 }
 
-/* 🛑 Estilos para el contenedor de la Card de Búsqueda/Registro */
+
 .searchCard {
   background: #bcb7dd; 
   padding: 1.5rem 2rem;
@@ -386,8 +384,7 @@ basado en accountsreceivable/AccountReceivableAccount.module.css
   margin-bottom: 2rem;
 }
 
-/* 🛑 Clase obsoleta/conflictiva eliminada o renombrada si se usaba para la disposición vertical: */
-/* La clase .fechaGrupo se mantiene, pero se corrige su dirección para que no colisione con el .trans-form-group */
+
 .fechaGrupo {
   /* Se corrige la dirección para que sea consistente con .trans-form-group */
   display: flex;
@@ -396,13 +393,11 @@ basado en accountsreceivable/AccountReceivableAccount.module.css
   gap: 0.3rem; 
 }
 
-/* ... (Estilos de input[type="text"], input[type="number"], etc., se mantienen por ser globales) ... */
-/* --- Bloque 1: Suaviza el color de TODOS los placeholders --- */
+
 input::placeholder,
 textarea::placeholder {
-  /* Para navegadores basados en WebKit (Chrome, Safari, Edge) */
-  color: #999; /* Gris más suave que el negro por defecto */
-  opacity: 1; /* Asegura que el color se muestre, no la opacidad predeterminada */
+  color: #999;
+  opacity: 1; 
 }
 
 /* Para Firefox */
@@ -417,7 +412,7 @@ input:-ms-input-placeholder,
 textarea:-ms-input-placeholder {
   color: #999;
 }
-/* --- Bloque 2: Estilos específicos para campos deshabilitados --- */
+
 input:disabled {
   background-color: #f0f0f0; /* Fondo más claro y definido */
   color: #505050; /* Color del texto DE VALOR (ej: C-98765) */
@@ -448,3 +443,33 @@ input:disabled::placeholder {
 .rowApplied {
   background-color: #a8ffa8 !important; 
 }
+
+/* ==================================== */
+/* ESTILOS PARA LA TARJETA DE BÚSQUEDA */
+/* ==================================== */
+
+
+.searchGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* Espacio vertical entre el campo de cuenta, las fechas y los botones */
+}
+ 
+.accountInputGroup {
+
+  max-width: 450px; 
+}
+
+
+.buscador {
+  display: flex;
+  /* Eliminamos el padding y fondo de aquí para un look más limpio, es opcional */
+  padding: 0;
+  background-color: transparent;
+  border-radius: 0;
+  margin-bottom: 0;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+
