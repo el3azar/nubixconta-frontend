@@ -11,8 +11,7 @@ const getAuthHeader = (token) => ({
 export const useBankTransactionService = () => {
     const { token } = useAuth();
 
-    // ... (Mantén tus métodos existentes como createBankTransaction, updateTransaction, etc.) ...
-
+  
     /**
      * Filtra transacciones bancarias por el nombre o código de una cuenta bancaria,
      * y opcionalmente por rango de fechas.

@@ -1,4 +1,3 @@
-// src/components/banks/NewBankTransaction.jsx
 import React, { useState } from "react";
 import Boton from "../inventory/inventoryelements/Boton";
 import SelectBase from "../inventory/inventoryelements/SelectBase";
@@ -57,46 +56,39 @@ const NewBankTransaction = () => {
         setBankEntries(prevEntries => [...prevEntries, newDetail]);
     };
 
-    const handleDeleteDetail = (indexToDelete) => {
-        if (window.confirm(`¿Está seguro de eliminar esta línea de asiento?`)) {
+    const handleDeleteDetail = async (indexToDelete) => {
+        const userConfirmed = await Notifier.confirm({
+             title: '¿Estás seguro?',
+             text: "No podrás revertir esta acción.",
+             confirmButtonText: 'Sí, eliminar'
+});
+
+      
+        if (userConfirmed.isConfirmed) {
+            // Este bloque ahora SÓLO se ejecuta si el usuario hace clic en 'Sí, eliminar'.
             setBankEntries(prev => prev.filter((_, index) => index !== indexToDelete));
+            Notifier.info('Línea de asiento eliminada.');
         }
+  
     };
 
     const totalDebe = bankEntries.reduce((sum, item) => sum + (Number(item.debit) || 0), 0);
     const totalHaber = bankEntries.reduce((sum, item) => sum + (Number(item.credit) || 0), 0);
-    const balance = totalDebe - totalHaber; // Se mantiene el cálculo del balance
+    const balance = totalDebe - totalHaber;
 
-    // --- LÓGICA DE GUARDADO DE LA TRANSACCIÓN COMPLETA ---
     const handleSaveTransaction = async () => {
-        // --- VALIDACIONES INICIALES ---
-        if (!header.transactionDate) {
-            Notifier.error('La fecha de la transacción es obligatoria.');
+        if (!header.transactionDate || !header.receiptNumber || !header.description || !header.transactionType) {
+            Notifier.error('Todos los campos del encabezado son obligatorios.');
             return;
         }
-        if (!header.receiptNumber) {
-            Notifier.error('El número de referencia es obligatorio.');
+        if (bankEntries.length < 2) {
+            Notifier.error('La transacción debe tener al menos dos asientos.');
             return;
         }
-        if (!header.description) {
-            Notifier.error('La descripción general de la transacción es obligatoria.');
-            return;
-        }
-        if (!header.transactionType) {
-            Notifier.error('El tipo de transacción es obligatorio.');
-            return;
-        }
-        if (bankEntries.length === 0) {
-            Notifier.error('Debe añadir al menos un asiento a la transacción.');
-            return;
-        }
-
-        // ***** AQUÍ ESTÁ LA NUEVA VALIDACIÓN PARA EL BALANCE *****
         if (balance !== 0) {
-            Notifier.error('La transacción no cuadra. El Debe y el Haber deben ser iguales para registrarla.');
-            return; // Detiene la ejecución si no cuadra
+            Notifier.error('La transacción no cuadra. El Debe y el Haber deben ser iguales.');
+            return;
         }
-        // ***** FIN DE LA NUEVA VALIDACIÓN *****
 
         setIsLoading(true);
         setError(null);
@@ -107,7 +99,7 @@ const NewBankTransaction = () => {
                 receiptNumber: header.receiptNumber,
                 description: header.description,
                 transactionType: header.transactionType.value,
-                totalAmount: totalDebe, // Ya configurado para tomar el totalDebe
+                totalAmount: totalDebe,
                 bankEntries: bankEntries.map(entry => ({
                     idCatalog: entry.idCatalog,
                     description: entry.description,
@@ -116,17 +108,14 @@ const NewBankTransaction = () => {
                 }))
             };
 
-            console.log("Enviando a la API:", transactionData);
             await createBankTransaction(transactionData);
-
             Notifier.success('Transacción bancaria registrada con éxito!');
             navigate('/bancos/transacciones');
 
         } catch (err) {
-            console.error("Error al guardar la transacción:", err);
-            setError('Error al guardar la transacción.');
             const backendError = err.response?.data?.message || err.message || 'Error desconocido.';
             Notifier.error(`Error al guardar: ${backendError}`);
+            setError('Error al guardar la transacción.');
         } finally {
             setIsLoading(false);
         }
@@ -158,7 +147,7 @@ const NewBankTransaction = () => {
             <div className={styles.searchCard}>
                 <h3 className={styles.h2Izq}>Encabezado de la Transacción</h3>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: '18px' }}>
-                    <div className={styles['trans-form-group']}>
+                     <div className={styles['trans-form-group']}>
                         <label className={styles.formLabel}>Fecha:</label>
                         <input
                             type="date"
@@ -220,13 +209,34 @@ const NewBankTransaction = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        <DocumentTable
-                            documents={bankEntries}
-                            columns={detailColumns}
-                            styles={styles}
-                            showRowActions={false}
-                            emptyMessage="Añada asientos a la transacción."
-                        />
+                        {bankEntries.length > 0 ? (
+                            bankEntries.map((entry, index) => (
+                                // Se añade un 'key' único a cada fila para que React optimice el renderizado
+                                <tr key={index}>
+                                    <td>{entry.accountName}</td>
+                                    <td>{entry.description}</td>
+                                    <td className={styles.textAlignRight}>${Number(entry.debit).toFixed(2)}</td>
+                                    <td className={styles.textAlignRight}>${Number(entry.credit).toFixed(2)}</td>
+                                    <td className={styles.textAlignCenter}>
+                                        {/* El botón se renderiza aquí directamente */}
+                                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                                            <Boton color="rojo" title="Eliminar" size="icon" forma="pastilla" onClick={() => handleDeleteDetail(index)}>
+                                                <i className="bi bi-trash"></i>
+                                            </Boton>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            // Mensaje para cuando no hay asientos en la tabla
+                            <tr>
+                                <td colSpan={detailColumns.length} style={{ textAlign: 'center' }}>
+                                    Añada asientos a la transacción.
+                                </td>
+                            </tr>
+                        )}
+                        
+                        {/* Las filas de Total y Balance se mantienen igual */}
                         <tr className={styles.tableTotalRow} style={{ backgroundColor: '#bcb7dd', fontWeight: 'bold' }}>
                             <td colSpan={2}>Total</td>
                             <td className={styles.textAlignRight}>${(totalDebe || 0).toFixed(2)}</td>
@@ -248,7 +258,7 @@ const NewBankTransaction = () => {
                     color="verde"
                     forma="pastilla"
                     onClick={handleSaveTransaction}
-                    disabled={isLoading || balance !== 0} // Deshabilita el botón si isLoading o si NO cuadra
+                    disabled={isLoading || balance !== 0}
                 >
                     {isLoading ? 'Registrando...' : 'Registrar Transacción'}
                 </Boton>
