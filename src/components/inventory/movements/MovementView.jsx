@@ -165,12 +165,13 @@ const MovementView = () => {
     {
       header: 'Acciones',
       id: 'acciones',
+      size: 180, 
       cell: ({ row }) => {
         const movement = row.original;
         const isManual = movement.originModule.includes('Manual');
 
         return (
-          <div className="d-flex gap-2 justify-content-center flex-wrap">
+          <div className="d-flex gap-2 justify-content-center">
             {isManual && movement.status === 'PENDIENTE' && (
               <>
                 <Boton color="morado" title="Editar" onClick={() => handleOpenEditModal(movement)} size="icon">
