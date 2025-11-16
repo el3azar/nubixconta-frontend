@@ -9,6 +9,7 @@ import styles from '../../styles/banks/Banks.module.css';
 import { bankTransactionService } from '../../services/banks/banksService';
 import { Notifier } from '../../utils/alertUtils';
 import SelectBase from "../inventory/inventoryelements/SelectBase";
+import { DocumentTableBank } from "../shared/TableBank";
 
 
 const ViewBankTransaction = () => {
@@ -142,7 +143,7 @@ const ViewBankTransaction = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        <DocumentTable
+                        <DocumentTableBank
                             documents={bankEntries}
                             columns={detailColumns}
                             styles={styles}

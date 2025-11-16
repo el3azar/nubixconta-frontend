@@ -22,6 +22,7 @@ import { useBankModuleService } from '../../services/banks/BankModuleService'; /
 import { useBankEntriesService } from '../../services/banks/BankEntriesService'; // <-- Este se mantiene para 'Otros Modulos'
 import { useCompany } from "../../context/CompanyContext";
 import { useAuth } from "../../context/AuthContext";
+import { DocumentTableBank } from '../shared/TableBank';
 
 // --- FUNCIÓN COMPLETA PARA CARGAR IMAGEN ---
 const loadImageAsBase64 = (url) => {
@@ -298,7 +299,7 @@ const BankReportsView = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        <DocumentTable
+                        <DocumentTableBank
                             documents={reportData}
                             columns={currentColumns}
                             isLoading={isLoading}

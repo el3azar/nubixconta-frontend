@@ -15,6 +15,7 @@ import { Notifier } from '../../utils/alertUtils';
 import SearchCardBank from './SearchCardBank';
 import { DocumentTable } from '../shared/DocumentTable';
 import Boton from '../inventory/inventoryelements/Boton';
+import { DocumentTableBank } from '../shared/TableBank';
 
 // Las columnas para 'Este Módulo' (BankTransactionsView original)
 export const thisModuleColumns = [
@@ -383,7 +384,7 @@ const BankTransactionsView = ({ apiDataCodigo }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        <DocumentTable
+                        <DocumentTableBank
                             documents={transactions}
                             columns={currentColumns}
                             showRowActions={isEsteModulo}
